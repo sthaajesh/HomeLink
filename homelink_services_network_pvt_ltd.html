@@ -1602,21 +1602,27 @@
                         <div id="login-box-employee" class="hidden space-y-5">
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Employee Login (ID: 021, 022...)</h2>
-                                <p class="text-xs sm:text-sm text-slate-500 mt-1">Enter or select your numeric Employee ID. Your access is strictly locked to the branch location assigned to your ID by the Owner.</p>
+                                <p class="text-xs sm:text-sm text-slate-500 mt-1">Enter your numeric Employee ID, official company email, and staff passcode. Access is strictly locked to your Owner-assigned branch location.</p>
                             </div>
                             <form onsubmit="handleRoleLoginSubmit(event, 'employee')" class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Employee ID (e.g., 021, 022) *</label>
-                                    <input type="text" id="emp-login-id" list="employee-id-datalist" required value="021" placeholder="Enter Employee ID like 021 or 022" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-mono font-extrabold bg-white">
-                                    <datalist id="employee-id-datalist"></datalist>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Employee ID (e.g., 021, 022) *</label>
+                                        <input type="text" id="emp-login-id" list="employee-id-datalist" oninput="syncEmployeeLoginEmailById(this.value)" required value="021" placeholder="e.g., 021" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-mono font-extrabold bg-white">
+                                        <datalist id="employee-id-datalist"></datalist>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Employee Email *</label>
+                                        <input type="email" id="emp-login-email" required value="pratima.021@homelink.com.np" placeholder="name.021@homelink.com.np" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-medium bg-white">
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Staff Passcode *</label>
-                                    <input type="password" required value="staff2025" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
+                                    <input type="password" id="emp-login-passcode" required value="staff2025" placeholder="••••••••" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
                                 </div>
                                 <div class="flex flex-col sm:flex-row gap-3 pt-1">
                                     <button type="submit" class="flex-1 py-3.5 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm sm:text-base shadow-md transition">
-                                        Sign In with Employee ID
+                                        Sign In with Employee ID & Email
                                     </button>
                                     <button type="button" onclick="quickRoleLogin('employee')" class="py-3.5 px-5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-extrabold text-sm transition">
                                         1-Click ID 021 Demo
@@ -1629,16 +1635,22 @@
                         <div id="login-box-admin" class="hidden space-y-5">
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Owner Login</h2>
-                                <p class="text-xs sm:text-sm text-slate-500 mt-1">Full Owner access across Dharan & Biratnagar hubs, including assigning Employee IDs (021, 022...) to specific locations.</p>
+                                <p class="text-xs sm:text-sm text-slate-500 mt-1">Sign in with your Owner ID, official email, and password to manage both branches and assign Employee IDs (021, 022...) to locations.</p>
                             </div>
                             <form onsubmit="handleRoleLoginSubmit(event, 'admin')" class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Owner Email / ID *</label>
-                                    <input type="text" required value="owner@homelink.com.np" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-medium">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Owner ID *</label>
+                                        <input type="text" id="owner-login-id" required value="OWNER" placeholder="e.g., OWNER" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-mono font-extrabold bg-white">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Owner Email *</label>
+                                        <input type="email" id="owner-login-email" required value="owner@homelink.com.np" placeholder="owner@homelink.com.np" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-medium bg-white">
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Owner Password *</label>
-                                    <input type="password" required value="admin2025" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
+                                    <input type="password" id="owner-login-password" required value="admin2025" placeholder="••••••••" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
                                 </div>
                                 <div class="flex flex-col sm:flex-row gap-3 pt-1">
                                     <button type="submit" class="flex-1 py-3.5 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm sm:text-base shadow-md transition">
@@ -2047,10 +2059,11 @@
                     </div>
                     <div id="owner-add-employee-card" class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm self-start">
                         <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl mb-1">Register Employee ID & Assign Location</h3>
-                        <p class="text-sm sm:text-base text-slate-500 mb-5">Create an Employee ID (like <strong>024</strong>, <strong>025</strong>) and assign which branch location they belong to.</p>
+                        <p class="text-sm sm:text-base text-slate-500 mb-5">Create an Employee ID (like <strong>024</strong>, <strong>025</strong>) with email and assign which branch location they belong to.</p>
                         <form onsubmit="handleAddEmployeeSubmit(event)" class="space-y-3.5">
                             <input type="text" id="emp-add-code" required placeholder="Employee ID (e.g. 024, 025) *" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-mono font-bold">
                             <input type="text" id="emp-add-name" required placeholder="Employee Full Name *" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
+                            <input type="email" id="emp-add-email" required placeholder="Employee Email (e.g. name.024@homelink.com.np) *" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
                             <input type="text" id="emp-add-role" required placeholder="Designation (e.g. Branch Coordinator) *" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
                             <select id="emp-add-dept" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-semibold">
                                 <option value="Rentals">Primary Desk: Rental Queries</option>
@@ -2661,10 +2674,10 @@
         ];
 
         const INITIAL_EMPLOYEES = [
-            { id: 'emp-0', empCode: 'OWNER', initials: 'SL', name: 'Suman Limbu', role: 'Company Owner & MD', department: 'All', deptLabel: 'Owner • All Branches & Staff', branchCity: 'All', hub: 'Dharan & Biratnagar (Owner)', phone: '+977 98520-55101', color: 'from-brand-600 to-indigo-700', isOwner: true },
-            { id: 'emp-1', empCode: '021', initials: 'PR', name: 'Pratima Rai', role: 'Branch Coordinator', department: 'Rentals', deptLabel: 'Rentals, Jobs & Services', branchCity: 'Dharan', hub: 'Dharan', phone: '+977 98420-88202', color: 'from-indigo-500 to-violet-600' },
-            { id: 'emp-2', empCode: '022', initials: 'RP', name: 'Rakesh Pokharel', role: 'Branch Coordinator', department: 'Jobs', deptLabel: 'Rentals, Jobs & Services', branchCity: 'Biratnagar', hub: 'Biratnagar', phone: '+977 98027-44303', color: 'from-emerald-500 to-teal-600' },
-            { id: 'emp-3', empCode: '023', initials: 'BM', name: 'Binod Mandal', role: 'Field & Service Officer', department: 'Services', deptLabel: 'Rentals, Jobs & Services', branchCity: 'Biratnagar', hub: 'Biratnagar', phone: '+977 98123-77404', color: 'from-amber-500 to-orange-600' }
+            { id: 'emp-0', empCode: 'OWNER', email: 'owner@homelink.com.np', initials: 'SL', name: 'Suman Limbu', role: 'Company Owner & MD', department: 'All', deptLabel: 'Owner • All Branches & Staff', branchCity: 'All', hub: 'Dharan & Biratnagar (Owner)', phone: '+977 98520-55101', color: 'from-brand-600 to-indigo-700', isOwner: true },
+            { id: 'emp-1', empCode: '021', email: 'pratima.021@homelink.com.np', initials: 'PR', name: 'Pratima Rai', role: 'Branch Coordinator', department: 'Rentals', deptLabel: 'Rentals, Jobs & Services', branchCity: 'Dharan', hub: 'Dharan', phone: '+977 98420-88202', color: 'from-indigo-500 to-violet-600' },
+            { id: 'emp-2', empCode: '022', email: 'rakesh.022@homelink.com.np', initials: 'RP', name: 'Rakesh Pokharel', role: 'Branch Coordinator', department: 'Jobs', deptLabel: 'Rentals, Jobs & Services', branchCity: 'Biratnagar', hub: 'Biratnagar', phone: '+977 98027-44303', color: 'from-emerald-500 to-teal-600' },
+            { id: 'emp-3', empCode: '023', email: 'binod.023@homelink.com.np', initials: 'BM', name: 'Binod Mandal', role: 'Field & Service Officer', department: 'Services', deptLabel: 'Rentals, Jobs & Services', branchCity: 'Biratnagar', hub: 'Biratnagar', phone: '+977 98123-77404', color: 'from-amber-500 to-orange-600' }
         ];
 
         // Separated Departmental Customer Queries (Rentals, Jobs, and Services)
@@ -4330,18 +4343,15 @@
             saveState();
             e.target.reset();
             closeBookNowSection();
-            showToast(`Booking & payment proof submitted to ${newInquiry.assignedTo}!`, 'success');
+            showToast(`Booking & payment proof sent to ${newInquiry.assignedTo}!`, 'success');
         }
 
-        // ==========================================
-        // AUTHENTICATION & ROLE MANAGEMENT
-        // ==========================================
         function switchLoginRoleTab(role) {
             ['customer', 'employee', 'admin'].forEach(r => {
-                const tab = document.getElementById(`role-tab-${r}`);
+                const tabBtn = document.getElementById(`role-tab-${r}`);
                 const box = document.getElementById(`login-box-${r}`);
-                if (tab) {
-                    tab.className = r === role
+                if (tabBtn) {
+                    tabBtn.className = r === role
                         ? 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-brand-600 shadow-sm transition'
                         : 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-slate-600 hover:text-slate-900 transition';
                 }
@@ -4352,6 +4362,16 @@
             });
         }
 
+        function syncEmployeeLoginEmailById(rawCode) {
+            const emailInput = document.getElementById('emp-login-email');
+            if (!emailInput) return;
+            const code = (rawCode || '').trim().toLowerCase();
+            const match = employees.find(emp => !emp.isOwner && String(emp.empCode).toLowerCase() === code);
+            if (match && match.email) {
+                emailInput.value = match.email;
+            }
+        }
+
         function handleRoleLoginSubmit(e, role) {
             e.preventDefault();
             if (role === 'customer') {
@@ -4360,14 +4380,21 @@
                 releaseStaffBranchLocks();
             } else if (role === 'employee') {
                 const rawCode = document.getElementById('emp-login-id').value.trim();
+                const rawEmail = (document.getElementById('emp-login-email')?.value || '').trim().toLowerCase();
                 const empRecord = employees.find(emp => !emp.isOwner && String(emp.empCode).toLowerCase() === rawCode.toLowerCase());
                 if (!empRecord) {
                     showToast(`Employee ID "${rawCode}" not found. Try 021, 022, or 023 (or ask Owner to register it).`, 'info');
                     return;
                 }
+                const expectedEmail = (empRecord.email || `${empRecord.name.split(' ')[0].toLowerCase()}.${empRecord.empCode}@homelink.com.np`).toLowerCase();
+                if (!rawEmail || !rawEmail.includes('@') || (empRecord.email && rawEmail !== expectedEmail)) {
+                    showToast(`Email does not match Employee ID ${empRecord.empCode} (expected ${expectedEmail}).`, 'info');
+                    return;
+                }
                 const assignedLocation = empRecord.branchCity || 'Dharan';
                 currentUser = {
                     empCode: empRecord.empCode,
+                    email: rawEmail,
                     name: empRecord.name,
                     phone: empRecord.phone,
                     city: assignedLocation,
@@ -4377,7 +4404,13 @@
                 };
                 enforceEmployeeBranchLock();
             } else if (role === 'admin') {
-                currentUser = { empCode: 'OWNER', name: 'Suman Limbu (Owner)', phone: '9852055101', city: 'All', branchCity: 'All', department: 'All', role: 'admin' };
+                const ownerCode = (document.getElementById('owner-login-id')?.value || 'OWNER').trim();
+                const ownerEmail = (document.getElementById('owner-login-email')?.value || 'owner@homelink.com.np').trim();
+                if (!ownerEmail.includes('@')) {
+                    showToast('Please enter a valid Owner email address.', 'info');
+                    return;
+                }
+                currentUser = { empCode: ownerCode || 'OWNER', email: ownerEmail, name: 'Suman Limbu (Owner)', phone: '9852055101', city: 'All', branchCity: 'All', department: 'All', role: 'admin' };
                 releaseStaffBranchLocks();
             }
 
@@ -4877,6 +4910,7 @@
             }
             const empCode = document.getElementById('emp-add-code').value.trim();
             const name = document.getElementById('emp-add-name').value.trim();
+            const email = (document.getElementById('emp-add-email')?.value || '').trim().toLowerCase();
             const role = document.getElementById('emp-add-role').value.trim();
             const department = document.getElementById('emp-add-dept').value;
             const branchCity = document.getElementById('emp-add-hub').value;
@@ -4891,6 +4925,7 @@
             employees.push({
                 id: 'emp-' + Date.now(),
                 empCode,
+                email: email || `${name.split(' ')[0].toLowerCase()}.${empCode}@homelink.com.np`,
                 initials: initials || 'ST',
                 name,
                 role,
