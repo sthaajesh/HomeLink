@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>HomeLink Services Network Pvt. Ltd. | Dharan & Biratnagar</title>
+    <title>HomeLink Koshi | Dharan & Biratnagar</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -58,6 +58,40 @@
                 font-size: 16px !important;
             }
         }
+
+        /* Integrated Custom Combobox (<select>) Styling */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem 1rem;
+            padding-right: 2.35rem !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        select:hover:not(:disabled) {
+            border-color: #6366f1;
+            box-shadow: 0 2px 8px -2px rgba(79, 70, 229, 0.14);
+        }
+        select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        select:disabled {
+            opacity: 0.72;
+            cursor: not-allowed;
+            background-color: #f1f5f9;
+        }
+        /* Compact pill combobox inside header role switcher */
+        #header-role-select {
+            background-position: right 0.15rem center;
+            background-size: 0.85rem 0.85rem;
+            padding-right: 1.35rem !important;
+            box-shadow: none !important;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased overflow-x-hidden pb-20 md:pb-0 selection:bg-brand-600 selection:text-white min-h-screen flex flex-col">
@@ -72,22 +106,10 @@
     <header class="sticky top-0 z-40 w-full max-w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-sm">
         <div class="max-w-7xl mx-auto px-2.5 sm:px-4 lg:px-6 h-16 sm:h-20 flex items-center justify-between gap-1.5 sm:gap-2 lg:gap-3 min-w-0">
             
-            <!-- Left: Mobile Menu Button + Native-Style '<' Back Button + Brand Logo -->
+            <!-- Left: Mobile Menu Button + Brand Logo -->
             <div class="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1 lg:flex-initial shrink">
                 <button type="button" onclick="toggleMobileDrawer()" class="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:bg-slate-200 transition shrink-0" aria-label="Open Menu">
                     <i id="mobile-drawer-icon" class="ph-bold ph-list text-xl sm:text-2xl"></i>
-                </button>
-
-                <!-- Persistent Top-Left '<' Back Button (Automatically appears on any inner page) -->
-                <button 
-                    type="button" 
-                    id="global-top-back-btn" 
-                    onclick="goBackFromPage()" 
-                    class="hidden items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 border border-slate-200/80 shadow-sm transition-all group shrink-0" 
-                    title="Go back to previous page (Browser Back)"
-                    aria-label="Go back to previous page"
-                >
-                    <i class="ph-bold ph-caret-left text-lg sm:text-xl group-hover:-translate-x-0.5 transition-transform"></i>
                 </button>
 
                 <button type="button" onclick="navigateTo('page-home')" class="flex items-center gap-2 sm:gap-2.5 text-left group focus:outline-none min-w-0">
@@ -137,13 +159,13 @@
                 </button>
 
                 <!-- Integrated Role Switcher Pill -->
-                <div class="hidden md:flex items-center bg-slate-100 hover:bg-slate-200/70 rounded-xl px-2 py-1.5 border border-slate-200/90 transition shrink-0">
-                    <i class="ph-fill ph-user-switch text-brand-600 text-sm mr-1"></i>
-                    <select id="header-role-select" onchange="handleHeaderRoleSwitch(this.value)" class="bg-transparent text-xs font-extrabold text-slate-800 focus:outline-none cursor-pointer max-w-[115px] xl:max-w-none">
+                <div class="hidden md:flex items-center bg-slate-100/90 hover:bg-indigo-50/70 rounded-xl px-2.5 py-1.5 border border-slate-200/90 hover:border-indigo-300 transition shadow-xs shrink-0">
+                    <i class="ph-fill ph-user-switch text-brand-600 text-sm mr-1.5"></i>
+                    <select id="header-role-select" onchange="handleHeaderRoleSwitch(this.value)" class="bg-transparent text-xs font-extrabold text-slate-800 focus:outline-none cursor-pointer max-w-[125px] xl:max-w-none">
                         <option value="guest">Guest Mode</option>
                         <option value="customer">Customer</option>
-                        <option value="employee">Employee</option>
-                        <option value="admin">Company Admin</option>
+                        <option value="employee">Employee (ID 021)</option>
+                        <option value="admin">Owner</option>
                     </select>
                 </div>
 
@@ -164,11 +186,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div class="flex items-center justify-between bg-slate-100 p-2 rounded-xl">
                     <span class="text-xs font-extrabold text-slate-500 pl-1">Demo Role:</span>
-                    <select id="mobile-role-select" onchange="handleHeaderRoleSwitch(this.value); toggleMobileDrawer(false);" class="bg-white text-slate-800 text-xs font-extrabold rounded-lg px-2.5 py-1.5 border border-slate-200">
+                    <select id="mobile-role-select" onchange="handleHeaderRoleSwitch(this.value); toggleMobileDrawer(false);" class="bg-white text-slate-800 text-xs font-extrabold rounded-xl px-3 py-1.5 border border-slate-200 shadow-xs cursor-pointer">
                         <option value="guest">Guest Preview</option>
                         <option value="customer">Customer Login</option>
-                        <option value="employee">Employee Staff</option>
-                        <option value="admin">Company Admin</option>
+                        <option value="employee">Employee (ID 021)</option>
+                        <option value="admin">Owner Account</option>
                     </select>
                 </div>
                 <div class="flex items-center justify-between bg-slate-100 p-1.5 rounded-xl">
@@ -247,13 +269,13 @@
                             </div>
 
                             <div class="grid grid-cols-2 sm:flex items-center gap-2.5 border-t sm:border-t-0 sm:border-l border-slate-200 pt-2.5 sm:pt-0 sm:pl-2.5">
-                                <select id="home-search-city" class="bg-slate-100 text-slate-800 text-base lg:text-lg font-semibold rounded-xl px-4 py-3.5 focus:outline-none cursor-pointer">
+                                <select id="home-search-city" class="bg-slate-100/90 hover:bg-indigo-50/70 border border-slate-200 text-slate-800 text-base lg:text-lg font-bold rounded-xl px-4 py-3.5 cursor-pointer">
                                     <option value="All">All Cities</option>
                                     <option value="Dharan">Dharan</option>
                                     <option value="Biratnagar">Biratnagar</option>
                                 </select>
 
-                                <select id="home-search-category" class="bg-slate-100 text-slate-800 text-base lg:text-lg font-semibold rounded-xl px-4 py-3.5 focus:outline-none cursor-pointer">
+                                <select id="home-search-category" class="bg-slate-100/90 hover:bg-indigo-50/70 border border-slate-200 text-slate-800 text-base lg:text-lg font-bold rounded-xl px-4 py-3.5 cursor-pointer">
                                     <option value="All">All Categories</option>
                                     <option value="Rentals">Rentals / Flats</option>
                                     <option value="Jobs">Local Jobs</option>
@@ -490,10 +512,11 @@
                             </div>
                         </div>
                         <div class="mt-6 pt-4 border-t border-slate-100">
-                            <button type="button" onclick="searchByCityFromLocation('Dharan')" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition flex items-center justify-center gap-2">
-                                <span>Explore Dharan Listings</span>
-                                <i class="ph-bold ph-arrow-right"></i>
-                            </button>
+                            <a href="https://maps.app.goo.gl/ESjnpvNzyResPm6S9" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-sm">
+                                <i class="ph-fill ph-map-pin-line text-lg"></i>
+                                <span>Open Dharan Office in Google Maps</span>
+                                <i class="ph-bold ph-arrow-up-right"></i>
+                            </a>
                         </div>
                     </div>
 
@@ -512,10 +535,11 @@
                             </div>
                         </div>
                         <div class="mt-6 pt-4 border-t border-slate-100">
-                            <button type="button" onclick="searchByCityFromLocation('Biratnagar')" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition flex items-center justify-center gap-2">
-                                <span>Explore Biratnagar Listings</span>
-                                <i class="ph-bold ph-arrow-right"></i>
-                            </button>
+                            <a href="https://www.google.com/maps/search/?api=1&query=Traffic+Chowk+Biratnagar" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition flex items-center justify-center gap-2 shadow-sm">
+                                <i class="ph-fill ph-map-pin-line text-lg"></i>
+                                <span>Open Biratnagar Office in Google Maps</span>
+                                <i class="ph-bold ph-arrow-up-right"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -531,7 +555,7 @@
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                         <div class="flex items-center gap-2 text-xs sm:text-sm text-indigo-200 font-semibold">
                             <button type="button" onclick="navigateTo('page-home')" class="hover:text-white inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">
-                                <i class="ph-bold ph-arrow-left"></i> Home
+                                Home
                             </button>
                             <span class="text-slate-500">/</span>
                             <span class="text-white font-bold">Search & Filter Directory</span>
@@ -551,14 +575,14 @@
                             >
                         </div>
                         <div class="sm:col-span-2">
-                            <select id="search-page-city" onchange="syncSearchPageFilters()" class="w-full h-full bg-slate-100 rounded-xl px-3.5 py-3 text-base font-semibold focus:outline-none cursor-pointer">
+                            <select id="search-page-city" onchange="syncSearchPageFilters()" class="w-full h-full bg-slate-100/90 hover:bg-indigo-50/70 border border-slate-200 rounded-xl px-3.5 py-3 text-base font-bold cursor-pointer">
                                 <option value="All">All Cities</option>
                                 <option value="Dharan">Dharan</option>
                                 <option value="Biratnagar">Biratnagar</option>
                             </select>
                         </div>
                         <div class="sm:col-span-3">
-                            <select id="search-page-category" onchange="syncSearchPageFilters()" class="w-full h-full bg-slate-100 rounded-xl px-3.5 py-3 text-base font-semibold focus:outline-none cursor-pointer">
+                            <select id="search-page-category" onchange="syncSearchPageFilters()" class="w-full h-full bg-slate-100/90 hover:bg-indigo-50/70 border border-slate-200 rounded-xl px-3.5 py-3 text-base font-bold cursor-pointer">
                                 <option value="All">All Categories</option>
                                 <option value="Rentals">Rentals (Rooms & Flats)</option>
                                 <option value="Jobs">Local Jobs</option>
@@ -590,7 +614,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
                     <div id="search-results-count-badge" class="text-base sm:text-lg font-extrabold text-slate-800">Found 0 results</div>
-                    <select id="search-page-sort" onchange="syncSearchPageFilters()" class="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm sm:text-base font-semibold text-slate-700">
+                    <select id="search-page-sort" onchange="syncSearchPageFilters()" class="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm sm:text-base font-bold text-slate-700 shadow-xs cursor-pointer">
                         <option value="newest">Sort: Featured & Newest</option>
                         <option value="price-asc">Price / Rate: Low to High</option>
                         <option value="price-desc">Price / Rate: High to Low</option>
@@ -633,7 +657,7 @@
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
                         <div class="flex items-center gap-2 text-xs sm:text-sm text-indigo-200 font-semibold">
                             <button type="button" onclick="navigateTo('page-home')" class="hover:text-white inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">
-                                <i class="ph-bold ph-arrow-left"></i> Home
+                                Home
                             </button>
                             <span class="text-indigo-400">/</span>
                             <span class="px-2.5 py-0.5 rounded-md bg-indigo-500/30 text-indigo-200 text-xs font-extrabold uppercase">Part B</span>
@@ -755,7 +779,7 @@
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
                         <div class="flex items-center gap-2 text-xs sm:text-sm text-emerald-200 font-semibold">
                             <button type="button" onclick="navigateTo('page-home')" class="hover:text-white inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">
-                                <i class="ph-bold ph-arrow-left"></i> Home
+                                Home
                             </button>
                             <span class="text-emerald-500">/</span>
                             <span class="px-2.5 py-0.5 rounded-md bg-emerald-500/30 text-emerald-200 text-xs font-extrabold uppercase">Part C</span>
@@ -852,7 +876,7 @@
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
                         <div class="flex items-center gap-2 text-xs sm:text-sm text-amber-200 font-semibold">
                             <button type="button" onclick="navigateTo('page-home')" class="hover:text-white inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">
-                                <i class="ph-bold ph-arrow-left"></i> Home
+                                Home
                             </button>
                             <span class="text-amber-500">/</span>
                             <span class="px-2.5 py-0.5 rounded-md bg-amber-500/30 text-amber-200 text-xs font-extrabold uppercase">Part D</span>
@@ -945,8 +969,8 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                         <div class="flex items-center gap-2 text-xs sm:text-sm text-indigo-200 font-semibold">
-                            <button type="button" onclick="goBackFromPage()" class="hover:text-white inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">
-                                <i class="ph-bold ph-arrow-left"></i> Go Back
+                            <button type="button" onclick="navigateTo('page-home')" class="hover:text-white inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">
+                                Home
                             </button>
                             <span class="text-slate-500">/</span>
                             <span class="text-white font-bold">Provider Publishing Studio</span>
@@ -992,30 +1016,69 @@
                             </div>
                         </div>
 
+                        <!-- Dedicated Category-Specific CSV Option for Staff (Shown separately when Rental Property or Job Vacancy is selected) -->
+                        <div id="post-form-csv-section" class="hidden p-4 sm:p-5 rounded-2xl bg-emerald-50/80 border-2 border-emerald-300 space-y-3.5">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xl shrink-0">
+                                        <i class="ph-bold ph-file-csv"></i>
+                                    </div>
+                                    <div>
+                                        <span id="post-csv-badge" class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800">Employee Bulk Option • Rentals Only</span>
+                                        <h3 id="post-csv-title" class="text-sm sm:text-base font-extrabold text-slate-900">Bulk Add / Update Rental Properties via CSV</h3>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="downloadCategoryCsvTemplate()" class="px-3 py-2 rounded-xl bg-white hover:bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-extrabold flex items-center gap-1.5 transition">
+                                    <i class="ph-bold ph-download-simple"></i> <span id="post-csv-template-label">Download Rental CSV Template</span>
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                                <div class="sm:col-span-7 flex items-end gap-2">
+                                    <div class="flex-1">
+                                        <label id="post-csv-url-label" class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Rental CSV Link (Google Sheets / Published URL)</label>
+                                        <input type="url" id="post-csv-url-input" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv" class="w-full rounded-xl border border-emerald-300 px-3.5 py-2.5 text-xs sm:text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    </div>
+                                    <button type="button" onclick="handleCategoryCsvUrlImport()" class="px-3.5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-sm transition shrink-0">
+                                        Sync Link
+                                    </button>
+                                </div>
+
+                                <div class="sm:col-span-5">
+                                    <label id="post-csv-file-label" class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Or Upload Rental .CSV File</label>
+                                    <input type="file" id="post-csv-file-input" accept=".csv,text/csv" onchange="handleCategoryCsvFileUpload(this)" class="w-full text-xs text-slate-700 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-extrabold file:bg-slate-900 file:text-white hover:file:bg-slate-800 cursor-pointer bg-white p-1.5 rounded-xl border border-emerald-300">
+                                </div>
+                            </div>
+
+                            <p id="post-csv-hint" class="text-[11px] text-slate-600 font-mono bg-white/80 px-3 py-1.5 rounded-xl border border-emerald-200/80">
+                                Columns: id, title, subtype, city, neighborhood, price, contactName, phone, description (Automatically saved to Rentals)
+                            </p>
+                        </div>
+
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">City Hub *</label>
-                                <select id="form-city" required onchange="populateFormNeighborhoods(this.value)" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-                                    <option value="Dharan">Dharan (Sunsari)</option>
-                                    <option value="Biratnagar">Biratnagar (Morang)</option>
+                                <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">2. Branch City *</label>
+                                <select id="form-city" onchange="populateFormNeighborhoods(this.value)" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 hover:bg-white px-4 py-3 text-sm sm:text-base font-bold text-slate-800 cursor-pointer">
+                                    <option value="Dharan">Dharan</option>
+                                    <option value="Biratnagar">Biratnagar</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Neighborhood / Chowk *</label>
-                                <input type="text" id="form-neighborhood" list="neighborhood-suggestions" required placeholder="e.g., Bhanu Chowk, Tintolia" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Area / Chowk *</label>
+                                <input type="text" id="form-neighborhood" list="neighborhood-suggestions" required placeholder="e.g., Bhanu Chowk, BPKIHS, Traffic Chowk" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
                                 <datalist id="neighborhood-suggestions"></datalist>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Listing Title *</label>
-                            <input type="text" id="form-title" required placeholder="e.g., Spacious 3BHK Flat near BPKIHS Gate" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">3. Listing Title *</label>
+                            <input type="text" id="form-title" required placeholder="e.g., Spacious 3BHK Flat near BPKIHS Gate" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label id="form-subtype-label" class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Property Type *</label>
-                                <select id="form-subtype" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
+                                <select id="form-subtype" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 hover:bg-white px-4 py-3 text-sm sm:text-base font-bold text-slate-800 cursor-pointer"></select>
                             </div>
                             <div>
                                 <label id="form-price-label" class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Monthly Rent (NPR) *</label>
@@ -1040,76 +1103,6 @@
                         <div>
                             <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Facilities / Highlights (comma separated)</label>
                             <input type="text" id="form-tags" placeholder="e.g., Car Parking, 24hr Water, 1st Floor, Wi-Fi" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        </div>
-
-                        <!-- Structured Rental Property Specifications (Shown only for Rental Properties) -->
-                        <div id="form-rental-specs-section" class="p-4 sm:p-5 rounded-2xl bg-indigo-50/60 border border-indigo-200/90 space-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm sm:text-base font-extrabold uppercase tracking-wider text-indigo-900">
-                                    <i class="ph-fill ph-sliders text-indigo-600 mr-1"></i> Rental Property Specifications
-                                </span>
-                                <span class="text-xs font-bold text-indigo-600">Shown on Flat Details</span>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Tenancy *</label>
-                                    <select id="form-rental-tenancy" class="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="General">General</option>
-                                        <option value="Exclusive">Exclusive</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Rent Type *</label>
-                                    <select id="form-rental-rent-type" class="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="Flat">Flat</option>
-                                        <option value="Room">Room</option>
-                                        <option value="House">House</option>
-                                        <option value="Commercial">Commercial</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Generic Ward Location *</label>
-                                    <input type="text" id="form-rental-ward" placeholder="e.g., Dharan 11, Biratnagar 3" class="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Bathroom *</label>
-                                    <select id="form-rental-bathroom" class="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="Attached">Attached</option>
-                                        <option value="Separate">Separate</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Electrical Equipments *</label>
-                                    <select id="form-rental-electrical" class="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="Fan & Light Bulb Installed">Fan & Light Bulb Installed</option>
-                                        <option value="Light Bulb Only">Light Bulb Only</option>
-                                        <option value="Not Included">Not Included</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Electricity Meter *</label>
-                                    <select id="form-rental-meter" class="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="Separate">Separate</option>
-                                        <option value="Shared">Shared</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Parking Space *</label>
-                                    <select id="form-rental-parking" class="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="Bike Only">Bike Only</option>
-                                        <option value="Car & Bike">Car & Bike</option>
-                                        <option value="None">None</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Internet Access / Wi-Fi *</label>
-                                    <select id="form-rental-wifi" class="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                        <option value="Yes">Yes</option>
-                                        <option value="No">No</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Property / Listing Photo Selector (Hidden on Job Provider Form) -->
@@ -1156,13 +1149,13 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Full Description *</label>
-                            <textarea id="form-description" rows="4" required placeholder="Describe exact location, room count, terms, or service details..." class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                            <label id="form-description-label" class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Full Description *</label>
+                            <textarea id="form-description" rows="4" required placeholder="Describe exact location, room count, floor, water/parking facilities, and rental terms..." class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
                         </div>
 
                         <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
                             <button type="button" onclick="cancelEditOrGoBack()" class="px-6 py-3.5 rounded-xl border border-slate-300 text-slate-700 text-sm sm:text-base font-bold hover:bg-slate-100 transition">
-                                Cancel & Go Back
+                                Cancel
                             </button>
                             <button type="submit" id="post-form-submit-btn" class="px-7 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm sm:text-base font-bold shadow-md transition flex items-center justify-center gap-2">
                                 <i class="ph-bold ph-check-circle text-xl"></i>
@@ -1220,9 +1213,6 @@
             <div class="bg-gradient-to-r from-slate-900 via-brand-900 to-slate-900 text-white border-b border-slate-800">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-                        <button type="button" onclick="goBackFromPage()" class="text-xs sm:text-sm text-indigo-200 hover:text-white inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-bold transition">
-                            <i class="ph-bold ph-arrow-left"></i> Back to Listings
-                        </button>
                         <div class="flex flex-wrap items-center gap-2">
                             <span id="detail-category-badge" class="px-3 py-1 rounded-lg bg-brand-600 text-xs sm:text-sm font-bold uppercase">Category</span>
                             <span id="detail-subtype" class="px-3 py-1 rounded-lg bg-white/15 text-xs sm:text-sm font-bold">Subtype</span>
@@ -1384,7 +1374,7 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                         <div>
                                             <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Gender *</label>
-                                            <select id="inq-gender" required class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-semibold bg-white">
+                                            <select id="inq-gender" required class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-bold bg-white cursor-pointer">
                                                 <option value="Male">Male</option>
                                                 <option value="Female">Female</option>
                                                 <option value="Other">Other</option>
@@ -1542,16 +1532,13 @@
             <div class="bg-gradient-to-r from-slate-900 via-brand-900 to-slate-900 text-white border-b border-slate-800">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-                        <button type="button" onclick="goBackFromPage()" class="text-xs sm:text-sm text-indigo-200 hover:text-white inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 font-bold transition">
-                            <i class="ph-bold ph-arrow-left"></i> Go Back
-                        </button>
                         <span class="px-3.5 py-1 rounded-full bg-white/10 text-indigo-200 text-xs sm:text-sm font-bold">
                             <i class="ph-fill ph-shield-check text-emerald-400"></i> Role-Based Portal Access
                         </span>
                     </div>
                     <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">Sign In to HomeLink Network</h1>
                     <p id="login-page-prompt" class="text-sm sm:text-base lg:text-lg text-indigo-200 mt-1.5 max-w-3xl">
-                        Please log in as a Customer, Employee, or Admin to access Rentals, Jobs, Home Services, and Booking tools.
+                        Please log in as a Customer, Employee (ID 021, 022...), or Owner to access Rentals, Jobs, Home Services, and Management tools.
                     </p>
                 </div>
             </div>
@@ -1568,7 +1555,7 @@
                                 Employee
                             </button>
                             <button type="button" onclick="switchLoginRoleTab('admin')" id="role-tab-admin" class="py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-slate-600 hover:text-slate-900 transition">
-                                Admin
+                                Owner
                             </button>
                         </div>
 
@@ -1601,54 +1588,63 @@
                         <!-- Employee Login Box -->
                         <div id="login-box-employee" class="hidden space-y-5">
                             <div>
-                                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Company Employee Login</h2>
-                                <p class="text-xs sm:text-sm text-slate-500 mt-1">Sign in to manage Rental, Job, and Home Service customer queries and edit listings.</p>
+                                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Employee Login (ID: 021, 022...)</h2>
+                                <p class="text-xs sm:text-sm text-slate-500 mt-1">Enter your numeric Employee ID, official company email, and staff passcode. Access is strictly locked to your Owner-assigned branch location.</p>
                             </div>
                             <form onsubmit="handleRoleLoginSubmit(event, 'employee')" class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Select Staff Profile *</label>
-                                    <select id="emp-login-id" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-semibold bg-white">
-                                        <option value="Pratima Rai|Rentals|Dharan">Pratima Rai — Rental Queries Division (Dharan)</option>
-                                        <option value="Rakesh Pokharel|Jobs|Biratnagar">Rakesh Pokharel — Job Queries Division (Biratnagar)</option>
-                                        <option value="Binod Mandal|Services|Biratnagar & Dharan">Binod Mandal — Home Services Dispatch</option>
-                                    </select>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Employee ID (e.g., 021, 022) *</label>
+                                        <input type="text" id="emp-login-id" list="employee-id-datalist" oninput="syncEmployeeLoginEmailById(this.value)" required value="021" placeholder="e.g., 021" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-mono font-extrabold bg-white">
+                                        <datalist id="employee-id-datalist"></datalist>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Employee Email *</label>
+                                        <input type="email" id="emp-login-email" required value="pratima.021@homelink.com.np" placeholder="name.021@homelink.com.np" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-medium bg-white">
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Staff Passcode *</label>
-                                    <input type="password" required value="staff2025" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
+                                    <input type="password" id="emp-login-passcode" required value="staff2025" placeholder="••••••••" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
                                 </div>
                                 <div class="flex flex-col sm:flex-row gap-3 pt-1">
                                     <button type="submit" class="flex-1 py-3.5 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm sm:text-base shadow-md transition">
-                                        Sign In to Staff Desk
+                                        Sign In with Employee ID & Email
                                     </button>
                                     <button type="button" onclick="quickRoleLogin('employee')" class="py-3.5 px-5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-extrabold text-sm transition">
-                                        1-Click Employee Demo
+                                        1-Click ID 021 Demo
                                     </button>
                                 </div>
                             </form>
                         </div>
 
-                        <!-- Admin Login Box -->
+                        <!-- Owner Login Box -->
                         <div id="login-box-admin" class="hidden space-y-5">
                             <div>
-                                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Company Admin Login</h2>
-                                <p class="text-xs sm:text-sm text-slate-500 mt-1">Full administrative access across Dharan & Biratnagar hubs, staff roster, and listings.</p>
+                                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">Owner Login</h2>
+                                <p class="text-xs sm:text-sm text-slate-500 mt-1">Sign in with your Owner ID, official email, and password to manage both branches and assign Employee IDs (021, 022...) to locations.</p>
                             </div>
                             <form onsubmit="handleRoleLoginSubmit(event, 'admin')" class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Admin ID *</label>
-                                    <input type="text" required value="admin@homelink.com.np" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-medium">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Owner ID *</label>
+                                        <input type="text" id="owner-login-id" required value="OWNER" placeholder="e.g., OWNER" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-mono font-extrabold bg-white">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Owner Email *</label>
+                                        <input type="email" id="owner-login-email" required value="owner@homelink.com.np" placeholder="owner@homelink.com.np" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-medium bg-white">
+                                    </div>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Admin Password *</label>
-                                    <input type="password" required value="admin2025" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
+                                    <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Owner Password *</label>
+                                    <input type="password" id="owner-login-password" required value="admin2025" placeholder="••••••••" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
                                 </div>
                                 <div class="flex flex-col sm:flex-row gap-3 pt-1">
                                     <button type="submit" class="flex-1 py-3.5 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm sm:text-base shadow-md transition">
-                                        Sign In as Company Admin
+                                        Sign In as Owner
                                     </button>
                                     <button type="button" onclick="quickRoleLogin('admin')" class="py-3.5 px-5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-sm transition">
-                                        1-Click Admin Demo
+                                        1-Click Owner Demo
                                     </button>
                                 </div>
                             </form>
@@ -1657,20 +1653,24 @@
 
                     <!-- Right 5 Cols: Quick Demo Access Card -->
                     <aside class="lg:col-span-5 bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-4">
-                        <span class="px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-extrabold uppercase">Instant Demo Access</span>
-                        <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Quick Role Switcher</h3>
-                        <p class="text-xs sm:text-sm text-slate-500">Test any user role immediately with one click:</p>
+                        <span class="px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-extrabold uppercase">Instant Role Switcher</span>
+                        <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Customer, Employee & Owner Access</h3>
+                        <p class="text-xs sm:text-sm text-slate-500">Test Customer access, Employee IDs (021 / 022), or Owner branch assignment:</p>
                         <div class="space-y-2.5 pt-1">
                             <button type="button" onclick="quickRoleLogin('customer')" class="w-full p-3.5 rounded-2xl bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-extrabold text-sm text-left flex items-center justify-between transition">
-                                <span>1. Continue as Customer (Aarav)</span>
+                                <span>1. Customer Account (Aarav)</span>
                                 <i class="ph-bold ph-arrow-right"></i>
                             </button>
-                            <button type="button" onclick="quickRoleLogin('employee')" class="w-full p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-extrabold text-sm text-left flex items-center justify-between transition">
-                                <span>2. Continue as Employee (Pratima)</span>
+                            <button type="button" onclick="quickRoleLogin('employee', '021')" class="w-full p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-extrabold text-sm text-left flex items-center justify-between transition">
+                                <span id="quick-emp-021-label">2. Employee ID 021 (Pratima Rai)</span>
+                                <i class="ph-bold ph-arrow-right"></i>
+                            </button>
+                            <button type="button" onclick="quickRoleLogin('employee', '022')" class="w-full p-3.5 rounded-2xl bg-teal-50 hover:bg-teal-100 text-teal-900 font-extrabold text-sm text-left flex items-center justify-between transition">
+                                <span id="quick-emp-022-label">3. Employee ID 022 (Rakesh Pokharel)</span>
                                 <i class="ph-bold ph-arrow-right"></i>
                             </button>
                             <button type="button" onclick="quickRoleLogin('admin')" class="w-full p-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-extrabold text-sm text-left flex items-center justify-between transition">
-                                <span>3. Continue as Admin (Suman MD)</span>
+                                <span>4. Owner Account (Assign Locations & All Access)</span>
                                 <i class="ph-bold ph-arrow-right"></i>
                             </button>
                         </div>
@@ -1779,14 +1779,14 @@
                             <span id="stat-total-listings" class="text-3xl lg:text-4xl font-extrabold text-slate-900">0</span>
                             <span class="text-xs sm:text-sm font-bold text-emerald-600"><span id="stat-verified-listings">0</span> verified</span>
                         </div>
-                        <p class="text-xs sm:text-sm text-slate-500 mt-1.5"><span id="stat-total-employees">4</span> active staff members</p>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1.5"><span id="stat-total-employees">0</span> active employees</p>
                     </div>
                 </div>
 
                 <!-- Primary Departmental Workspace Tabs + Global City & Status Filters -->
-                <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+                <div class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-4">
                     <!-- 5 Departmental Navigation Tabs -->
-                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 xl:pb-0">
+                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
                         <button type="button" onclick="switchStaffTab('rental-queries')" id="staff-tab-rental-queries" class="shrink-0 px-4 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-600/20">
                             <i class="ph-fill ph-key text-base"></i>
                             <span>1. Rental Queries</span>
@@ -1812,22 +1812,26 @@
                         </button>
                     </div>
 
-                    <!-- City & Status Filter Controls for Employee Queries -->
-                    <div id="staff-query-filters-bar" class="flex flex-wrap items-center gap-2.5 border-t xl:border-t-0 pt-3 xl:pt-0 border-slate-100">
-                        <span class="text-xs font-extrabold uppercase text-slate-400">Filter Queue:</span>
-                        <select id="staff-filter-city" onchange="setStaffQueryFilters()" class="bg-slate-100 text-slate-800 text-xs sm:text-sm font-bold rounded-xl px-3.5 py-2.5 focus:outline-none cursor-pointer">
-                            <option value="All">All Cities (Dharan & BRT)</option>
-                            <option value="Dharan">Dharan Hub Only</option>
-                            <option value="Biratnagar">Biratnagar Hub Only</option>
-                        </select>
-                        <select id="staff-filter-status" onchange="setStaffQueryFilters()" class="bg-slate-100 text-slate-800 text-xs sm:text-sm font-bold rounded-xl px-3.5 py-2.5 focus:outline-none cursor-pointer">
-                            <option value="All">All Statuses</option>
-                            <option value="Pending">Pending Action Only</option>
-                            <option value="Resolved">Resolved / Completed</option>
-                        </select>
-                        <button type="button" onclick="openNewQueryModalForActiveDept()" class="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
-                            <i class="ph-bold ph-plus"></i> Log Phone Query
-                        </button>
+                    <!-- City & Status Filter Controls for Employee Queries (Positioned below the tabs on all screen sizes) -->
+                    <div id="staff-query-filters-bar" class="flex flex-wrap items-center justify-between gap-2.5 pt-3.5 border-t border-slate-100">
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <span class="text-xs font-extrabold uppercase text-slate-400">Filter Queue:</span>
+                            <select id="staff-filter-city" onchange="setStaffQueryFilters()" class="bg-slate-100/90 hover:bg-indigo-50/70 border border-slate-200 text-slate-800 text-xs sm:text-sm font-bold rounded-xl px-3.5 py-2.5 cursor-pointer">
+                                <option value="All">All Cities (Dharan & BRT)</option>
+                                <option value="Dharan">Dharan Hub Only</option>
+                                <option value="Biratnagar">Biratnagar Hub Only</option>
+                            </select>
+                            <select id="staff-filter-status" onchange="setStaffQueryFilters()" class="bg-slate-100/90 hover:bg-indigo-50/70 border border-slate-200 text-slate-800 text-xs sm:text-sm font-bold rounded-xl px-3.5 py-2.5 cursor-pointer">
+                                <option value="All">All Statuses</option>
+                                <option value="Pending">Pending Action Only</option>
+                                <option value="Resolved">Resolved / Completed</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" onclick="openNewQueryModalForActiveDept()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+                                <i class="ph-bold ph-plus"></i> Log Phone Query
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1846,7 +1850,7 @@
                         <input type="hidden" id="edit-q-id">
                         <div>
                             <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Department</label>
-                            <select id="edit-q-category" required class="w-full rounded-xl border border-amber-300 px-3.5 py-2.5 text-sm font-bold bg-white">
+                            <select id="edit-q-category" required class="w-full rounded-xl border border-amber-300 px-3.5 py-2.5 text-sm font-bold bg-white cursor-pointer">
                                 <option value="Rentals">Rental Application</option>
                                 <option value="Jobs">Job Application</option>
                                 <option value="Services">Service Booking</option>
@@ -1854,7 +1858,7 @@
                         </div>
                         <div>
                             <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1">City Hub</label>
-                            <select id="edit-q-city" required class="w-full rounded-xl border border-amber-300 px-3.5 py-2.5 text-sm font-bold bg-white">
+                            <select id="edit-q-city" required class="w-full rounded-xl border border-amber-300 px-3.5 py-2.5 text-sm font-bold bg-white cursor-pointer">
                                 <option value="Dharan">Dharan</option>
                                 <option value="Biratnagar">Biratnagar</option>
                             </select>
@@ -1903,12 +1907,12 @@
                         </button>
                     </div>
                     <form onsubmit="handleStaffManualQuerySubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5 text-slate-900">
-                        <select id="manual-q-category" required class="rounded-xl px-3.5 py-3 text-sm font-bold bg-white">
+                        <select id="manual-q-category" required class="rounded-xl border border-slate-200 px-3.5 py-3 text-sm font-bold bg-white cursor-pointer">
                             <option value="Rentals">Rental Query (Room/Flat)</option>
                             <option value="Jobs">Job Query (Applicant/Employer)</option>
                             <option value="Services">Service Query (Technician Dispatch)</option>
                         </select>
-                        <select id="manual-q-city" required class="rounded-xl px-3.5 py-3 text-sm font-bold bg-white">
+                        <select id="manual-q-city" required class="rounded-xl border border-slate-200 px-3.5 py-3 text-sm font-bold bg-white cursor-pointer">
                             <option value="Dharan">Dharan</option>
                             <option value="Biratnagar">Biratnagar</option>
                         </select>
@@ -2003,8 +2007,8 @@
                 <div id="staff-panel-listings" class="hidden bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
                     <div class="p-6 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
                         <div>
-                            <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl">All Property, Job & Service Listings</h3>
-                            <p class="text-sm sm:text-base text-slate-500">Filter listings by department, toggle verification badges, or remove outdated posts.</p>
+                            <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl">All Platform Listings (Rentals, Jobs & Services)</h3>
+                            <p class="text-sm sm:text-base text-slate-500">Staff can edit owner/job provider details, verify badges, or remove outdated items.</p>
                         </div>
                         <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl">
                             <button type="button" onclick="setStaffListingCategoryFilter('All')" id="staff-list-cat-All" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-white text-slate-900 shadow-sm">All</button>
@@ -2018,7 +2022,7 @@
                             <thead>
                                 <tr class="bg-slate-50 text-slate-500 uppercase text-xs sm:text-sm font-bold border-b border-slate-200">
                                     <th class="py-4 px-5">Listing Title</th>
-                                    <th class="py-4 px-5">Department</th>
+                                    <th class="py-4 px-5">Category</th>
                                     <th class="py-4 px-5">City / Area</th>
                                     <th class="py-4 px-5">Rate (NPR)</th>
                                     <th class="py-4 px-5">Status</th>
@@ -2031,32 +2035,37 @@
                 </div>
 
                 <!-- =========================================================
-                     PANEL 5: MANAGE EMPLOYEES & DEPARTMENT ASSIGNMENTS
+                     PANEL 5: MANAGE EMPLOYEES & OWNER LOCATION ASSIGNMENT
                      ========================================================= -->
                 <div id="staff-panel-employees" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-7">
                     <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm">
-                        <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl mb-1">Company Staff Roster & Departmental Assignments</h3>
-                        <p class="text-sm text-slate-500 mb-5">Click any employee's department queue button to jump directly to their assigned queries.</p>
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                            <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl">Employee IDs & Owner Branch Location Assignment</h3>
+                            <span id="owner-assign-badge" class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold">Owner Controls Location Assignment</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-5">Owners can assign or change which branch location (<strong>Dharan</strong> or <strong>Biratnagar</strong>) each Employee ID (<strong>021</strong>, <strong>022</strong>, etc.) belongs to.</p>
                         <div id="staff-employees-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
                     </div>
-                    <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm self-start">
-                        <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl mb-1">Add New Company Employee</h3>
-                        <p class="text-sm sm:text-base text-slate-500 mb-5">Assign a new coordinator to the Rental, Job, or Home Service query desk.</p>
+                    <div id="owner-add-employee-card" class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm self-start">
+                        <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl mb-1">Register Employee ID & Assign Location</h3>
+                        <p class="text-sm sm:text-base text-slate-500 mb-5">Create an Employee ID (like <strong>024</strong>, <strong>025</strong>) with email and assign which branch location they belong to.</p>
                         <form onsubmit="handleAddEmployeeSubmit(event)" class="space-y-3.5">
+                            <input type="text" id="emp-add-code" required placeholder="Employee ID (e.g. 024, 025) *" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-mono font-bold">
                             <input type="text" id="emp-add-name" required placeholder="Employee Full Name *" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
-                            <input type="text" id="emp-add-role" required placeholder="Designation (e.g. Rental Officer) *" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
-                            <select id="emp-add-dept" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-semibold">
-                                <option value="Rentals">Department: Rental Queries Division</option>
-                                <option value="Jobs">Department: Job Queries Division</option>
-                                <option value="Services">Department: Home Service Queries</option>
+                            <input type="email" id="emp-add-email" required placeholder="Employee Email (e.g. name.024@homelink.com.np) *" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
+                            <input type="text" id="emp-add-role" required placeholder="Designation (e.g. Branch Coordinator) *" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
+                            <select id="emp-add-dept" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 hover:bg-white px-4 py-3 text-sm sm:text-base font-bold cursor-pointer">
+                                <option value="Rentals">Primary Desk: Rental Queries</option>
+                                <option value="Jobs">Primary Desk: Job Queries</option>
+                                <option value="Services">Primary Desk: Home Service Queries</option>
                             </select>
-                            <select id="emp-add-hub" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-semibold">
-                                <option value="Dharan Head Office">Dharan Head Office</option>
-                                <option value="Biratnagar Branch">Biratnagar Branch</option>
+                            <select id="emp-add-hub" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 hover:bg-white px-4 py-3 text-sm sm:text-base font-bold cursor-pointer">
+                                <option value="Dharan">Assign Location: Dharan</option>
+                                <option value="Biratnagar">Assign Location: Biratnagar</option>
                             </select>
                             <input type="tel" id="emp-add-phone" required placeholder="Official Phone Number *" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base">
                             <button type="submit" class="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm sm:text-base transition">
-                                + Add Employee to Department
+                                + Register ID & Assign Location
                             </button>
                         </form>
                     </div>
@@ -2093,7 +2102,7 @@
                     <span>•</span>
                     <button type="button" onclick="openProtectedServicePage('page-services')" class="hover:text-brand-600">Services</button>
                     <span>•</span>
-                    <button type="button" onclick="openStaffPortal()" class="text-amber-700 hover:underline">Admin / Employee Login</button>
+                    <button type="button" onclick="openStaffPortal()" class="text-amber-700 hover:underline">Owner / Employee Login</button>
                     <span>•</span>
                     <button type="button" onclick="openSeparateFilesExporter()" class="text-indigo-600 hover:underline flex items-center gap-1">
                         <i class="ph-bold ph-files"></i> Export Multi-Page Files (.html / .css / .js)
@@ -2405,101 +2414,6 @@
                 description: 'Prime ground-floor commercial space at Biratnagar 9, Traffic Chowk. Ideal for pharmacy, clinic, consultancy, or retail showroom.'
             },
             {
-                id: 'hl-102',
-                title: 'Spacious 3BHK Flat Near BPKIHS Ghopa Camp Gate',
-                category: 'Rentals',
-                subtype: '3BHK Apartment',
-                city: 'Dharan',
-                neighborhood: 'BPKIHS / Ghopa',
-                price: 19500,
-                priceUnit: '/ month',
-                contactName: 'Dr. Bikram Subba (Owner)',
-                phone: '9852055443',
-                verified: true,
-                postedAt: '2 hours ago',
-                featured: true,
-                image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=900&q=80',
-                photoTag: 'BPKIHS 3BHK Residence',
-                tags: ['3BHK Flat', '24hr Water', 'Car & Bike Parking', 'Modular Kitchen'],
-                description: 'Bright and airy 3BHK flat located 300m from BPKIHS main gate, Dharan-18. Ideal for doctors, faculty families, or executives. Includes 3 large bedrooms, 2 washrooms, and inverter backup wiring.'
-            },
-            {
-                id: 'hl-103',
-                title: 'Sunny 2BHK Flat with Bike Parking near BPKIHS',
-                category: 'Rentals',
-                subtype: '2BHK Flat',
-                city: 'Dharan',
-                neighborhood: 'BPKIHS / Ghopa',
-                price: 14500,
-                priceUnit: '/ month',
-                contactName: 'Subash Rai (Owner)',
-                phone: '9842051234',
-                verified: true,
-                postedAt: '3 hours ago',
-                featured: true,
-                image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=900&q=80',
-                photoTag: '2BHK Living Hall',
-                tags: ['2BHK Flat', '24hr Drinking Water', 'Ground Floor', 'Bike Parking'],
-                description: 'Peaceful 2BHK ground floor flat just 5 minutes walk from BPKIHS main gate, Dharan-18. Features 2 bedrooms, 1 living room, kitchen, and covered bike parking.'
-            },
-            {
-                id: 'hl-104',
-                title: 'Affordable 1BHK Flat at Bargachhi Chowk',
-                category: 'Rentals',
-                subtype: '1BHK Flat',
-                city: 'Biratnagar',
-                neighborhood: 'Bargachhi (BRT)',
-                price: 9500,
-                priceUnit: '/ month',
-                contactName: 'Sita Devi Pokharel',
-                phone: '9842133445',
-                verified: true,
-                postedAt: '4 hours ago',
-                featured: false,
-                image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=900&q=80',
-                photoTag: '1BHK Interior',
-                tags: ['1BHK Flat', 'Separate Entrance', 'Wi-Fi Available', 'Bike Parking'],
-                description: 'Clean 1BHK flat (1 bedroom, hall, kitchen & attached bath) near Bargachhi Chowk, Biratnagar. Perfect for a couple or working professional.'
-            },
-            {
-                id: 'hl-105',
-                title: 'Single Student Room with Attached Kitchen Slab',
-                category: 'Rentals',
-                subtype: 'Single Room',
-                city: 'Dharan',
-                neighborhood: 'Chatara Line',
-                price: 5500,
-                priceUnit: '/ month',
-                contactName: 'Mina Gurung (Owner)',
-                phone: '9842177889',
-                verified: true,
-                postedAt: '5 hours ago',
-                featured: false,
-                image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=900&q=80',
-                photoTag: 'Furnished Student Room',
-                tags: ['Single Room', 'Free Wi-Fi', '2nd Floor', 'Students Preferred'],
-                description: 'Well-ventilated single room with kitchen slab at Chatara Line, near Hattisar Campus, Dharan. Rent includes water and high-speed Wi-Fi.'
-            },
-            {
-                id: 'hl-106',
-                title: 'Commercial Shutter & Office Space on Highway',
-                category: 'Rentals',
-                subtype: 'Commercial Space',
-                city: 'Biratnagar',
-                neighborhood: 'Traffic Chowk',
-                price: 28000,
-                priceUnit: '/ month',
-                contactName: 'Anil Agrawal',
-                phone: '9852021122',
-                verified: true,
-                postedAt: '1 day ago',
-                featured: false,
-                image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80',
-                photoTag: 'Main Road Commercial Space',
-                tags: ['Main Road Facing', '450 Sq. Ft.', 'Customer Parking'],
-                description: 'Prime ground-floor commercial space at Traffic Chowk, Biratnagar. Ideal for pharmacy, clinic, consultancy, or retail showroom.'
-            },
-            {
                 id: 'hl-107',
                 title: 'Complete House Painting, Wall Putty & Waterproofing',
                 category: 'Services',
@@ -2654,10 +2568,10 @@
         ];
 
         const INITIAL_EMPLOYEES = [
-            { id: 'emp-1', initials: 'SL', name: 'Suman Limbu', role: 'Managing Director & Admin', department: 'All', deptLabel: 'All Departments (Admin)', hub: 'Dharan Head Office', phone: '+977 98520-55101', color: 'from-brand-600 to-indigo-700' },
-            { id: 'emp-2', initials: 'PR', name: 'Pratima Rai', role: 'Rental Verification Coordinator', department: 'Rentals', deptLabel: 'Rental Queries Division', hub: 'Dharan (BPKIHS / Bhanu Chowk)', phone: '+977 98420-88202', color: 'from-indigo-500 to-violet-600' },
-            { id: 'emp-3', initials: 'RP', name: 'Rakesh Pokharel', role: 'Job Placement & HR Officer', department: 'Jobs', deptLabel: 'Job Queries Division', hub: 'Biratnagar (Traffic Chowk)', phone: '+977 98027-44303', color: 'from-emerald-500 to-teal-600' },
-            { id: 'emp-4', initials: 'BM', name: 'Binod Mandal', role: 'Home Services Lead Supervisor', department: 'Services', deptLabel: 'Home Service Queries Dispatch', hub: 'Biratnagar & Dharan Dispatch', phone: '+977 98123-77404', color: 'from-amber-500 to-orange-600' }
+            { id: 'emp-0', empCode: 'OWNER', email: 'owner@homelink.com.np', initials: 'SL', name: 'Suman Limbu', role: 'Company Owner & MD', department: 'All', deptLabel: 'Owner • All Branches & Staff', branchCity: 'All', hub: 'Dharan & Biratnagar (Owner)', phone: '+977 98520-55101', color: 'from-brand-600 to-indigo-700', isOwner: true },
+            { id: 'emp-1', empCode: '021', email: 'pratima.021@homelink.com.np', initials: 'PR', name: 'Pratima Rai', role: 'Branch Coordinator', department: 'Rentals', deptLabel: 'Rentals, Jobs & Services', branchCity: 'Dharan', hub: 'Dharan', phone: '+977 98420-88202', color: 'from-indigo-500 to-violet-600' },
+            { id: 'emp-2', empCode: '022', email: 'rakesh.022@homelink.com.np', initials: 'RP', name: 'Rakesh Pokharel', role: 'Branch Coordinator', department: 'Jobs', deptLabel: 'Rentals, Jobs & Services', branchCity: 'Biratnagar', hub: 'Biratnagar', phone: '+977 98027-44303', color: 'from-emerald-500 to-teal-600' },
+            { id: 'emp-3', empCode: '023', email: 'binod.023@homelink.com.np', initials: 'BM', name: 'Binod Mandal', role: 'Field & Service Officer', department: 'Services', deptLabel: 'Rentals, Jobs & Services', branchCity: 'Biratnagar', hub: 'Biratnagar', phone: '+977 98123-77404', color: 'from-amber-500 to-orange-600' }
         ];
 
         // Separated Departmental Customer Queries (Rentals, Jobs, and Services)
@@ -2811,7 +2725,8 @@
                 subtypes: ['3BHK Apartment', '2BHK Flat', '1BHK Flat', 'Single Room', 'Commercial Space', 'Full House / Bungalow'],
                 priceLabel: 'Monthly Rent (NPR) *',
                 priceUnit: '/ month',
-                tagsPlaceholder: 'e.g., 3BHK Flat, Car Parking, 24hr Water, Wi-Fi'
+                tagsPlaceholder: 'e.g., 3BHK Flat, Car Parking, 24hr Water, Wi-Fi',
+                descriptionPlaceholder: 'Describe exact location, room count, floor, water/parking facilities, and rental terms...'
             },
             Jobs: {
                 titlePlaceholder: 'e.g., Showroom Sales Executive / Tally Accountant',
@@ -2819,7 +2734,8 @@
                 subtypes: ['Full-Time Job', 'Part-Time / Shift', 'Contract / Gig', 'Internship / Trainee'],
                 priceLabel: 'Monthly Salary (NPR) *',
                 priceUnit: '/ month',
-                tagsPlaceholder: 'e.g., +2 Passed, 10 AM - 6 PM, Incentive'
+                tagsPlaceholder: 'e.g., +2 Passed, 10 AM - 6 PM, Incentive',
+                descriptionPlaceholder: 'Describe job responsibilities, required qualifications, working hours, experience, and salary perks...'
             },
             Services: {
                 titlePlaceholder: 'e.g., 24/7 Emergency Plumber / House Painting Team',
@@ -2827,7 +2743,8 @@
                 subtypes: ['Painting & Renovation', 'Plumbing & Sanitary', 'Electrical & Wiring', 'AC & Cooling Tech', 'Carpentry & Cleaning'],
                 priceLabel: 'Base Visit / Service Charge (NPR) *',
                 priceUnit: 'visit / base rate',
-                tagsPlaceholder: 'e.g., Same-Day Visit, 30-Day Warranty, Verified'
+                tagsPlaceholder: 'e.g., Same-Day Visit, 30-Day Warranty, Verified',
+                descriptionPlaceholder: 'Describe service scope, technician experience, equipment covered, warranty, and service areas...'
             }
         };
 
@@ -2877,6 +2794,149 @@
             renderAllViews();
         });
 
+        // ==========================================
+        // MULTI-PAGE ROUTER & BROWSER HISTORY
+        // ==========================================
+        const PAGE_METADATA = {
+            'page-home': { slug: 'home', title: 'HomeLink Koshi | Dharan & Biratnagar' },
+            'page-search-results': { slug: 'search', title: 'Search Flats, Jobs & Services | HomeLink Koshi' },
+            'page-rentals': { slug: 'rentals', title: 'Rentals & Flats Hub | HomeLink Koshi' },
+            'page-jobs': { slug: 'jobs', title: 'Local Jobs & Hiring Hub | HomeLink Koshi' },
+            'page-services': { slug: 'services', title: 'Verified Home Services | HomeLink Koshi' },
+            'page-post-listing': { slug: 'post-listing', title: 'Post or Edit Listing | HomeLink Koshi' },
+            'page-listing-detail': { slug: 'listing-detail', title: 'Listing Details & Booking | HomeLink Koshi' },
+            'page-login': { slug: 'login', title: 'Sign In | HomeLink Koshi' },
+            'page-staff-dashboard': { slug: 'staff-dashboard', title: 'Staff & Departmental Queries Dashboard | HomeLink Koshi' }
+        };
+
+        function resolvePageIdFromLocation() {
+            const initialAttr = document.body ? document.body.getAttribute('data-initial-page') : null;
+            if (initialAttr && PAGE_METADATA[initialAttr]) return initialAttr;
+
+            const params = new URLSearchParams(window.location.search);
+            const qPage = params.get('page');
+            const hashSlug = (window.location.hash || '').replace(/^#/, '').split('?')[0];
+            const candidate = qPage || hashSlug;
+
+            if (candidate) {
+                if (PAGE_METADATA[candidate]) return candidate;
+                const matched = Object.keys(PAGE_METADATA).find(k => PAGE_METADATA[k].slug === candidate);
+                if (matched) return matched;
+            }
+            return 'page-home';
+        }
+
+        function initNaturalBrowserHistory() {
+            const initialPage = resolvePageIdFromLocation();
+            const params = new URLSearchParams(window.location.search);
+            const detailParam = params.get('id');
+
+            navigationStack = [{ pageId: initialPage, detailId: detailParam || null, scrollY: 0 }];
+            if (initialPage === 'page-listing-detail' && detailParam) {
+                populateDetailViewById(detailParam);
+            }
+            navigateTo(initialPage, { detailId: detailParam, skipHistoryPush: true });
+
+            window.addEventListener('popstate', (event) => {
+                isHandlingPopState = true;
+                const state = event.state;
+                if (state && state.pageId) {
+                    if (state.pageId === 'page-listing-detail' && state.detailId) {
+                        populateDetailViewById(state.detailId);
+                    }
+                    navigateTo(state.pageId, { detailId: state.detailId, skipHistoryPush: true });
+                } else {
+                    const fallbackPage = resolvePageIdFromLocation();
+                    navigateTo(fallbackPage, { skipHistoryPush: true });
+                }
+                isHandlingPopState = false;
+            });
+        }
+
+        function navigateTo(pageId, options = {}) {
+            if (!PAGE_METADATA[pageId]) pageId = 'page-home';
+
+            if (currentPageId !== pageId) {
+                previousPageId = currentPageId;
+            }
+            currentPageId = pageId;
+
+            document.querySelectorAll('.page-view').forEach(section => {
+                if (section.id === pageId) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+
+            const meta = PAGE_METADATA[pageId] || PAGE_METADATA['page-home'];
+            document.title = meta.title;
+
+            if (!options.skipHistoryPush && !isHandlingPopState) {
+                navigationStack.push({
+                    pageId,
+                    detailId: options.detailId || null,
+                    scrollY: window.scrollY || 0
+                });
+                try {
+                    const newHash = `#${meta.slug}${options.detailId ? `?id=${encodeURIComponent(options.detailId)}` : ''}`;
+                    window.history.pushState({ pageId, detailId: options.detailId || null }, meta.title, newHash);
+                } catch (e) {}
+            }
+
+            updateNavigationHighlights();
+            if (!options.preserveScroll) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function goBackFromPage() {
+            if (navigationStack.length > 1) {
+                navigationStack.pop();
+                const prev = navigationStack[navigationStack.length - 1];
+                if (prev.pageId === 'page-listing-detail' && prev.detailId) {
+                    populateDetailViewById(prev.detailId);
+                }
+                navigateTo(prev.pageId, { detailId: prev.detailId, skipHistoryPush: true });
+                return;
+            }
+            if (previousPageId && previousPageId !== currentPageId) {
+                navigateTo(previousPageId, { skipHistoryPush: true });
+            } else {
+                navigateTo('page-home', { skipHistoryPush: true });
+            }
+        }
+
+        function openProtectedServicePage(targetPageId) {
+            if (!currentUser) {
+                pendingRouteAfterLogin = () => navigateTo(targetPageId);
+                const promptEl = document.getElementById('login-page-prompt');
+                if (promptEl) {
+                    promptEl.textContent = 'Please sign in as a Customer, Employee, or Admin to access Rentals, Jobs, and Home Services.';
+                }
+                switchLoginRoleTab('customer');
+                navigateTo('page-login');
+                showToast('Please sign in to access this service hub', 'info');
+                return;
+            }
+            navigateTo(targetPageId);
+        }
+
+        function openStaffPortal() {
+            if (!currentUser || (currentUser.role !== 'employee' && currentUser.role !== 'admin')) {
+                pendingRouteAfterLogin = () => navigateTo('page-staff-dashboard');
+                const promptEl = document.getElementById('login-page-prompt');
+                if (promptEl) {
+                    promptEl.textContent = 'Please sign in with your branch-allocated Employee ID or Admin credentials to open the Staff Dashboard.';
+                }
+                switchLoginRoleTab('employee');
+                navigateTo('page-login');
+                showToast('Employee or Admin login required for Staff Dashboard', 'info');
+                return;
+            }
+            navigateTo('page-staff-dashboard');
+        }
+
         function loadStateFromStorage() {
             try {
                 const storedListings = localStorage.getItem(STORAGE_KEY_LISTINGS);
@@ -2918,196 +2978,69 @@
         }
 
         // ==========================================
-        // MULTI-PAGE ROUTER WITH REAL BROWSER HISTORY
-        // Supports clean page routes (?page=... & #page-...),
-        // dynamic browser tab titles, '<' Back & '>' Forward
+        // BRANCH LOCATION ACCESS CONTROL HELPERS
         // ==========================================
-        const PAGE_METADATA = {
-            'page-home': { slug: 'home', file: 'index.html', title: 'HomeLink Services Network Pvt. Ltd. | Dharan & Biratnagar' },
-            'page-search-results': { slug: 'search', file: 'search.html', title: 'Search Flats, Jobs & Services | HomeLink Koshi' },
-            'page-rentals': { slug: 'rentals', file: 'rentals.html', title: 'Rentals & Flats Hub | HomeLink Koshi' },
-            'page-jobs': { slug: 'jobs', file: 'jobs.html', title: 'Local Jobs & Hiring Hub | HomeLink Koshi' },
-            'page-services': { slug: 'services', file: 'services.html', title: 'Verified Home Services | HomeLink Koshi' },
-            'page-post-listing': { slug: 'post-listing', file: 'post-listing.html', title: 'Post Property, Job or Service | HomeLink Koshi' },
-            'page-listing-detail': { slug: 'listing-detail', file: 'listing-detail.html', title: 'Listing Details & Booking | HomeLink Koshi' },
-            'page-login': { slug: 'login', file: 'login.html', title: 'Customer, Employee & Admin Login | HomeLink Koshi' },
-            'page-staff-dashboard': { slug: 'staff-dashboard', file: 'staff-dashboard.html', title: 'Staff Operations & Queries Dashboard | HomeLink Koshi' }
-        };
-
-        function resolveInitialPageFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            const queryPage = params.get('page');
-            if (queryPage) {
-                const matchedBySlug = Object.keys(PAGE_METADATA).find(k => PAGE_METADATA[k].slug === queryPage || k === queryPage);
-                if (matchedBySlug) return matchedBySlug;
+        function getEmployeeRestrictedCity() {
+            if (!currentUser || currentUser.role !== 'employee') return null;
+            if (currentUser.branchCity === 'Dharan' || currentUser.branchCity === 'Biratnagar') {
+                return currentUser.branchCity;
             }
-            const rawHash = window.location.hash ? window.location.hash.replace('#', '') : '';
-            if (rawHash) {
-                const matchedByHash = Object.keys(PAGE_METADATA).find(k => PAGE_METADATA[k].slug === rawHash || k === rawHash);
-                if (matchedByHash) return matchedByHash;
+            if (currentUser.city === 'Dharan' || currentUser.city === 'Biratnagar') {
+                return currentUser.city;
             }
-            const bodyPage = document.body ? document.body.getAttribute('data-initial-page') : null;
-            if (bodyPage && PAGE_METADATA[bodyPage]) return bodyPage;
-            return 'page-home';
+            return null;
         }
 
-        function initNaturalBrowserHistory() {
-            try {
-                const startPage = resolveInitialPageFromUrl();
-                const params = new URLSearchParams(window.location.search);
-                const detailParam = params.get('id');
-                if (startPage === 'page-listing-detail' && detailParam) {
-                    currentDetailListingId = detailParam;
-                    populateDetailViewById(detailParam);
-                }
+        function canStaffAccessCity(targetCity) {
+            if (!currentUser) return false;
+            if (currentUser.role === 'admin') return true;
+            if (currentUser.role === 'employee') {
+                const restrictedCity = getEmployeeRestrictedCity();
+                if (!restrictedCity) return true;
+                return targetCity === restrictedCity;
+            }
+            return false;
+        }
 
-                const meta = PAGE_METADATA[startPage] || PAGE_METADATA['page-home'];
-                document.title = meta.title;
-                window.history.replaceState({ pageId: startPage, detailId: detailParam || null, scrollY: 0 }, '', `#${meta.slug}`);
-                if (startPage !== 'page-home') {
-                    navigateTo(startPage, { skipHistoryPush: true });
-                }
-            } catch (e) {}
+        function enforceEmployeeBranchLock() {
+            const restrictedCity = getEmployeeRestrictedCity();
+            if (!restrictedCity) return;
 
-            // Listen to Browser '<' Back & '>' Forward buttons
-            window.addEventListener('popstate', (event) => {
-                isHandlingPopState = true;
-                if (event.state && event.state.pageId) {
-                    const targetPage = event.state.pageId;
-                    if (targetPage === 'page-listing-detail' && event.state.detailId) {
-                        currentDetailListingId = event.state.detailId;
-                        populateDetailViewById(event.state.detailId);
-                    }
-                    if (navigationStack.length > 1) {
-                        navigationStack.pop();
-                    }
-                    navigateTo(targetPage, {
-                        skipHistoryPush: true,
-                        restoreScrollY: typeof event.state.scrollY === 'number' ? event.state.scrollY : 0
-                    });
-                } else {
-                    const fallbackPage = resolveInitialPageFromUrl();
-                    navigateTo(fallbackPage, { skipHistoryPush: true, restoreScrollY: 0 });
-                }
-                isHandlingPopState = false;
+            // Lock global city filter to the employee's allocated branch
+            activeCity = restrictedCity;
+            staffQueryCityFilter = restrictedCity;
+
+            const staffCitySel = document.getElementById('staff-filter-city');
+            if (staffCitySel) {
+                staffCitySel.value = restrictedCity;
+                staffCitySel.disabled = true;
+            }
+
+            const manualCitySel = document.getElementById('manual-q-city');
+            if (manualCitySel) {
+                manualCitySel.value = restrictedCity;
+                manualCitySel.disabled = true;
+            }
+
+            const editCitySel = document.getElementById('edit-q-city');
+            if (editCitySel) {
+                editCitySel.value = restrictedCity;
+                editCitySel.disabled = true;
+            }
+
+            const formCitySel = document.getElementById('form-city');
+            if (formCitySel) {
+                formCitySel.value = restrictedCity;
+                formCitySel.disabled = true;
+                populateFormNeighborhoods(restrictedCity);
+            }
+        }
+
+        function releaseStaffBranchLocks() {
+            ['staff-filter-city', 'manual-q-city', 'edit-q-city', 'form-city'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = false;
             });
-        }
-
-        function navigateTo(pageId, options = {}) {
-            const { skipHistoryPush = false, detailId = null, restoreScrollY = null } = options;
-
-            // Save scroll position of the page we are leaving into current history entry
-            if (navigationStack.length > 0) {
-                navigationStack[navigationStack.length - 1].scrollY = window.scrollY || 0;
-            }
-            const currentMeta = PAGE_METADATA[currentPageId] || PAGE_METADATA['page-home'];
-            try {
-                if (!skipHistoryPush && window.history.state) {
-                    window.history.replaceState(
-                        { ...window.history.state, scrollY: window.scrollY || 0 },
-                        '',
-                        `#${currentMeta.slug}`
-                    );
-                }
-            } catch (e) {}
-
-            if (pageId !== currentPageId) {
-                previousPageId = currentPageId;
-            }
-            currentPageId = pageId;
-
-            const nextMeta = PAGE_METADATA[pageId] || PAGE_METADATA['page-home'];
-            document.title = nextMeta.title;
-
-            // Push new entry to real browser history with clean slug (#rentals, #jobs, #services, etc.)
-            if (!skipHistoryPush && !isHandlingPopState) {
-                const stateObj = {
-                    pageId,
-                    detailId: detailId || currentDetailListingId || null,
-                    scrollY: 0
-                };
-                navigationStack.push(stateObj);
-                try {
-                    window.history.pushState(stateObj, '', `#${nextMeta.slug}`);
-                } catch (e) {}
-            }
-
-            document.querySelectorAll('.page-view').forEach(el => {
-                el.classList.add('hidden');
-            });
-
-            const target = document.getElementById(pageId);
-            if (target) {
-                target.classList.remove('hidden');
-            }
-
-            updateTopLeftBackButton();
-            updateNavigationHighlights();
-            renderAllViews();
-
-            if (typeof restoreScrollY === 'number') {
-                setTimeout(() => window.scrollTo({ top: restoreScrollY, behavior: 'instant' }), 10);
-            } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        function updateTopLeftBackButton() {
-            const backBtn = document.getElementById('global-top-back-btn');
-            if (!backBtn) return;
-            if (currentPageId !== 'page-home') {
-                backBtn.classList.remove('hidden');
-                backBtn.classList.add('inline-flex');
-            } else {
-                backBtn.classList.add('hidden');
-                backBtn.classList.remove('inline-flex');
-            }
-        }
-
-        function goBackFromPage() {
-            // Use native browser history back if we have history entries in this session
-            if (navigationStack.length > 1) {
-                const prevEntry = navigationStack.pop(); // current
-                const targetEntry = navigationStack[navigationStack.length - 1] || { pageId: 'page-home', scrollY: 0 };
-                try {
-                    window.history.back();
-                    return;
-                } catch (e) {
-                    navigateTo(targetEntry.pageId, { skipHistoryPush: true, restoreScrollY: targetEntry.scrollY || 0 });
-                    return;
-                }
-            }
-            navigateTo(previousPageId && previousPageId !== currentPageId ? previousPageId : 'page-home', { skipHistoryPush: true });
-        }
-
-        function openProtectedServicePage(pageId) {
-            if (!currentUser) {
-                pendingRouteAfterLogin = () => navigateTo(pageId);
-                const promptEl = document.getElementById('login-page-prompt');
-                if (promptEl) {
-                    promptEl.textContent = 'Please log in as a Customer, Employee, or Admin to access this service section.';
-                }
-                switchLoginRoleTab('customer');
-                navigateTo('page-login');
-                showToast('Please log in to open this section', 'info');
-                return;
-            }
-            navigateTo(pageId);
-        }
-
-        function openStaffPortal() {
-            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'employee')) {
-                navigateTo('page-staff-dashboard');
-            } else {
-                pendingRouteAfterLogin = () => navigateTo('page-staff-dashboard');
-                const promptEl = document.getElementById('login-page-prompt');
-                if (promptEl) {
-                    promptEl.textContent = 'Sign in with Company Employee or Admin credentials to access the Staff Management Portal.';
-                }
-                switchLoginRoleTab('admin');
-                navigateTo('page-login');
-                showToast('Switched to Employee / Admin Login tab', 'info');
-            }
         }
 
         function openPostPage(defaultCategory) {
@@ -3132,12 +3065,27 @@
                 Jobs: 'Job Provider Page: Post a Local Job Vacancy',
                 Services: 'Service Provider Page: Register Home Service'
             };
-            document.getElementById('post-page-heading').textContent = titles[defaultCategory] || 'Add New Listing';
+            const headingEl = document.getElementById('post-page-heading');
+            if (headingEl) headingEl.textContent = titles[defaultCategory] || 'Add New Listing';
             const submitTextEl = document.getElementById('post-form-submit-text');
             if (submitTextEl) submitTextEl.textContent = 'Publish Listing Now';
 
-            document.getElementById('form-contact-name').value = currentUser.name;
-            document.getElementById('form-phone').value = currentUser.phone || '9842012345';
+            const contactInput = document.getElementById('form-contact-name');
+            const phoneInput = document.getElementById('form-phone');
+            if (contactInput) contactInput.value = currentUser.name || '';
+            if (phoneInput) phoneInput.value = currentUser.phone || '9842012345';
+
+            const restrictedCity = getEmployeeRestrictedCity();
+            const citySelect = document.getElementById('form-city');
+            if (restrictedCity) {
+                if (citySelect) citySelect.value = restrictedCity;
+                populateFormNeighborhoods(restrictedCity);
+                enforceEmployeeBranchLock();
+            } else {
+                if (citySelect) citySelect.value = 'Dharan';
+                populateFormNeighborhoods('Dharan');
+                releaseStaffBranchLocks();
+            }
 
             navigateTo('page-post-listing');
         }
@@ -3145,7 +3093,8 @@
         function openEditListingPage(id) {
             if (!currentUser || (currentUser.role !== 'employee' && currentUser.role !== 'admin')) {
                 pendingRouteAfterLogin = () => openEditListingPage(id);
-                document.getElementById('login-page-prompt').textContent = 'Please sign in as a Company Employee or Admin to edit owner and job provider listings.';
+                const promptEl = document.getElementById('login-page-prompt');
+                if (promptEl) promptEl.textContent = 'Please sign in as a Company Employee or Admin to edit owner and job provider listings.';
                 switchLoginRoleTab('employee');
                 navigateTo('page-login');
                 showToast('Employee or Admin login required to edit listings', 'info');
@@ -3154,6 +3103,12 @@
 
             const item = listings.find(l => l.id === id);
             if (!item) return;
+
+            if (!canStaffAccessCity(item.city)) {
+                const branch = getEmployeeRestrictedCity();
+                showToast(`Access Denied: Employee ID ${currentUser.empCode || ''} is allocated to ${branch} branch only and cannot edit ${item.city} listings.`, 'info');
+                return;
+            }
 
             editingListingId = id;
             const form = document.getElementById('post-listing-form');
@@ -3185,30 +3140,24 @@
             document.getElementById('form-phone').value = item.phone || '';
             document.getElementById('form-tags').value = (item.tags || []).join(', ');
 
-            if (item.category === 'Rentals') {
-                const rd = getNormalizedRentalDetails(item);
-                document.getElementById('form-rental-tenancy').value = rd.tenancy;
-                document.getElementById('form-rental-rent-type').value = rd.rentType;
-                document.getElementById('form-rental-ward').value = rd.location;
-                document.getElementById('form-rental-bathroom').value = rd.bathroom;
-                document.getElementById('form-rental-electrical').value = rd.electricalEquipments;
-                document.getElementById('form-rental-meter').value = rd.electricityMeter;
-                document.getElementById('form-rental-parking').value = rd.parkingSpace;
-                document.getElementById('form-rental-wifi').value = rd.wifi;
-            }
-
             const imgUrl = item.image || getFallbackImageForCategory(item.category, item.subtype);
             document.getElementById('form-image-url').value = imgUrl;
             updateFormPhotoPreview(imgUrl);
 
             document.getElementById('form-description').value = item.description || '';
 
-            document.getElementById('post-page-heading').textContent = `Staff Editor: Modifying "${item.title}"`;
+            document.getElementById('post-page-heading').textContent = `Staff Editor (${item.city} Branch): Modifying "${item.title}"`;
             const submitTextEl = document.getElementById('post-form-submit-text');
             if (submitTextEl) submitTextEl.textContent = 'Save Staff Edits & Update Listing';
 
+            if (getEmployeeRestrictedCity()) {
+                enforceEmployeeBranchLock();
+            } else {
+                releaseStaffBranchLocks();
+            }
+
             navigateTo('page-post-listing');
-            showToast(`Editing "${item.title}" (${item.contactName})`, 'info');
+            showToast(`Editing "${item.title}"`, 'info');
         }
 
         function cancelEditOrGoBack() {
@@ -3453,13 +3402,16 @@
             const subtypeSelect = document.getElementById('form-subtype');
             const priceLabel = document.getElementById('form-price-label');
             const tagsInput = document.getElementById('form-tags');
+            const descriptionInput = document.getElementById('form-description');
             const photoSection = document.getElementById('form-photo-section');
-            const rentalSpecsSection = document.getElementById('form-rental-specs-section');
 
             if (titleInput) titleInput.placeholder = cfg.titlePlaceholder;
             if (subtypeLabel) subtypeLabel.textContent = cfg.subtypeLabel;
             if (priceLabel) priceLabel.textContent = cfg.priceLabel;
             if (tagsInput) tagsInput.placeholder = cfg.tagsPlaceholder;
+            if (descriptionInput && cfg.descriptionPlaceholder) {
+                descriptionInput.placeholder = cfg.descriptionPlaceholder;
+            }
 
             if (subtypeSelect) {
                 subtypeSelect.innerHTML = cfg.subtypes
@@ -3467,12 +3419,32 @@
                     .join('');
             }
 
-            // Show Rental Specifications section only when Category is Rentals
-            if (rentalSpecsSection) {
-                if (cat === 'Rentals') {
-                    rentalSpecsSection.classList.remove('hidden');
+            // Show dedicated category-specific CSV section for Employees/Owner on Rental Property or Job Vacancy
+            const postCsvSection = document.getElementById('post-form-csv-section');
+            const isStaffUser = currentUser && (currentUser.role === 'employee' || currentUser.role === 'admin');
+            if (postCsvSection) {
+                if (isStaffUser && (cat === 'Rentals' || cat === 'Jobs')) {
+                    postCsvSection.classList.remove('hidden');
+                    const isJob = cat === 'Jobs';
+                    const badgeEl = document.getElementById('post-csv-badge');
+                    const titleEl = document.getElementById('post-csv-title');
+                    const tplLabelEl = document.getElementById('post-csv-template-label');
+                    const urlLabelEl = document.getElementById('post-csv-url-label');
+                    const fileLabelEl = document.getElementById('post-csv-file-label');
+                    const hintEl = document.getElementById('post-csv-hint');
+
+                    if (badgeEl) badgeEl.textContent = isJob ? 'Employee Bulk Option • Job Vacancies Only' : 'Employee Bulk Option • Rental Properties Only';
+                    if (titleEl) titleEl.textContent = isJob ? 'Bulk Add / Update Job Vacancies via CSV' : 'Bulk Add / Update Rental Properties via CSV';
+                    if (tplLabelEl) tplLabelEl.textContent = isJob ? 'Download Job CSV Template' : 'Download Rental CSV Template';
+                    if (urlLabelEl) urlLabelEl.textContent = isJob ? 'Job CSV Link (Google Sheets / Published URL)' : 'Rental CSV Link (Google Sheets / Published URL)';
+                    if (fileLabelEl) fileLabelEl.textContent = isJob ? 'Or Upload Job .CSV File' : 'Or Upload Rental .CSV File';
+                    if (hintEl) {
+                        hintEl.textContent = isJob
+                            ? 'Columns: id, title, subtype, city, neighborhood, price, contactName, phone, description (Automatically saved to Jobs)'
+                            : 'Columns: id, title, subtype, city, neighborhood, price, contactName, phone, description (Automatically saved to Rentals)';
+                    }
                 } else {
-                    rentalSpecsSection.classList.add('hidden');
+                    postCsvSection.classList.add('hidden');
                 }
             }
 
@@ -3519,7 +3491,8 @@
             e.preventDefault();
             const form = document.getElementById('post-listing-form');
             const category = form.elements['category'].value || 'Rentals';
-            const city = document.getElementById('form-city').value;
+            const restrictedCity = getEmployeeRestrictedCity();
+            const city = restrictedCity || document.getElementById('form-city').value;
             const neighborhood = document.getElementById('form-neighborhood').value.trim();
             const title = document.getElementById('form-title').value.trim();
             const subtype = document.getElementById('form-subtype').value;
@@ -3540,17 +3513,6 @@
 
             const cfg = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.Rentals;
 
-            const rentalDetails = category === 'Rentals' ? {
-                tenancy: document.getElementById('form-rental-tenancy')?.value || 'General',
-                rentType: document.getElementById('form-rental-rent-type')?.value || 'Flat',
-                location: document.getElementById('form-rental-ward')?.value.trim() || `${city} 1`,
-                bathroom: document.getElementById('form-rental-bathroom')?.value || 'Attached',
-                electricalEquipments: document.getElementById('form-rental-electrical')?.value || 'Fan & Light Bulb Installed',
-                electricityMeter: document.getElementById('form-rental-meter')?.value || 'Separate',
-                parkingSpace: document.getElementById('form-rental-parking')?.value || 'Bike Only',
-                wifi: document.getElementById('form-rental-wifi')?.value || 'Yes'
-            } : null;
-
             if (editingListingId) {
                 const idx = listings.findIndex(l => l.id === editingListingId);
                 if (idx !== -1) {
@@ -3566,17 +3528,16 @@
                         contactName,
                         phone,
                         image: chosenImage,
-                        rentalDetails,
                         tags,
                         description,
                         postedAt: 'Edited by Staff just now'
                     };
                 }
-                const updatedId = editingListingId;
+                const savedId = editingListingId;
                 editingListingId = null;
                 saveState();
-                showToast(`Updated "${title}" successfully!`, 'success');
-                openListingDetailPage(updatedId);
+                showToast(`Updated "${title}"!`, 'success');
+                openListingDetailPage(savedId);
                 return;
             }
 
@@ -3596,7 +3557,6 @@
                 featured: true,
                 image: chosenImage,
                 photoTag: `${subtype} • ${city}`,
-                rentalDetails,
                 tags,
                 description
             };
@@ -3615,10 +3575,16 @@
         }
 
         function setGlobalCity(city) {
-            activeCity = city;
+            const restrictedCity = getEmployeeRestrictedCity();
+            if (restrictedCity && city !== restrictedCity) {
+                showToast(`Employee ID ${currentUser.empCode || ''} is locked to ${restrictedCity} branch data only.`, 'info');
+                activeCity = restrictedCity;
+            } else {
+                activeCity = city;
+            }
             ['All', 'Dharan', 'Biratnagar'].forEach(c => {
                 document.querySelectorAll(`.city-sync-btn-${c}`).forEach(btn => {
-                    if (c === city) {
+                    if (c === activeCity) {
                         btn.className = `city-sync-btn-${c} px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-white text-slate-900 shadow-sm`;
                     } else {
                         btn.className = `city-sync-btn-${c} px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition text-white/80 hover:text-white`;
@@ -3626,7 +3592,7 @@
                 });
             });
             const searchCitySelect = document.getElementById('search-page-city');
-            if (searchCitySelect) searchCitySelect.value = city;
+            if (searchCitySelect) searchCitySelect.value = activeCity;
             renderAllViews();
         }
 
@@ -3792,7 +3758,7 @@
         // ==========================================
         function createListingCardHTML(item) {
             const isSaved = savedIds.includes(item.id);
-            const isStaff = currentUser && (currentUser.role === 'employee' || currentUser.role === 'admin');
+            const isStaff = currentUser && (currentUser.role === 'employee' || currentUser.role === 'admin') && canStaffAccessCity(item.city);
             const imgSrc = item.image || getFallbackImageForCategory(item.category, item.subtype);
             const microSpecs = (item.tags || []).slice(0, 3).map(t => escapeHTML(t)).join(' • ');
 
@@ -3940,7 +3906,7 @@
 
             const staffEditBtn = document.getElementById('detail-staff-edit-btn');
             if (staffEditBtn) {
-                const isStaff = currentUser && (currentUser.role === 'employee' || currentUser.role === 'admin');
+                const isStaff = currentUser && (currentUser.role === 'employee' || currentUser.role === 'admin') && canStaffAccessCity(item.city);
                 if (isStaff) {
                     staffEditBtn.classList.remove('hidden');
                     staffEditBtn.classList.add('inline-flex');
@@ -3961,61 +3927,59 @@
                 if (specIdBadge) specIdBadge.textContent = `Property ID: ${formattedId}`;
 
                 const specCards = [
-                    { label: 'Property ID', value: formattedId, icon: 'ph-hash', accent: 'text-indigo-600' },
-                    { label: 'Rent Rate', value: `${formatNPR(item.price)} ${item.priceUnit}`, icon: 'ph-currency-circle-dollar', accent: 'text-emerald-600' },
-                    { label: 'Tenancy', value: rd.tenancy, icon: 'ph-users-three', accent: 'text-violet-600' },
-                    { label: 'Rent Type', value: rd.rentType, icon: 'ph-buildings', accent: 'text-brand-600' },
-                    { label: 'Location (Ward)', value: rd.location, icon: 'ph-map-pin', accent: 'text-rose-600' },
-                    { label: 'Bathroom', value: rd.bathroom, icon: 'ph-shower', accent: 'text-sky-600' },
-                    { label: 'Electrical Equipments', value: rd.electricalEquipments, icon: 'ph-fan', accent: 'text-amber-600' },
-                    { label: 'Electricity Meter', value: rd.electricityMeter, icon: 'ph-gauge', accent: 'text-orange-600' },
-                    { label: 'Parking Space', value: rd.parkingSpace, icon: 'ph-car', accent: 'text-teal-600' },
-                    { label: 'Internet Access / Wi-Fi', value: rd.wifi, icon: 'ph-wifi-high', accent: rd.wifi === 'Yes' ? 'text-emerald-600' : 'text-slate-500' }
+                    { label: 'Property ID', value: formattedId, icon: 'ph-hash' },
+                    { label: 'Rent Rate', value: `${formatNPR(item.price)} / mo`, icon: 'ph-currency-circle-dollar' },
+                    { label: 'Tenancy', value: rd.tenancy, icon: 'ph-users-three' },
+                    { label: 'Rent Type', value: rd.rentType, icon: 'ph-buildings' },
+                    { label: 'Location', value: rd.location, icon: 'ph-map-pin' },
+                    { label: 'Bathroom', value: rd.bathroom, icon: 'ph-shower' },
+                    { label: 'Electrical Equipments', value: rd.electricalEquipments, icon: 'ph-fan' },
+                    { label: 'Electricity Meter', value: rd.electricityMeter, icon: 'ph-gauge' },
+                    { label: 'Parking Space', value: rd.parkingSpace, icon: 'ph-car' },
+                    { label: 'Internet / Wi-Fi', value: rd.wifi, icon: 'ph-wifi-high' }
                 ];
 
-                rentalSpecsGrid.innerHTML = specCards.map(sc => `
-                    <div class="bg-white rounded-2xl p-3.5 border border-indigo-100 shadow-sm">
-                        <div class="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">
-                            <i class="ph-fill ${sc.icon} ${sc.accent} text-base"></i>
-                            <span>${escapeHTML(sc.label)}</span>
+                rentalSpecsGrid.innerHTML = specCards.map(s => `
+                    <div class="p-3 rounded-xl bg-white border border-indigo-100 shadow-xs">
+                        <div class="text-[11px] font-bold uppercase text-slate-400 flex items-center gap-1">
+                            <i class="ph-fill ${s.icon} text-indigo-600"></i> ${escapeHTML(s.label)}
                         </div>
-                        <div class="text-sm sm:text-base font-extrabold text-slate-900 mt-1">${escapeHTML(sc.value)}</div>
+                        <div class="text-xs sm:text-sm font-extrabold text-slate-900 mt-0.5">${escapeHTML(s.value)}</div>
                     </div>
                 `).join('');
-
                 rentalSpecsBox.classList.remove('hidden');
             } else {
                 document.getElementById('detail-neighborhood').textContent = `${item.neighborhood}, ${item.city} • Posted ${item.postedAt || 'Recently'}`;
                 if (rentalSpecsBox) rentalSpecsBox.classList.add('hidden');
             }
 
+            // Update Hero Image & TikTok Banner Context
+            const heroImg = document.getElementById('detail-hero-image');
+            const fullPhotoLink = document.getElementById('detail-full-photo-link');
+            const photoCaption = document.getElementById('detail-photo-caption');
             const imgSrc = item.image || getFallbackImageForCategory(item.category, item.subtype);
-            document.getElementById('detail-hero-image').src = imgSrc;
-            document.getElementById('detail-full-photo-link').href = imgSrc;
-            document.getElementById('detail-photo-caption').innerHTML = `<i class="ph-fill ph-camera text-emerald-400"></i> <span>${escapeHTML(item.photoTag || 'Verified Listing Photo')}</span>`;
-
-            const tiktokLinkEl = document.getElementById('detail-tiktok-link');
-            const tiktokEyebrowEl = document.getElementById('detail-tiktok-eyebrow');
-            const tiktokHeadingEl = document.getElementById('detail-tiktok-heading');
-            const tiktokBtnTextEl = document.getElementById('detail-tiktok-btn-text');
-            if (tiktokLinkEl) {
-                const querySlug = encodeURIComponent(`${item.title} ${item.city} HomeLink`);
-                tiktokLinkEl.href = item.tiktokUrl || `https://www.tiktok.com/search?q=${querySlug}`;
+            if (heroImg) heroImg.src = imgSrc;
+            if (fullPhotoLink) fullPhotoLink.href = imgSrc;
+            if (photoCaption) {
+                const capSpan = photoCaption.querySelector('span');
+                if (capSpan) capSpan.textContent = item.photoTag || `${item.subtype} • ${item.city}`;
             }
-            if (tiktokEyebrowEl && tiktokHeadingEl && tiktokBtnTextEl) {
-                if (item.category === 'Jobs') {
-                    tiktokEyebrowEl.textContent = 'Role & Workplace Overview';
-                    tiktokHeadingEl.textContent = 'Watch Our Videos for More Details';
-                    tiktokBtnTextEl.textContent = 'Watch Video';
-                } else if (item.category === 'Services') {
-                    tiktokEyebrowEl.textContent = 'Service Showcase';
-                    tiktokHeadingEl.textContent = 'Watch Our Service Videos on TikTok';
-                    tiktokBtnTextEl.textContent = 'Watch Video';
-                } else {
-                    tiktokEyebrowEl.textContent = 'Video Walkthrough';
-                    tiktokHeadingEl.textContent = 'Watch Full Property & Surroundings Video on TikTok';
-                    tiktokBtnTextEl.textContent = 'Watch TikTok Video';
-                }
+
+            const tiktokEyebrow = document.getElementById('detail-tiktok-eyebrow');
+            const tiktokHeading = document.getElementById('detail-tiktok-heading');
+            const tiktokBtnText = document.getElementById('detail-tiktok-btn-text');
+            if (item.category === 'Jobs') {
+                if (tiktokEyebrow) tiktokEyebrow.textContent = 'Role & Workplace Overview';
+                if (tiktokHeading) tiktokHeading.textContent = 'Watch Our Videos for More Details';
+                if (tiktokBtnText) tiktokBtnText.textContent = 'Watch Videos';
+            } else if (item.category === 'Services') {
+                if (tiktokEyebrow) tiktokEyebrow.textContent = 'Service Showcase';
+                if (tiktokHeading) tiktokHeading.textContent = 'Watch Our Service Videos on TikTok';
+                if (tiktokBtnText) tiktokBtnText.textContent = 'Watch Videos';
+            } else {
+                if (tiktokEyebrow) tiktokEyebrow.textContent = 'Video Walkthrough';
+                if (tiktokHeading) tiktokHeading.textContent = 'Watch Full Property & Surroundings Video on TikTok';
+                if (tiktokBtnText) tiktokBtnText.textContent = 'Watch TikTok Video';
             }
 
             // Toggle between Book Property/Service section vs. Apply for Position section for Jobs
@@ -4165,6 +4129,11 @@
                 showToast('Please log in to view full listing details', 'info');
                 return;
             }
+            const item = listings.find(l => l.id === id);
+            if (item && currentUser.role === 'employee' && !canStaffAccessCity(item.city)) {
+                showToast(`Access Restricted: Employee ID ${currentUser.empCode || ''} can only view ${getEmployeeRestrictedCity()} branch listings.`, 'info');
+                return;
+            }
             populateDetailViewById(id);
             navigateTo('page-listing-detail', { detailId: id });
         }
@@ -4262,18 +4231,15 @@
             saveState();
             e.target.reset();
             closeBookNowSection();
-            showToast(`Booking & payment proof submitted to ${newInquiry.assignedTo}!`, 'success');
+            showToast(`Booking & payment proof sent to ${newInquiry.assignedTo}!`, 'success');
         }
 
-        // ==========================================
-        // AUTHENTICATION & ROLE MANAGEMENT
-        // ==========================================
         function switchLoginRoleTab(role) {
             ['customer', 'employee', 'admin'].forEach(r => {
-                const tab = document.getElementById(`role-tab-${r}`);
+                const tabBtn = document.getElementById(`role-tab-${r}`);
                 const box = document.getElementById(`login-box-${r}`);
-                if (tab) {
-                    tab.className = r === role
+                if (tabBtn) {
+                    tabBtn.className = r === role
                         ? 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-brand-600 shadow-sm transition'
                         : 'py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-slate-600 hover:text-slate-900 transition';
                 }
@@ -4284,22 +4250,62 @@
             });
         }
 
+        function syncEmployeeLoginEmailById(rawCode) {
+            const emailInput = document.getElementById('emp-login-email');
+            if (!emailInput) return;
+            const code = (rawCode || '').trim().toLowerCase();
+            const match = employees.find(emp => !emp.isOwner && String(emp.empCode).toLowerCase() === code);
+            if (match && match.email) {
+                emailInput.value = match.email;
+            }
+        }
+
         function handleRoleLoginSubmit(e, role) {
             e.preventDefault();
             if (role === 'customer') {
                 const idVal = document.getElementById('cust-login-id').value.trim();
                 currentUser = { name: 'Aarav Shrestha', phone: idVal || '9842012345', city: 'Dharan', role: 'customer' };
+                releaseStaffBranchLocks();
             } else if (role === 'employee') {
-                const raw = document.getElementById('emp-login-id').value;
-                const [empName, dept, hub] = raw.split('|');
-                currentUser = { name: empName || 'Pratima Rai', phone: '9842088202', city: hub || 'Dharan', department: dept || 'Rentals', role: 'employee' };
+                const rawCode = document.getElementById('emp-login-id').value.trim();
+                const rawEmail = (document.getElementById('emp-login-email')?.value || '').trim().toLowerCase();
+                const empRecord = employees.find(emp => !emp.isOwner && String(emp.empCode).toLowerCase() === rawCode.toLowerCase());
+                if (!empRecord) {
+                    showToast(`Employee ID "${rawCode}" not found. Try 021, 022, or 023 (or ask Owner to register it).`, 'info');
+                    return;
+                }
+                const expectedEmail = (empRecord.email || `${empRecord.name.split(' ')[0].toLowerCase()}.${empRecord.empCode}@homelink.com.np`).toLowerCase();
+                if (!rawEmail || !rawEmail.includes('@') || (empRecord.email && rawEmail !== expectedEmail)) {
+                    showToast(`Email does not match Employee ID ${empRecord.empCode} (expected ${expectedEmail}).`, 'info');
+                    return;
+                }
+                const assignedLocation = empRecord.branchCity || 'Dharan';
+                currentUser = {
+                    empCode: empRecord.empCode,
+                    email: rawEmail,
+                    name: empRecord.name,
+                    phone: empRecord.phone,
+                    city: assignedLocation,
+                    branchCity: assignedLocation,
+                    department: empRecord.department || 'Rentals',
+                    role: 'employee'
+                };
+                enforceEmployeeBranchLock();
             } else if (role === 'admin') {
-                currentUser = { name: 'Suman Limbu (MD)', phone: '9852055101', city: 'All', department: 'All', role: 'admin' };
+                const ownerCode = (document.getElementById('owner-login-id')?.value || 'OWNER').trim();
+                const ownerEmail = (document.getElementById('owner-login-email')?.value || 'owner@homelink.com.np').trim();
+                if (!ownerEmail.includes('@')) {
+                    showToast('Please enter a valid Owner email address.', 'info');
+                    return;
+                }
+                currentUser = { empCode: ownerCode || 'OWNER', email: ownerEmail, name: 'Suman Limbu (Owner)', phone: '9852055101', city: 'All', branchCity: 'All', department: 'All', role: 'admin' };
+                releaseStaffBranchLocks();
             }
 
             saveState();
             renderAllViews();
-            showToast(`Signed in as ${currentUser.name} (${currentUser.role.toUpperCase()})`, 'success');
+            const branchNote = currentUser.role === 'employee' ? ` • ID ${currentUser.empCode} (${currentUser.branchCity} Branch Only)` : '';
+            showToast(`Signed in as ${currentUser.name}${branchNote}`, 'success');
 
             if (pendingRouteAfterLogin) {
                 const fn = pendingRouteAfterLogin;
@@ -4315,17 +4321,31 @@
             }
         }
 
-        function quickRoleLogin(role) {
+        function quickRoleLogin(role, empIdCode = '021') {
             if (role === 'customer') {
                 currentUser = { name: 'Aarav Shrestha', phone: '9842012345', city: 'Dharan', role: 'customer' };
+                releaseStaffBranchLocks();
             } else if (role === 'employee') {
-                currentUser = { name: 'Pratima Rai', phone: '9842088202', city: 'Dharan', department: 'Rentals', role: 'employee' };
+                const empRecord = employees.find(emp => !emp.isOwner && String(emp.empCode) === String(empIdCode)) || employees.find(emp => !emp.isOwner);
+                const assignedLoc = empRecord ? empRecord.branchCity : 'Dharan';
+                currentUser = {
+                    empCode: empRecord ? empRecord.empCode : '021',
+                    name: empRecord ? empRecord.name : 'Pratima Rai',
+                    phone: empRecord ? empRecord.phone : '9842088202',
+                    city: assignedLoc,
+                    branchCity: assignedLoc,
+                    department: empRecord ? empRecord.department : 'Rentals',
+                    role: 'employee'
+                };
+                enforceEmployeeBranchLock();
             } else if (role === 'admin') {
-                currentUser = { name: 'Suman Limbu (Admin)', phone: '9852055101', city: 'All', department: 'All', role: 'admin' };
+                currentUser = { empCode: 'OWNER', name: 'Suman Limbu (Owner)', phone: '9852055101', city: 'All', branchCity: 'All', department: 'All', role: 'admin' };
+                releaseStaffBranchLocks();
             }
             saveState();
             renderAllViews();
-            showToast(`Switched to ${currentUser.name} (${role.toUpperCase()})`, 'success');
+            const branchNote = currentUser.role === 'employee' ? ` • ID ${currentUser.empCode} (${currentUser.branchCity} Only)` : '';
+            showToast(`Switched to ${currentUser.name}${branchNote}`, 'success');
 
             if (pendingRouteAfterLogin) {
                 const fn = pendingRouteAfterLogin;
@@ -4339,6 +4359,9 @@
         function logoutUser() {
             currentUser = null;
             pendingRouteAfterLogin = null;
+            activeCity = 'All';
+            staffQueryCityFilter = 'All';
+            releaseStaffBranchLocks();
             saveState();
             renderAllViews();
             showToast('Signed out (Guest Preview Mode)', 'info');
@@ -4446,15 +4469,20 @@
             grid.innerHTML = employees.map(emp => `
                 <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
                     <div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${emp.color || 'from-brand-600 to-indigo-700'} text-white font-extrabold text-xl flex items-center justify-center shadow-md mb-4">
-                            ${escapeHTML(emp.initials)}
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${emp.color || 'from-brand-600 to-indigo-700'} text-white font-extrabold text-xl flex items-center justify-center shadow-md">
+                                ${escapeHTML(emp.initials)}
+                            </div>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800 text-xs font-mono font-extrabold border border-slate-200">
+                                ${escapeHTML(emp.empCode || emp.id.toUpperCase())}
+                            </span>
                         </div>
-                        <span class="text-xs font-extrabold uppercase tracking-wider text-brand-600">${escapeHTML(emp.deptLabel || emp.department)}</span>
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-brand-600">${escapeHTML(emp.hub)}</span>
                         <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-1">${escapeHTML(emp.name)}</h3>
                         <p class="text-xs sm:text-sm font-semibold text-slate-500">${escapeHTML(emp.role)}</p>
                     </div>
                     <div class="mt-4 pt-4 border-t border-slate-100 text-xs sm:text-sm text-slate-600 space-y-1">
-                        <div><i class="ph-fill ph-map-pin text-emerald-600"></i> ${escapeHTML(emp.hub)}</div>
+                        <div><i class="ph-fill ph-map-pin text-emerald-600"></i> Scope: <strong>${escapeHTML(emp.hub)}</strong></div>
                         <div class="font-mono"><i class="ph-fill ph-phone text-brand-600"></i> ${escapeHTML(emp.phone)}</div>
                     </div>
                 </div>
@@ -4622,41 +4650,365 @@
             else box.classList.add('hidden');
         }
 
-        function handleStaffManualQuerySubmit(e) {
-            e.preventDefault();
-            const category = document.getElementById('manual-q-category').value;
-            const city = document.getElementById('manual-q-city').value;
-            const customerName = document.getElementById('manual-q-name').value.trim();
-            const phone = document.getElementById('manual-q-phone').value.trim();
-            const listingTitle = document.getElementById('manual-q-title').value.trim();
-            const message = document.getElementById('manual-q-message').value.trim();
+        function getSelectedPostFormCategory() {
+            const form = document.getElementById('post-listing-form');
+            const val = form && form.elements['category'] ? form.elements['category'].value : 'Rentals';
+            return val === 'Jobs' ? 'Jobs' : 'Rentals';
+        }
 
-            const deptLeadMap = {
-                Rentals: 'Pratima Rai (Rental Desk)',
-                Jobs: 'Rakesh Pokharel (Job Desk)',
-                Services: 'Binod Mandal (Service Dispatch)'
+        function downloadCategoryCsvTemplate() {
+            const targetCategory = getSelectedPostFormCategory();
+            const restrictedCity = getEmployeeRestrictedCity();
+            const scoped = listings
+                .filter(l => l.category === targetCategory)
+                .filter(l => !restrictedCity || l.city === restrictedCity);
+
+            const headers = ['id', 'title', 'subtype', 'city', 'neighborhood', 'price', 'contactName', 'phone', 'description'];
+            const escapeCsv = (val) => `"${String(val ?? '').replace(/"/g, '""')}"`;
+            const rows = scoped.map(item => [
+                item.id,
+                item.title,
+                item.subtype,
+                item.city,
+                item.neighborhood,
+                item.price,
+                item.contactName,
+                item.phone,
+                item.description
+            ].map(escapeCsv).join(','));
+
+            const csvContent = [headers.join(','), ...rows].join('\n');
+            triggerFileDownload(`homelink_${targetCategory.toLowerCase()}_${(restrictedCity || 'all').toLowerCase()}.csv`, csvContent, 'text/csv;charset=utf-8');
+            showToast(`Downloaded ${targetCategory} CSV template!`, 'success');
+        }
+
+        function parseCsvTextRows(csvText) {
+            const rows = [];
+            let row = [];
+            let field = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < csvText.length; i++) {
+                const ch = csvText[i];
+                const next = csvText[i + 1];
+                if (inQuotes) {
+                    if (ch === '"' && next === '"') {
+                        field += '"';
+                        i++;
+                    } else if (ch === '"') {
+                        inQuotes = false;
+                    } else {
+                        field += ch;
+                    }
+                } else if (ch === '"') {
+                    inQuotes = true;
+                } else if (ch === ',') {
+                    row.push(field.trim());
+                    field = '';
+                } else if (ch === '\r' && next === '\n') {
+                    row.push(field.trim());
+                    rows.push(row);
+                    row = [];
+                    field = '';
+                    i++;
+                } else if (ch === '\n' || ch === '\r') {
+                    row.push(field.trim());
+                    rows.push(row);
+                    row = [];
+                    field = '';
+                } else {
+                    field += ch;
+                }
+            }
+            if (field.length > 0 || row.length > 0) {
+                row.push(field.trim());
+                rows.push(row);
+            }
+            return rows.filter(r => r.some(cell => cell !== ''));
+        }
+
+        function applyCsvRowsToCategory(csvText, targetCategory) {
+            const parsed = parseCsvTextRows(csvText);
+            if (parsed.length < 2) {
+                showToast(`CSV file must include a header row and at least one ${targetCategory === 'Jobs' ? 'Job' : 'Rental'} row.`, 'info');
+                return;
+            }
+
+            const headers = parsed[0].map(h => h.toLowerCase().trim());
+            const idxOf = (name) => headers.indexOf(name.toLowerCase());
+            const restrictedCity = getEmployeeRestrictedCity();
+
+            let updatedCount = 0;
+            let addedCount = 0;
+            let skippedBranchCount = 0;
+
+            for (let r = 1; r < parsed.length; r++) {
+                const cols = parsed[r];
+                const getCol = (name) => {
+                    const idx = idxOf(name);
+                    return idx >= 0 && cols[idx] !== undefined ? cols[idx].trim() : '';
+                };
+
+                const rowId = getCol('id');
+                const title = getCol('title');
+                if (!title) continue;
+
+                const rowCityRaw = getCol('city') || restrictedCity || 'Dharan';
+                const city = rowCityRaw.toLowerCase().includes('birat') ? 'Biratnagar' : 'Dharan';
+
+                if (restrictedCity && city !== restrictedCity) {
+                    skippedBranchCount++;
+                    continue;
+                }
+
+                const subtype = getCol('subtype') || (targetCategory === 'Jobs' ? 'Full-Time Job' : '2BHK Flat');
+                const neighborhood = getCol('neighborhood') || (city === 'Dharan' ? 'Bhanu Chowk' : 'Traffic Chowk');
+                const price = Number(getCol('price').replace(/[^0-9.]/g, '')) || (targetCategory === 'Jobs' ? 18000 : 12000);
+                const contactName = getCol('contactName') || (currentUser ? currentUser.name : 'HomeLink Staff');
+                const phone = getCol('phone') || '9852055101';
+                const description = getCol('description') || `${title} in ${neighborhood}, ${city}.`;
+                const cfg = CATEGORY_CONFIG[targetCategory];
+
+                const existingIdx = rowId ? listings.findIndex(l => l.id.toLowerCase() === rowId.toLowerCase() && l.category === targetCategory) : -1;
+
+                if (existingIdx !== -1) {
+                    if (!canStaffAccessCity(listings[existingIdx].city)) {
+                        skippedBranchCount++;
+                        continue;
+                    }
+                    listings[existingIdx] = {
+                        ...listings[existingIdx],
+                        category: targetCategory,
+                        title,
+                        subtype,
+                        city,
+                        neighborhood,
+                        price,
+                        priceUnit: cfg.priceUnit,
+                        contactName,
+                        phone,
+                        description,
+                        postedAt: 'CSV Updated by Staff'
+                    };
+                    updatedCount++;
+                } else {
+                    listings.unshift({
+                        id: rowId || `hl-${targetCategory === 'Jobs' ? 'job' : 'rent'}-${Date.now()}-${r}`,
+                        title,
+                        category: targetCategory,
+                        subtype,
+                        city,
+                        neighborhood,
+                        price,
+                        priceUnit: cfg.priceUnit,
+                        contactName,
+                        phone,
+                        verified: true,
+                        postedAt: 'CSV Imported by Staff',
+                        featured: true,
+                        image: getFallbackImageForCategory(targetCategory, subtype),
+                        photoTag: `${subtype} • ${city}`,
+                        tags: [subtype, city, 'CSV Synced'],
+                        description
+                    });
+                    addedCount++;
+                }
+            }
+
+            saveState();
+            renderAllViews();
+            const skipMsg = skippedBranchCount > 0 ? ` (${skippedBranchCount} outside your ${restrictedCity} branch skipped)` : '';
+            showToast(`${targetCategory} CSV Sync Complete: ${updatedCount} updated, ${addedCount} added${skipMsg}!`, 'success');
+            navigateTo(targetCategory === 'Jobs' ? 'page-jobs' : 'page-rentals');
+        }
+
+        async function handleCategoryCsvUrlImport() {
+            const targetCategory = getSelectedPostFormCategory();
+            const urlInput = document.getElementById('post-csv-url-input');
+            const url = urlInput ? urlInput.value.trim() : '';
+            if (!url) {
+                showToast(`Please paste a ${targetCategory} CSV URL link first.`, 'info');
+                return;
+            }
+
+            try {
+                showToast(`Fetching ${targetCategory} CSV from link...`, 'info');
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const text = await resp.text();
+                applyCsvRowsToCategory(text, targetCategory);
+                if (urlInput) urlInput.value = '';
+            } catch (err) {
+                showToast('Could not fetch remote CSV URL (check public sharing/CORS) or upload the .csv file directly.', 'info');
+            }
+        }
+
+        function handleCategoryCsvFileUpload(inputEl) {
+            const targetCategory = getSelectedPostFormCategory();
+            const file = inputEl && inputEl.files && inputEl.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                applyCsvRowsToCategory(ev.target.result || '', targetCategory);
+                inputEl.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function openEditInquiryBox(inqId) {
+            const q = inquiries.find(item => item.id === inqId);
+            if (!q) return;
+            if (!canStaffAccessCity(q.city)) {
+                showToast(`Access Denied: Employee ID ${currentUser.empCode || ''} is allocated to ${getEmployeeRestrictedCity()} branch only.`, 'info');
+                return;
+            }
+            document.getElementById('edit-q-id').value = q.id;
+            document.getElementById('edit-q-category').value = q.category;
+            document.getElementById('edit-q-city').value = q.city;
+            document.getElementById('edit-q-name').value = q.customerName;
+            document.getElementById('edit-q-phone').value = q.phone;
+            document.getElementById('edit-q-assigned').value = q.assignedTo;
+            document.getElementById('edit-q-status').value = q.status;
+            document.getElementById('edit-q-title').value = q.listingTitle;
+            document.getElementById('edit-q-message').value = q.message;
+
+            const box = document.getElementById('staff-edit-query-box');
+            if (box) {
+                box.classList.remove('hidden');
+                box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function closeEditInquiryBox() {
+            const box = document.getElementById('staff-edit-query-box');
+            if (box) box.classList.add('hidden');
+        }
+
+        function handleEditInquirySubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-q-id').value;
+            const idx = inquiries.findIndex(item => item.id === id);
+            if (idx === -1) return;
+
+            if (!canStaffAccessCity(inquiries[idx].city)) {
+                showToast(`Access Denied: You can only edit ${getEmployeeRestrictedCity()} branch applications.`, 'info');
+                return;
+            }
+
+            const restrictedCity = getEmployeeRestrictedCity();
+            const statusVal = document.getElementById('edit-q-status').value.trim();
+            inquiries[idx] = {
+                ...inquiries[idx],
+                category: document.getElementById('edit-q-category').value,
+                city: restrictedCity || document.getElementById('edit-q-city').value,
+                customerName: document.getElementById('edit-q-name').value.trim(),
+                phone: document.getElementById('edit-q-phone').value.trim(),
+                assignedTo: document.getElementById('edit-q-assigned').value.trim(),
+                status: statusVal,
+                resolved: statusVal.toLowerCase().includes('resolved'),
+                listingTitle: document.getElementById('edit-q-title').value.trim(),
+                message: document.getElementById('edit-q-message').value.trim()
             };
 
-            inquiries.unshift({
-                id: 'inq-' + Date.now(),
-                category,
-                subtype: category,
-                customerName,
+            saveState();
+            closeEditInquiryBox();
+            renderStaffDashboard();
+            showToast('Updated branch application & query details!', 'success');
+        }
+
+        function toggleResolveInquiry(id) {
+            const q = inquiries.find(item => item.id === id);
+            if (!q) return;
+            if (!canStaffAccessCity(q.city)) {
+                showToast(`Access Denied: You can only update ${getEmployeeRestrictedCity()} branch queries.`, 'info');
+                return;
+            }
+            q.resolved = !q.resolved;
+            q.status = q.resolved ? 'Resolved ✓' : 'Pending Follow-Up';
+            saveState();
+            renderStaffDashboard();
+            showToast(q.resolved ? 'Marked query as Resolved' : 'Reopened query', 'info');
+        }
+
+        function toggleVerifyListing(id) {
+            const item = listings.find(l => l.id === id);
+            if (!item) return;
+            if (!canStaffAccessCity(item.city)) {
+                showToast(`Access Denied: You can only verify ${getEmployeeRestrictedCity()} branch listings.`, 'info');
+                return;
+            }
+            item.verified = !item.verified;
+            saveState();
+            renderAllViews();
+            showToast(item.verified ? 'Listing verified ✓' : 'Verification removed', 'info');
+        }
+
+        function deleteListingByStaff(id) {
+            const item = listings.find(l => l.id === id);
+            if (item && !canStaffAccessCity(item.city)) {
+                showToast(`Access Denied: You can only delete ${getEmployeeRestrictedCity()} branch listings.`, 'info');
+                return;
+            }
+            listings = listings.filter(l => l.id !== id);
+            saveState();
+            renderAllViews();
+            showToast('Listing removed by staff', 'info');
+        }
+
+        function handleAddEmployeeSubmit(e) {
+            e.preventDefault();
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('Only the Owner account can register new Employee IDs and assign locations.', 'info');
+                return;
+            }
+            const empCode = document.getElementById('emp-add-code').value.trim();
+            const name = document.getElementById('emp-add-name').value.trim();
+            const email = (document.getElementById('emp-add-email')?.value || '').trim().toLowerCase();
+            const role = document.getElementById('emp-add-role').value.trim();
+            const department = document.getElementById('emp-add-dept').value;
+            const branchCity = document.getElementById('emp-add-hub').value;
+            const phone = document.getElementById('emp-add-phone').value.trim();
+            const initials = name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2);
+
+            if (employees.some(emp => String(emp.empCode).toLowerCase() === empCode.toLowerCase())) {
+                showToast(`Employee ID "${empCode}" already exists! Use a unique ID like 024 or 025.`, 'info');
+                return;
+            }
+
+            employees.push({
+                id: 'emp-' + Date.now(),
+                empCode,
+                email: email || `${name.split(' ')[0].toLowerCase()}.${empCode}@homelink.com.np`,
+                initials: initials || 'ST',
+                name,
+                role,
+                department,
+                deptLabel: 'Rentals, Jobs & Services',
+                branchCity,
+                hub: branchCity,
                 phone,
-                listingTitle,
-                city,
-                neighborhood: city,
-                assignedTo: deptLeadMap[category],
-                message,
-                status: 'Pending Action',
-                resolved: false,
-                time: 'Just now'
+                color: branchCity === 'Dharan' ? 'from-indigo-600 to-violet-700' : 'from-emerald-600 to-teal-700'
             });
             saveState();
             e.target.reset();
-            toggleStaffLogQueryBox(false);
-            switchEmployeeDepartmentDesk(category);
-            showToast('Logged phone query into departmental queue!', 'success');
+            renderAllViews();
+            showToast(`Owner assigned Employee ID ${empCode} (${name}) to ${branchCity}!`, 'success');
+        }
+
+        function assignEmployeeLocationByOwner(empId, newLocation) {
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('Only the Owner can change an employee\'s assigned branch location.', 'info');
+                return;
+            }
+            const emp = employees.find(item => item.id === empId);
+            if (!emp || emp.isOwner) return;
+
+            emp.branchCity = newLocation;
+            emp.hub = newLocation;
+            emp.color = newLocation === 'Dharan' ? 'from-indigo-500 to-violet-600' : 'from-emerald-500 to-teal-600';
+            saveState();
+            renderAllViews();
+            showToast(`Owner assigned Employee ID ${emp.empCode} (${emp.name}) to ${newLocation} branch!`, 'success');
         }
 
         function openEditInquiryBox(inqId) {
@@ -4794,19 +5146,59 @@
         }
 
         function renderStaffDashboard() {
-            const rentalQs = inquiries.filter(q => q.category === 'Rentals');
-            const jobQs = inquiries.filter(q => q.category === 'Jobs');
-            const serviceQs = inquiries.filter(q => q.category === 'Services');
-
             const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+            const restrictedCity = getEmployeeRestrictedCity();
+            if (restrictedCity) {
+                enforceEmployeeBranchLock();
+            }
+
+            // Update dashboard header badge to show Employee ID & Branch Allocation
+            const roleBadgeEl = document.getElementById('staff-role-badge');
+            const deptIndicatorEl = document.getElementById('staff-dept-indicator');
+            const dashTitleEl = document.getElementById('staff-dashboard-title');
+            if (currentUser && currentUser.role === 'employee' && restrictedCity) {
+                if (roleBadgeEl) roleBadgeEl.textContent = `Employee ID: ${currentUser.empCode || '021'} • ${restrictedCity} Branch Only`;
+                if (deptIndicatorEl) deptIndicatorEl.textContent = `Owner-Assigned Location: ${restrictedCity} Only (Rentals, Jobs & Services)`;
+                if (dashTitleEl) dashTitleEl.textContent = `${restrictedCity} Branch Staff Operations (${currentUser.name} • ID ${currentUser.empCode})`;
+            } else if (currentUser && currentUser.role === 'admin') {
+                if (roleBadgeEl) roleBadgeEl.textContent = 'Owner Portal • All Branches & Staff Location Control';
+                if (deptIndicatorEl) deptIndicatorEl.textContent = 'Full Owner Access: Dharan & Biratnagar Hubs';
+                if (dashTitleEl) dashTitleEl.textContent = 'Owner Operations & Branch Location Assignment';
+            }
+
+            // Keep login page datalist & quick demo labels synced with Owner's latest location assignments
+            const empDatalist = document.getElementById('employee-id-datalist');
+            if (empDatalist) {
+                empDatalist.innerHTML = employees
+                    .filter(e => !e.isOwner)
+                    .map(e => `<option value="${escapeHTML(e.empCode)}">${escapeHTML(e.empCode)} — ${escapeHTML(e.name)} (${escapeHTML(e.branchCity)} Branch)</option>`)
+                    .join('');
+            }
+            const emp021 = employees.find(e => e.empCode === '021');
+            const emp022 = employees.find(e => e.empCode === '022');
+            if (emp021) setTxt('quick-emp-021-label', `2. Employee ID 021 (${emp021.name} • ${emp021.branchCity})`);
+            if (emp022) setTxt('quick-emp-022-label', `3. Employee ID 022 (${emp022.name} • ${emp022.branchCity})`);
+
+            // Filter queries and listings strictly by the Employee's Owner-assigned branch location
+            const scopedInquiries = restrictedCity
+                ? inquiries.filter(q => q.city === restrictedCity)
+                : inquiries;
+            const visibleListings = restrictedCity
+                ? listings.filter(l => l.city === restrictedCity)
+                : listings;
+
+            const rentalQs = scopedInquiries.filter(q => q.category === 'Rentals');
+            const jobQs = scopedInquiries.filter(q => q.category === 'Jobs');
+            const serviceQs = scopedInquiries.filter(q => q.category === 'Services');
+
             setTxt('stat-rental-queries', rentalQs.length);
             setTxt('stat-rental-pending', `${rentalQs.filter(q => !q.resolved).length} pending visits`);
             setTxt('stat-job-queries', jobQs.length);
             setTxt('stat-job-pending', `${jobQs.filter(q => !q.resolved).length} applicants`);
             setTxt('stat-service-queries', serviceQs.length);
             setTxt('stat-service-pending', `${serviceQs.filter(q => !q.resolved).length} dispatches`);
-            setTxt('stat-total-listings', listings.length);
-            setTxt('stat-verified-listings', listings.filter(l => l.verified).length);
+            setTxt('stat-total-listings', visibleListings.length);
+            setTxt('stat-verified-listings', visibleListings.filter(l => l.verified).length);
             setTxt('stat-total-employees', employees.length);
 
             setTxt('tab-badge-Rentals', rentalQs.length);
@@ -4814,7 +5206,8 @@
             setTxt('tab-badge-Services', serviceQs.length);
 
             const filterQueue = (arr) => arr.filter(q => {
-                if (staffQueryCityFilter !== 'All' && q.city !== staffQueryCityFilter) return false;
+                if (restrictedCity && q.city !== restrictedCity) return false;
+                if (!restrictedCity && staffQueryCityFilter !== 'All' && q.city !== staffQueryCityFilter) return false;
                 if (staffQueryStatusFilter === 'Pending' && q.resolved) return false;
                 if (staffQueryStatusFilter === 'Resolved' && !q.resolved) return false;
                 return true;
@@ -4824,16 +5217,20 @@
             const jList = document.getElementById('staff-job-queries-list');
             const sList = document.getElementById('staff-service-queries-list');
 
-            if (rList) rList.innerHTML = filterQueue(rentalQs).map(renderInquiryRowHTML).join('') || '<p class="text-sm text-slate-400">No rental queries match the current filter.</p>';
-            if (jList) jList.innerHTML = filterQueue(jobQs).map(renderInquiryRowHTML).join('') || '<p class="text-sm text-slate-400">No job queries match the current filter.</p>';
-            if (sList) sList.innerHTML = filterQueue(serviceQs).map(renderInquiryRowHTML).join('') || '<p class="text-sm text-slate-400">No service queries match the current filter.</p>';
+            if (rList) rList.innerHTML = filterQueue(rentalQs).map(renderInquiryRowHTML).join('') || `<p class="text-sm text-slate-400">No ${restrictedCity || ''} rental queries match the current filter.</p>`;
+            if (jList) jList.innerHTML = filterQueue(jobQs).map(renderInquiryRowHTML).join('') || `<p class="text-sm text-slate-400">No ${restrictedCity || ''} job queries match the current filter.</p>`;
+            if (sList) sList.innerHTML = filterQueue(serviceQs).map(renderInquiryRowHTML).join('') || `<p class="text-sm text-slate-400">No ${restrictedCity || ''} service queries match the current filter.</p>`;
 
             const tbody = document.getElementById('staff-listings-tbody');
+            const isOwner = currentUser && currentUser.role === 'admin';
             if (tbody) {
-                const filteredListings = listings.filter(l => staffListingCategoryFilter === 'All' || l.category === staffListingCategoryFilter);
+                const filteredListings = visibleListings.filter(l => staffListingCategoryFilter === 'All' || l.category === staffListingCategoryFilter);
                 tbody.innerHTML = filteredListings.map(item => `
                     <tr class="hover:bg-slate-50/80">
-                        <td class="py-3.5 px-5 font-bold text-slate-900">${escapeHTML(item.title)}</td>
+                        <td class="py-3.5 px-5 font-bold text-slate-900">
+                            <div>${escapeHTML(item.title)}</div>
+                            <div class="text-xs font-medium text-slate-400">${escapeHTML(item.subtype)} • ${escapeHTML(item.contactName)}</div>
+                        </td>
                         <td class="py-3.5 px-5 text-xs font-extrabold">${escapeHTML(item.category)}</td>
                         <td class="py-3.5 px-5 text-xs sm:text-sm text-slate-600">${escapeHTML(item.neighborhood)}, ${escapeHTML(item.city)}</td>
                         <td class="py-3.5 px-5 font-bold text-slate-800">${formatNPR(item.price)}</td>
@@ -4852,17 +5249,39 @@
             }
 
             const empListEl = document.getElementById('staff-employees-list');
+            const addEmpCard = document.getElementById('owner-add-employee-card');
+            if (addEmpCard) {
+                if (isOwner) addEmpCard.classList.remove('hidden');
+                else addEmpCard.classList.add('hidden');
+            }
             if (empListEl) {
-                empListEl.innerHTML = employees.map(emp => `
-                    <div class="p-4 rounded-2xl border border-slate-200 flex items-start justify-between gap-3">
-                        <div>
-                            <h4 class="font-extrabold text-slate-900 text-base">${escapeHTML(emp.name)}</h4>
-                            <p class="text-xs font-bold text-brand-600">${escapeHTML(emp.deptLabel || emp.department)}</p>
-                            <p class="text-xs text-slate-500 mt-1">${escapeHTML(emp.hub)} • ${escapeHTML(emp.phone)}</p>
+                const visibleEmployees = restrictedCity
+                    ? employees.filter(e => e.branchCity === restrictedCity || e.isOwner)
+                    : employees;
+                empListEl.innerHTML = visibleEmployees.map(emp => `
+                    <div class="p-4 rounded-2xl border border-slate-200 flex flex-col justify-between gap-3 bg-slate-50/40">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2.5 py-0.5 rounded-md bg-slate-900 text-white text-xs font-mono font-extrabold">ID: ${escapeHTML(emp.empCode || emp.id)}</span>
+                                    <h4 class="font-extrabold text-slate-900 text-base">${escapeHTML(emp.name)}</h4>
+                                </div>
+                                <p class="text-xs font-bold text-brand-600 mt-1">Assigned Branch: <strong>${escapeHTML(emp.hub)}</strong></p>
+                                <p class="text-xs text-slate-500 mt-0.5">${escapeHTML(emp.role)} • ${escapeHTML(emp.phone)}</p>
+                            </div>
+                            <button type="button" onclick="switchEmployeeDepartmentDesk('${escapeHTML(emp.department)}')" class="px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold shrink-0">
+                                Open Queue
+                            </button>
                         </div>
-                        <button type="button" onclick="switchEmployeeDepartmentDesk('${escapeHTML(emp.department)}')" class="px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold shrink-0">
-                            Open Queue
-                        </button>
+                        ${isOwner && !emp.isOwner ? `
+                            <div class="pt-2.5 border-t border-slate-200/80 flex items-center justify-between gap-2">
+                                <span class="text-[11px] font-extrabold uppercase text-slate-500">Owner Assign Location:</span>
+                                <select onchange="assignEmployeeLocationByOwner('${emp.id}', this.value)" class="rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100/70 px-3 py-1.5 text-xs font-extrabold text-slate-900 cursor-pointer">
+                                    <option value="Dharan" ${emp.branchCity === 'Dharan' ? 'selected' : ''}>Dharan Branch</option>
+                                    <option value="Biratnagar" ${emp.branchCity === 'Biratnagar' ? 'selected' : ''}>Biratnagar Branch</option>
+                                </select>
+                            </div>
+                        ` : ''}
                     </div>
                 `).join('');
             }
