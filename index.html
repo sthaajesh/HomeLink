@@ -1058,33 +1058,265 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">2. Branch City *</label>
-                                <select id="form-city" onchange="populateFormNeighborhoods(this.value)" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 hover:bg-white px-4 py-3 text-sm sm:text-base font-bold text-slate-800 cursor-pointer">
+                                <select id="form-city" onchange="handleFormCityChange(this.value)" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 hover:bg-white px-4 py-3 text-sm sm:text-base font-bold text-slate-800 cursor-pointer">
                                     <option value="Dharan">Dharan</option>
                                     <option value="Biratnagar">Biratnagar</option>
                                 </select>
                             </div>
-                            <div>
+                            <div id="non-rental-neighborhood-wrap">
                                 <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Area / Chowk *</label>
                                 <input type="text" id="form-neighborhood" list="neighborhood-suggestions" required placeholder="e.g., Bhanu Chowk, BPKIHS, Traffic Chowk" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
                                 <datalist id="neighborhood-suggestions"></datalist>
                             </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">3. Listing Title *</label>
-                            <input type="text" id="form-title" required placeholder="e.g., Spacious 3BHK Flat near BPKIHS Gate" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div id="form-subtype-wrapper">
-                                <label id="form-subtype-label" class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Property Type *</label>
-                                <select id="form-subtype" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 hover:bg-white px-4 py-3 text-sm sm:text-base font-bold text-slate-800 cursor-pointer"></select>
+                            <div id="rental-date-wrap" class="hidden">
+                                <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">DATE (Listed Date) *</label>
+                                <input type="date" id="owner-date" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-bold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
                             </div>
-                            <div id="form-price-wrapper">
-                                <label id="form-price-label" class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Monthly Rent (NPR) *</label>
-                                <div class="relative">
-                                    <span class="absolute left-3.5 top-3.5 text-sm font-bold text-slate-400">Rs.</span>
-                                    <input type="number" id="form-price" required min="10" placeholder="15000" class="w-full rounded-xl border border-slate-300 pl-11 pr-4 py-3 text-sm sm:text-base font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+
+                        <!-- =========================================================
+                             RENTAL OWNER GOOGLE SHEET ("owner") EXACT 18-COLUMN FORM
+                             (Active ONLY when Rental Property is selected)
+                             ========================================================= -->
+                        <div id="rental-owner-sheet-fields" class="space-y-6">
+                            <!-- Row A: OWNER ID, CUSTOMER ID, HLSN PRICE -->
+                            <div class="p-4 sm:p-5 rounded-2xl bg-indigo-50/60 border border-indigo-200/80 space-y-4">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 flex items-center gap-1.5">
+                                        <i class="ph-fill ph-table text-base"></i> Google Sheet "owner" Record Tracking
+                                    </span>
+                                    <span class="text-[11px] font-bold text-indigo-600 bg-white px-2.5 py-1 rounded-lg border border-indigo-200">Dharan & Biratnagar Skeleton</span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">OWNER ID *</label>
+                                        <input type="text" id="owner-id" placeholder="e.g., OWN-DH-101" class="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">CUSTOMER ID</label>
+                                        <input type="text" id="owner-customer-id" placeholder="Assigned Customer ID (optional)" class="w-full rounded-xl border border-indigo-200 bg-white px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold uppercase text-slate-600 mb-1">HLSN PRICE (NPR) *</label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-2.5 text-xs font-bold text-slate-400">Rs.</span>
+                                            <input type="number" id="owner-hlsn-price" min="0" placeholder="HomeLink fee / price" class="w-full rounded-xl border border-indigo-200 bg-white pl-9 pr-3 py-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row B: PLAN (Radio: GENERAL, EXCLUSIVE) & SHEET ROW COLOR STATUS -->
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                                <div class="lg:col-span-5">
+                                    <label class="block text-sm font-bold uppercase tracking-wider text-slate-700 mb-2">PLAN *</label>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="owner_plan" value="GENERAL" checked class="peer sr-only">
+                                            <div class="p-3.5 rounded-2xl border-2 border-slate-200 peer-checked:border-brand-600 peer-checked:bg-brand-50 text-center font-extrabold text-sm text-slate-700 peer-checked:text-brand-700 transition">
+                                                GENERAL
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="owner_plan" value="EXCLUSIVE" class="peer sr-only">
+                                            <div class="p-3.5 rounded-2xl border-2 border-slate-200 peer-checked:border-amber-500 peer-checked:bg-amber-50 text-center font-extrabold text-sm text-slate-700 peer-checked:text-amber-800 transition">
+                                                EXCLUSIVE
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="lg:col-span-7">
+                                    <label class="block text-sm font-bold uppercase tracking-wider text-slate-700 mb-2">Sheet Row Color / Availability *</label>
+                                    <div class="grid grid-cols-3 gap-2.5">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="owner_row_color" value="white" checked onchange="handleOwnerRowColorChange(this.value)" class="peer sr-only">
+                                            <div class="p-3 rounded-2xl border-2 border-slate-200 peer-checked:border-slate-900 peer-checked:bg-white text-center transition">
+                                                <span class="block text-xs font-extrabold text-slate-900">White</span>
+                                                <span class="block text-[10px] font-semibold text-slate-500">Available</span>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="owner_row_color" value="green" onchange="handleOwnerRowColorChange(this.value)" class="peer sr-only">
+                                            <div class="p-3 rounded-2xl border-2 border-slate-200 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 text-center transition">
+                                                <span class="block text-xs font-extrabold text-emerald-800">Green</span>
+                                                <span class="block text-[10px] font-semibold text-emerald-700">Filled (HomeLink)</span>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="owner_row_color" value="red" onchange="handleOwnerRowColorChange(this.value)" class="peer sr-only">
+                                            <div class="p-3 rounded-2xl border-2 border-slate-200 peer-checked:border-rose-600 peer-checked:bg-rose-50 text-center transition">
+                                                <span class="block text-xs font-extrabold text-rose-800">Red</span>
+                                                <span class="block text-[10px] font-semibold text-rose-700">Sold (External)</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row C: OWNER NAME, CONTACT NO., OPT.CONTACT NO. -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">OWNER NAME *</label>
+                                    <input type="text" id="owner-name" placeholder="e.g., Ramesh Limbu" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">CONTACT NO. *</label>
+                                    <input type="tel" id="owner-contact" placeholder="98XXXXXXXX" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">OPT.CONTACT NO.</label>
+                                    <input type="tel" id="owner-opt-contact" placeholder="Optional backup phone" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                            </div>
+
+                            <!-- Row D: ADDRESS (Radio Pills: DHARAN 1 TO 20 / BIRATNAGAR 1 TO 19) -->
+                            <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                                <div class="flex items-center justify-between gap-2">
+                                    <label class="block text-sm font-bold uppercase tracking-wider text-slate-700">ADDRESS (Select Ward) *</label>
+                                    <span id="owner-address-city-hint" class="text-xs font-extrabold text-brand-600">DHARAN 1 TO 20</span>
+                                </div>
+                                <div id="owner-address-radio-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2"></div>
+                            </div>
+
+                            <!-- Row E: NEAR LANDMARK & MAP LINK -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">NEAR LANDMARK *</label>
+                                    <input type="text" id="owner-landmark" placeholder="e.g., Near BPKIHS Gate / Traffic Chowk" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">MAP LINK (Google Maps URL)</label>
+                                    <input type="url" id="owner-map-link" placeholder="https://maps.app.goo.gl/..." class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                            </div>
+
+                            <!-- Row F: 4 SEPARATE RADIO COLUMNS: TYPE: ROOM, TYPE: FLAT, TYPE: HOUSE, TYPE: COMMERCIAL -->
+                            <div class="p-4 sm:p-5 rounded-2xl bg-white border-2 border-indigo-200 space-y-4">
+                                <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100">
+                                    <div>
+                                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600">4 Separate Sheet Columns (Radio Groups)</span>
+                                        <h3 class="text-sm sm:text-base font-extrabold text-slate-900">Property Type Columns</h3>
+                                    </div>
+                                    <button type="button" onclick="clearAllOwnerTypeRadios()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition">
+                                        Reset All Types
+                                    </button>
+                                </div>
+
+                                <!-- Column: TYPE: ROOM -->
+                                <div class="p-3.5 rounded-xl bg-indigo-50/50 border border-indigo-100">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="text-xs font-extrabold uppercase tracking-wider text-indigo-900">TYPE: ROOM</label>
+                                        <button type="button" onclick="clearRadioGroup('owner_type_room')" class="text-[11px] font-bold text-slate-500 hover:text-rose-600">Clear</button>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_room" value="1B" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 text-xs font-extrabold transition">1B</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_room" value="1BK" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 text-xs font-extrabold transition">1BK</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_room" value="2B" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 text-xs font-extrabold transition">2B</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_room" value="2BK" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 text-xs font-extrabold transition">2BK</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_room" value="3B" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 text-xs font-extrabold transition">3B</span></label>
+                                    </div>
+                                </div>
+
+                                <!-- Column: TYPE: FLAT -->
+                                <div class="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="text-xs font-extrabold uppercase tracking-wider text-emerald-900">TYPE: FLAT</label>
+                                        <button type="button" onclick="clearRadioGroup('owner_type_flat')" class="text-[11px] font-bold text-slate-500 hover:text-rose-600">Clear</button>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_flat" value="1BHK" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 text-xs font-extrabold transition">1BHK</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_flat" value="2BK" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 text-xs font-extrabold transition">2BK</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_flat" value="2BHK" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 text-xs font-extrabold transition">2BHK</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_flat" value="3BK" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 text-xs font-extrabold transition">3BK</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_flat" value="3BHK" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 text-xs font-extrabold transition">3BHK</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_flat" value="4BHK" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 text-xs font-extrabold transition">4BHK</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_flat" value="4BK" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 text-xs font-extrabold transition">4BK</span></label>
+                                    </div>
+                                </div>
+
+                                <!-- Column: TYPE: HOUSE -->
+                                <div class="p-3.5 rounded-xl bg-amber-50/50 border border-amber-100">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="text-xs font-extrabold uppercase tracking-wider text-amber-900">TYPE: HOUSE</label>
+                                        <button type="button" onclick="clearRadioGroup('owner_type_house')" class="text-[11px] font-bold text-slate-500 hover:text-rose-600">Clear</button>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_house" value="BUILDING" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-amber-600 peer-checked:text-white peer-checked:border-amber-600 text-xs font-extrabold transition">BUILDING</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_house" value="WOODEN" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-amber-600 peer-checked:text-white peer-checked:border-amber-600 text-xs font-extrabold transition">WOODEN</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_house" value="COTTAGE" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-amber-600 peer-checked:text-white peer-checked:border-amber-600 text-xs font-extrabold transition">COTTAGE</span></label>
+                                    </div>
+                                </div>
+
+                                <!-- Column: TYPE: COMMERCIAL -->
+                                <div class="p-3.5 rounded-xl bg-sky-50/50 border border-sky-100">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="text-xs font-extrabold uppercase tracking-wider text-sky-900">TYPE: COMMERCIAL</label>
+                                        <button type="button" onclick="clearRadioGroup('owner_type_commercial')" class="text-[11px] font-bold text-slate-500 hover:text-rose-600">Clear</button>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_commercial" value="ROOM" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-sky-600 peer-checked:text-white peer-checked:border-sky-600 text-xs font-extrabold transition">ROOM</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_commercial" value="SHUTTER" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-sky-600 peer-checked:text-white peer-checked:border-sky-600 text-xs font-extrabold transition">SHUTTER</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_commercial" value="FLAT" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-sky-600 peer-checked:text-white peer-checked:border-sky-600 text-xs font-extrabold transition">FLAT</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_type_commercial" value="LAND" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-sky-600 peer-checked:text-white peer-checked:border-sky-600 text-xs font-extrabold transition">LAND</span></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row G: RENT & FLOOR (Radio) -->
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold uppercase tracking-wider text-slate-700 mb-1.5">RENT (Monthly NPR) *</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3.5 top-3.5 text-sm font-bold text-slate-400">Rs.</span>
+                                        <input type="number" id="owner-rent" min="10" placeholder="e.g., 16000" class="w-full rounded-xl border border-slate-300 pl-11 pr-4 py-3 text-sm sm:text-base font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    </div>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                                    <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-700 mb-2.5">FLOOR *</label>
+                                    <div class="flex flex-wrap gap-2">
+                                        <label class="cursor-pointer"><input type="radio" name="owner_floor" value="UNDERGROUND" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-slate-900 peer-checked:text-white peer-checked:border-slate-900 text-xs font-extrabold transition">UNDERGROUND</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_floor" value="GROUND FLOOR" checked class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-slate-900 peer-checked:text-white peer-checked:border-slate-900 text-xs font-extrabold transition">GROUND FLOOR</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_floor" value="FIRST FLOOR" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-slate-900 peer-checked:text-white peer-checked:border-slate-900 text-xs font-extrabold transition">FIRST FLOOR</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_floor" value="SECOND FLOOR" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-slate-900 peer-checked:text-white peer-checked:border-slate-900 text-xs font-extrabold transition">SECOND FLOOR</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_floor" value="THIRD FLOOR" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-slate-900 peer-checked:text-white peer-checked:border-slate-900 text-xs font-extrabold transition">THIRD FLOOR</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_floor" value="FOURTH FLOOR" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-slate-900 peer-checked:text-white peer-checked:border-slate-900 text-xs font-extrabold transition">FOURTH FLOOR</span></label>
+                                        <label class="cursor-pointer"><input type="radio" name="owner_floor" value="FIFTH FLOOR" class="peer sr-only"><span class="inline-block px-3.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-slate-900 peer-checked:text-white peer-checked:border-slate-900 text-xs font-extrabold transition">FIFTH FLOOR</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Standard Fields for Jobs & Home Services (Hidden when Rentals is active) -->
+                        <div id="non-rental-standard-fields" class="hidden space-y-6">
+                            <div>
+                                <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">3. Listing Title *</label>
+                                <input type="text" id="form-title" placeholder="e.g., Senior Tally Accountant / Emergency Plumber" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div id="form-subtype-wrapper">
+                                    <label id="form-subtype-label" class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Type *</label>
+                                    <select id="form-subtype" class="w-full rounded-xl border border-slate-300 bg-slate-50/60 hover:bg-white px-4 py-3 text-sm sm:text-base font-bold text-slate-800 cursor-pointer"></select>
+                                </div>
+                                <div id="form-price-wrapper">
+                                    <label id="form-price-label" class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Monthly Salary / Rate (NPR) *</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3.5 top-3.5 text-sm font-bold text-slate-400">Rs.</span>
+                                        <input type="number" id="form-price" min="10" placeholder="15000" class="w-full rounded-xl border border-slate-300 pl-11 pr-4 py-3 text-sm sm:text-base font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Provider / Employer Name *</label>
+                                    <input type="text" id="form-contact-name" placeholder="e.g., Ramesh Limbu" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Phone / WhatsApp Number *</label>
+                                    <input type="tel" id="form-phone" placeholder="98420XXXXX" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
                                 </div>
                             </div>
                         </div>
@@ -1093,8 +1325,8 @@
                         <div id="form-staff-rental-specs" class="hidden p-4 sm:p-5 rounded-2xl bg-indigo-50/80 border-2 border-indigo-200 space-y-4">
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <div>
-                                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-700">Employee & Owner Verification Details</span>
-                                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900">Rental Property Specifications & Facilities</h3>
+                                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-700">Staff Authentication Details</span>
+                                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900">Additional Rental Facilities (Website Display)</h3>
                                 </div>
                                 <span class="px-2.5 py-1 rounded-lg bg-white border border-indigo-200 text-xs font-bold text-indigo-700">Authenticated Specs</span>
                             </div>
@@ -1159,17 +1391,6 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Provider / Owner Name *</label>
-                                <input type="text" id="form-contact-name" required placeholder="e.g., Ramesh Limbu" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Phone / WhatsApp Number *</label>
-                                <input type="tel" id="form-phone" required placeholder="98420XXXXX" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
-                            </div>
-                        </div>
-
                         <div>
                             <label class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Facilities / Highlights (comma separated)</label>
                             <input type="text" id="form-tags" placeholder="e.g., Car Parking, 24hr Water, 1st Floor, Wi-Fi" class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500">
@@ -1218,8 +1439,8 @@
                         </div>
 
                         <div>
-                            <label id="form-description-label" class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">Full Description *</label>
-                            <textarea id="form-description" rows="4" required placeholder="Describe exact location, room count, floor, water/parking facilities, and rental terms..." class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                            <label id="form-description-label" class="block text-sm sm:text-base font-bold uppercase tracking-wider text-slate-700 mb-1.5">DESCRIPTION (Important Property & Owner Notes) *</label>
+                            <textarea id="form-description" rows="4" required placeholder="Important notes about the property, owner terms, water/parking, and tenant preferences..." class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm sm:text-base text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
                         </div>
 
                         <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
@@ -1873,11 +2094,15 @@
                         </button>
                         <button type="button" onclick="switchStaffTab('listings')" id="staff-tab-listings" class="shrink-0 px-4 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200">
                             <i class="ph-bold ph-list-checks text-base"></i>
-                            <span>4. All Listings</span>
+                            <span>4. Separated Listings</span>
                         </button>
                         <button type="button" onclick="switchStaffTab('employees')" id="staff-tab-employees" class="shrink-0 px-4 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200">
                             <i class="ph-bold ph-users-three text-base"></i>
                             <span>5. Staff Directory</span>
+                        </button>
+                        <button type="button" onclick="switchStaffTab('database')" id="staff-tab-database" class="hidden shrink-0 px-4 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition flex items-center gap-2 bg-amber-100 text-amber-900 hover:bg-amber-200 border border-amber-300">
+                            <i class="ph-fill ph-database text-base text-amber-600"></i>
+                            <span>6. Cloud Database Explorer</span>
                         </button>
                     </div>
 
@@ -1996,87 +2221,13 @@
                 </div>
 
                 <!-- =========================================================
-                     PANEL 1: RENTAL QUERIES QUEUE (For Rental Division Staff)
+                     PANEL 4: SEPARATED LISTINGS (1. Rental Listings, 2. Job Listings, 3. Service Listings)
                      ========================================================= -->
-                <div id="staff-panel-rental-queries" class="bg-white rounded-3xl border-2 border-indigo-100 p-6 sm:p-8 shadow-sm">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-slate-100">
-                        <div class="flex items-center gap-3.5">
-                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-2xl shadow-md shadow-indigo-600/25 shrink-0">
-                                <i class="ph-fill ph-house-line"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-800 text-xs font-extrabold uppercase">Department 1</span>
-                                    <span class="text-xs sm:text-sm font-bold text-slate-500">Lead Coordinator: <strong>Pratima Rai (Dharan & BRT)</strong></span>
-                                </div>
-                                <h3 class="font-extrabold text-slate-900 text-xl sm:text-2xl mt-0.5">Rental Property & Room Inspection Queries</h3>
-                                <p class="text-xs sm:text-sm text-slate-500">Tenant room/flat visit requests, BPKIHS apartment inquiries, and landlord callbacks.</p>
-                            </div>
-                        </div>
-                        <button type="button" onclick="openPostPage('Rentals')" class="self-start sm:self-auto px-4 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold text-xs sm:text-sm transition shrink-0">
-                            + Post New Rental Property
-                        </button>
-                    </div>
-                    <div id="staff-rental-queries-list" class="space-y-4"></div>
-                </div>
-
-                <!-- =========================================================
-                     PANEL 2: JOB QUERIES QUEUE (For Job Placement Staff)
-                     ========================================================= -->
-                <div id="staff-panel-job-queries" class="hidden bg-white rounded-3xl border-2 border-emerald-100 p-6 sm:p-8 shadow-sm">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-slate-100">
-                        <div class="flex items-center gap-3.5">
-                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-2xl shadow-md shadow-emerald-600/25 shrink-0">
-                                <i class="ph-fill ph-briefcase"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-xs font-extrabold uppercase">Department 2</span>
-                                    <span class="text-xs sm:text-sm font-bold text-slate-500">Lead Coordinator: <strong>Rakesh Pokharel (Biratnagar & Dharan)</strong></span>
-                                </div>
-                                <h3 class="font-extrabold text-slate-900 text-xl sm:text-2xl mt-0.5">Job Applicant & Employer Hiring Queries</h3>
-                                <p class="text-xs sm:text-sm text-slate-500">Candidate interview requests, CV follow-ups, and local business staff requirements.</p>
-                            </div>
-                        </div>
-                        <button type="button" onclick="openPostPage('Jobs')" class="self-start sm:self-auto px-4 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-extrabold text-xs sm:text-sm transition shrink-0">
-                            + Post New Job Vacancy
-                        </button>
-                    </div>
-                    <div id="staff-job-queries-list" class="space-y-4"></div>
-                </div>
-
-                <!-- =========================================================
-                     PANEL 3: HOME SERVICE QUERIES QUEUE (For Service Dispatch Staff)
-                     ========================================================= -->
-                <div id="staff-panel-service-queries" class="hidden bg-white rounded-3xl border-2 border-amber-100 p-6 sm:p-8 shadow-sm">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-slate-100">
-                        <div class="flex items-center gap-3.5">
-                            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-2xl shadow-md shadow-amber-500/25 shrink-0">
-                                <i class="ph-fill ph-wrench"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-900 text-xs font-extrabold uppercase">Department 3</span>
-                                    <span class="text-xs sm:text-sm font-bold text-slate-500">Lead Supervisor: <strong>Binod Mandal (24/7 Dispatch)</strong></span>
-                                </div>
-                                <h3 class="font-extrabold text-slate-900 text-xl sm:text-2xl mt-0.5">Home Service Booking & Technician Dispatch Queries</h3>
-                                <p class="text-xs sm:text-sm text-slate-500">Plumbing, Electrician, AC Repair, Painting, and Carpentry doorstep service dispatches.</p>
-                            </div>
-                        </div>
-                        <button type="button" onclick="openPostPage('Services')" class="self-start sm:self-auto px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold text-xs sm:text-sm transition shrink-0">
-                            + Register Service Pro
-                        </button>
-                    </div>
-                    <div id="staff-service-queries-list" class="space-y-4"></div>
-                </div>
-
-                <!-- =========================================================
-                     PANEL 4: MANAGE ALL LISTINGS (Approve / Filter by Dept / Delete)
-                     ========================================================= -->
-                <div id="staff-panel-listings" class="hidden bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-                    <div class="p-6 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div id="staff-panel-listings" class="hidden space-y-6">
+                    <!-- Top Header & Pending Alert -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm flex flex-wrap items-center justify-between gap-4">
                         <div>
-                            <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl">All Platform Listings (Rentals, Jobs & Services)</h3>
+                            <h3 class="font-extrabold text-slate-900 text-lg sm:text-xl">Separated Platform Listings (Rentals • Jobs • Services)</h3>
                             <p class="text-sm sm:text-base text-slate-500">Click any pending property to open its property form and authenticate it.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
@@ -2085,27 +2236,111 @@
                                 <span id="staff-pending-props-alert-text">0 Pending Properties — Open Form</span>
                             </button>
                             <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl">
-                                <button type="button" onclick="setStaffListingCategoryFilter('All')" id="staff-list-cat-All" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-white text-slate-900 shadow-sm">All</button>
-                                <button type="button" onclick="setStaffListingCategoryFilter('Rentals')" id="staff-list-cat-Rentals" class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600">Rentals</button>
-                                <button type="button" onclick="setStaffListingCategoryFilter('Jobs')" id="staff-list-cat-Jobs" class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600">Jobs</button>
-                                <button type="button" onclick="setStaffListingCategoryFilter('Services')" id="staff-list-cat-Services" class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600">Services</button>
+                                <button type="button" onclick="setStaffListingCategoryFilter('All')" id="staff-list-cat-All" class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-white text-slate-900 shadow-sm">Show All 3 Tables</button>
+                                <button type="button" onclick="setStaffListingCategoryFilter('Rentals')" id="staff-list-cat-Rentals" class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600">1. Rentals Only</button>
+                                <button type="button" onclick="setStaffListingCategoryFilter('Jobs')" id="staff-list-cat-Jobs" class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600">2. Jobs Only</button>
+                                <button type="button" onclick="setStaffListingCategoryFilter('Services')" id="staff-list-cat-Services" class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600">3. Services Only</button>
                             </div>
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-sm">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                                    <th class="py-3.5 px-5">Listing & Contact</th>
-                                    <th class="py-3.5 px-5">Category</th>
-                                    <th class="py-3.5 px-5">Branch Location</th>
-                                    <th class="py-3.5 px-5">Rate / Salary</th>
-                                    <th class="py-3.5 px-5">Status</th>
-                                    <th class="py-3.5 px-5 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="staff-listings-tbody" class="divide-y divide-slate-100"></tbody>
-                        </table>
+
+                    <!-- 4A. RENTAL PROPERTIES TABLE -->
+                    <div id="staff-listings-box-Rentals" class="bg-white rounded-3xl border-2 border-indigo-100 overflow-hidden shadow-sm">
+                        <div class="p-5 sm:p-6 bg-indigo-50/50 border-b border-indigo-100 flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-lg shadow-sm">
+                                    <i class="ph-fill ph-house-line"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600">Table 4A • Rentals</span>
+                                    <h4 class="font-extrabold text-slate-900 text-base sm:text-lg">Rental Properties & Flats (<span id="staff-count-rentals">0</span>)</h4>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPostPage('Rentals')" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold transition">
+                                + Add Rental Property
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                                        <th class="py-3.5 px-5">Property & Owner</th>
+                                        <th class="py-3.5 px-5">Property Type</th>
+                                        <th class="py-3.5 px-5">Branch Location</th>
+                                        <th class="py-3.5 px-5">Monthly Rent</th>
+                                        <th class="py-3.5 px-5">Status</th>
+                                        <th class="py-3.5 px-5 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staff-listings-tbody-Rentals" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 4B. JOB VACANCIES TABLE -->
+                    <div id="staff-listings-box-Jobs" class="bg-white rounded-3xl border-2 border-emerald-100 overflow-hidden shadow-sm">
+                        <div class="p-5 sm:p-6 bg-emerald-50/50 border-b border-emerald-100 flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-sm">
+                                    <i class="ph-fill ph-briefcase"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-600">Table 4B • Jobs</span>
+                                    <h4 class="font-extrabold text-slate-900 text-base sm:text-lg">Local Job Vacancies (<span id="staff-count-jobs">0</span>)</h4>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPostPage('Jobs')" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition">
+                                + Add Job Vacancy
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                                        <th class="py-3.5 px-5">Job Title & Employer</th>
+                                        <th class="py-3.5 px-5">Shift / Type</th>
+                                        <th class="py-3.5 px-5">Branch Location</th>
+                                        <th class="py-3.5 px-5">Monthly Salary</th>
+                                        <th class="py-3.5 px-5">Status</th>
+                                        <th class="py-3.5 px-5 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staff-listings-tbody-Jobs" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 4C. HOME SERVICES TABLE -->
+                    <div id="staff-listings-box-Services" class="bg-white rounded-3xl border-2 border-amber-100 overflow-hidden shadow-sm">
+                        <div class="p-5 sm:p-6 bg-amber-50/50 border-b border-amber-100 flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg shadow-sm">
+                                    <i class="ph-fill ph-wrench"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-700">Table 4C • Home Services</span>
+                                    <h4 class="font-extrabold text-slate-900 text-base sm:text-lg">Home Service Professionals (<span id="staff-count-services">0</span>)</h4>
+                                </div>
+                            </div>
+                            <button type="button" onclick="openPostPage('Services')" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold transition">
+                                + Register Service Pro
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                                        <th class="py-3.5 px-5">Service & Technician</th>
+                                        <th class="py-3.5 px-5">Specialty</th>
+                                        <th class="py-3.5 px-5">Branch Location</th>
+                                        <th class="py-3.5 px-5">Visit Rate</th>
+                                        <th class="py-3.5 px-5">Status</th>
+                                        <th class="py-3.5 px-5 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staff-listings-tbody-Services" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -2172,6 +2407,157 @@
                         </form>
                     </div>
                 </div>
+
+                <!-- =========================================================
+                     PANEL 6: OWNER CLOUD DATABASE EXPLORER (Owner Only)
+                     ========================================================= -->
+                <div id="staff-panel-database" class="hidden space-y-6">
+                    <!-- Google Sheets ("owner" tab) 2-Way Sync Panel for Rentals -->
+                    <div class="bg-emerald-950 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-emerald-800/80 space-y-4">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                            <div>
+                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 text-xs font-extrabold uppercase tracking-wider mb-1.5">
+                                    <i class="ph-fill ph-google-logo"></i> Rental Owner Google Sheet Sync ("owner" tab)
+                                </div>
+                                <h3 class="text-lg sm:text-xl font-extrabold">2-Way Sync with Your Google Sheet ("owner")</h3>
+                                <p class="text-xs sm:text-sm text-emerald-200/90 mt-0.5">Pull existing rows so HomeLink starts right where your Google Sheet left behind, and auto-append new rental owner records.</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" onclick="toggleOwnerAppsScriptDrawer()" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition">
+                                    <i class="ph-bold ph-code"></i> Apps Script Setup Code
+                                </button>
+                                <button type="button" onclick="pullFromOwnerGoogleSheet()" class="px-4 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm">
+                                    <i class="ph-bold ph-cloud-arrow-down"></i> Pull from "owner" Sheet
+                                </button>
+                                <button type="button" onclick="pushAllRentalsToOwnerSheet()" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm">
+                                    <i class="ph-bold ph-cloud-arrow-up"></i> Push Rentals to Sheet
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
+                            <div class="lg:col-span-9">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-emerald-300 mb-1">Google Apps Script Web App URL (ends with /exec)</label>
+                                <input type="url" id="gsheet-owner-webapp-url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full rounded-xl bg-slate-900/90 border border-emerald-700 px-4 py-2.5 text-xs sm:text-sm font-mono text-white placeholder-slate-400 focus:outline-none focus:border-emerald-400">
+                            </div>
+                            <div class="lg:col-span-3 flex items-center gap-2">
+                                <button type="button" onclick="saveOwnerSheetWebAppUrl()" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs sm:text-sm transition">
+                                    Save & Connect URL
+                                </button>
+                            </div>
+                        </div>
+                        <div id="gsheet-owner-status-line" class="text-xs font-mono text-emerald-300/90">
+                            Status: Paste your Apps Script Web App URL above to connect your "owner" tab (18 columns).
+                        </div>
+
+                        <!-- Collapsible Copy-Ready Google Apps Script Drawer -->
+                        <div id="gsheet-apps-script-drawer" class="hidden pt-4 border-t border-emerald-800/80 space-y-3">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="text-xs font-extrabold text-amber-300">Paste into Google Sheets → Extensions → Apps Script → Deploy as Web App (Access: Anyone)</span>
+                                <button type="button" onclick="copyOwnerAppsScriptCode()" class="px-3.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold flex items-center gap-1.5 transition">
+                                    <i class="ph-bold ph-copy"></i> Copy Apps Script Code
+                                </button>
+                            </div>
+                            <textarea id="gsheet-apps-script-code" readonly rows="10" class="w-full font-mono text-[11px] sm:text-xs bg-slate-950 text-emerald-300 p-4 rounded-2xl border border-emerald-800 focus:outline-none"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+                            <div>
+                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-extrabold uppercase tracking-wider mb-2">
+                                    <i class="ph-fill ph-database"></i> Owner Master Database Console
+                                </div>
+                                <h3 class="text-xl sm:text-2xl font-extrabold">Live Cloud Database Explorer & Editor</h3>
+                                <p class="text-xs sm:text-sm text-slate-400 mt-1">Directly inspect, search, edit raw JSON documents, or export/import separated tables (<code class="text-indigo-400">rentals</code>, <code class="text-emerald-400">jobs</code>, <code class="text-amber-400">services</code>, <code class="text-sky-400">employees</code>, <code class="text-rose-400">inquiries</code>).</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2.5">
+                                <button type="button" onclick="exportFullDatabaseJson()" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm">
+                                    <i class="ph-bold ph-download-simple text-base"></i> Export Full DB (.JSON)
+                                </button>
+                                <label class="cursor-pointer px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition">
+                                    <i class="ph-bold ph-upload-simple text-base"></i> Import JSON Backup
+                                    <input type="file" accept=".json,application/json" onchange="importFullDatabaseJson(this)" class="hidden">
+                                </label>
+                                <button type="button" onclick="openDbRecordModal()" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition">
+                                    <i class="ph-bold ph-plus-circle text-base"></i> + New Document
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Separated Collection Switcher & Search Filter -->
+                        <div class="pt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" onclick="setDbExplorerCollection('rentals')" id="db-col-btn-rentals" class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-emerald-500 text-slate-950 transition flex items-center gap-2">
+                                    <i class="ph-fill ph-house-line"></i>
+                                    <span>1. rentals</span>
+                                    <span id="db-count-rentals" class="px-2 py-0.5 rounded-full bg-slate-950/20 text-xs">0</span>
+                                </button>
+                                <button type="button" onclick="setDbExplorerCollection('jobs')" id="db-col-btn-jobs" class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white/10 text-slate-300 hover:bg-white/20 transition flex items-center gap-2">
+                                    <i class="ph-fill ph-briefcase"></i>
+                                    <span>2. jobs</span>
+                                    <span id="db-count-jobs" class="px-2 py-0.5 rounded-full bg-white/10 text-xs">0</span>
+                                </button>
+                                <button type="button" onclick="setDbExplorerCollection('services')" id="db-col-btn-services" class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white/10 text-slate-300 hover:bg-white/20 transition flex items-center gap-2">
+                                    <i class="ph-fill ph-wrench"></i>
+                                    <span>3. services</span>
+                                    <span id="db-count-services" class="px-2 py-0.5 rounded-full bg-white/10 text-xs">0</span>
+                                </button>
+                                <button type="button" onclick="setDbExplorerCollection('employees')" id="db-col-btn-employees" class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white/10 text-slate-300 hover:bg-white/20 transition flex items-center gap-2">
+                                    <i class="ph-fill ph-users-three"></i>
+                                    <span>4. employees</span>
+                                    <span id="db-count-employees" class="px-2 py-0.5 rounded-full bg-white/10 text-xs">0</span>
+                                </button>
+                                <button type="button" onclick="setDbExplorerCollection('inquiries')" id="db-col-btn-inquiries" class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white/10 text-slate-300 hover:bg-white/20 transition flex items-center gap-2">
+                                    <i class="ph-fill ph-chat-circle-text"></i>
+                                    <span>5. inquiries</span>
+                                    <span id="db-count-inquiries" class="px-2 py-0.5 rounded-full bg-white/10 text-xs">0</span>
+                                </button>
+                            </div>
+
+                            <div class="relative flex-1 max-w-md">
+                                <i class="ph-bold ph-magnifying-glass text-slate-400 absolute left-3.5 top-3"></i>
+                                <input type="search" id="db-explorer-search" oninput="renderOwnerDatabaseExplorer()" placeholder="Filter documents by ID, title, name, city, phone..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:border-emerald-400">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inline JSON Document Editor Box (Collapsible) -->
+                    <div id="db-json-editor-box" class="hidden bg-white rounded-3xl border-2 border-amber-400 p-6 sm:p-7 shadow-xl space-y-4">
+                        <div class="flex items-center justify-between gap-2">
+                            <div>
+                                <span id="db-editor-collection-badge" class="text-xs font-extrabold uppercase tracking-wider text-amber-700">Collection: listings</span>
+                                <h4 id="db-editor-heading" class="text-lg sm:text-xl font-extrabold text-slate-900">Edit Document JSON</h4>
+                            </div>
+                            <button type="button" onclick="closeDbRecordModal()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700">
+                                <i class="ph-bold ph-x"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-500">Modify any field below in valid JSON format and click <strong>Save to Cloud Database</strong> to immediately update the live state and sync with Firestore.</p>
+                        <textarea id="db-json-textarea" rows="12" spellcheck="false" class="w-full font-mono text-xs sm:text-sm bg-slate-950 text-emerald-300 p-4 rounded-2xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400"></textarea>
+                        <div class="flex items-center justify-end gap-3">
+                            <button type="button" onclick="closeDbRecordModal()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs sm:text-sm hover:bg-slate-100">
+                                Cancel
+                            </button>
+                            <button type="button" onclick="saveDbRecordFromJsonEditor()" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center gap-1.5">
+                                <i class="ph-bold ph-cloud-arrow-up text-base"></i>
+                                <span>Save to Cloud Database</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Live Collection Table -->
+                    <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                                <thead>
+                                    <tr id="db-explorer-thead-row" class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold uppercase tracking-wider text-slate-500"></tr>
+                                </thead>
+                                <tbody id="db-explorer-tbody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -2184,6 +2570,10 @@
                 <span>HomeLink Services Network Pvt. Ltd. • Dharan & Biratnagar</span>
             </div>
             <div class="flex items-center gap-4">
+                <span id="cloud-sync-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 text-xs font-bold">
+                    <span id="cloud-sync-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+                    <span id="cloud-sync-text">Connecting Cloud DB...</span>
+                </span>
                 <button type="button" onclick="navigateTo('page-home')" class="hover:text-white transition">Home</button>
                 <button type="button" onclick="openProtectedServicePage('page-rentals')" class="hover:text-white transition">Rentals</button>
                 <button type="button" onclick="openProtectedServicePage('page-jobs')" class="hover:text-white transition">Jobs</button>
@@ -2193,16 +2583,160 @@
         </div>
     </footer>
 
+    <!-- Real-Time Cloud Database Bridge (Firebase Firestore) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        async function initHomeLinkCloudDatabase() {
+            const setCloudStatus = (online, label) => {
+                const dot = document.getElementById('cloud-sync-dot');
+                const txt = document.getElementById('cloud-sync-text');
+                if (dot) dot.className = `w-2 h-2 rounded-full ${online ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400'}`;
+                if (txt) txt.textContent = label;
+            };
+
+            try {
+                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+                    setCloudStatus(false, 'Session Memory Mode');
+                    return;
+                }
+
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'homelink-koshi';
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                // Authenticate BEFORE any Firestore read/write (Mandatory Rule 3)
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                const user = auth.currentUser;
+                if (!user) {
+                    setCloudStatus(false, 'Session Memory Mode');
+                    return;
+                }
+
+                // Strict public artifact collection paths (Mandatory Rule 1)
+                const listingsCol = collection(db, 'artifacts', appId, 'public', 'data', 'listings');
+                const employeesCol = collection(db, 'artifacts', appId, 'public', 'data', 'employees');
+                const inquiriesCol = collection(db, 'artifacts', appId, 'public', 'data', 'inquiries');
+
+                let seededListings = false;
+                let seededEmployees = false;
+                let seededInquiries = false;
+
+                // Expose Cloud Sync API to main application script
+                window.HomeLinkCloudDB = {
+                    enabled: true,
+                    async upsertListing(item) {
+                        if (!auth.currentUser || !item || !item.id) return;
+                        const payload = {
+                            ...item,
+                            tags: Array.isArray(item.tags) ? item.tags : [],
+                            rentalDetails: item.rentalDetails || null
+                        };
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'listings', item.id), payload);
+                    },
+                    async removeListing(id) {
+                        if (!auth.currentUser || !id) return;
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'listings', id));
+                    },
+                    async upsertEmployee(emp) {
+                        if (!auth.currentUser || !emp || !emp.id) return;
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'employees', emp.id), { ...emp });
+                    },
+                    async upsertInquiry(inq) {
+                        if (!auth.currentUser || !inq || !inq.id) return;
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inquiries', inq.id), { ...inq });
+                    },
+                    async removeEmployee(id) {
+                        if (!auth.currentUser || !id) return;
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'employees', id));
+                    },
+                    async removeInquiry(id) {
+                        if (!auth.currentUser || !id) return;
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inquiries', id));
+                    },
+                    async seedDefaults() {
+                        if (!auth.currentUser) return;
+                        for (const item of window.INITIAL_LISTINGS_SEED || []) {
+                            await this.upsertListing(item);
+                        }
+                        for (const emp of window.INITIAL_EMPLOYEES_SEED || []) {
+                            await this.upsertEmployee(emp);
+                        }
+                        for (const inq of window.INITIAL_INQUIRIES_SEED || []) {
+                            await this.upsertInquiry(inq);
+                        }
+                    }
+                };
+
+                // Simple collection listeners without orderBy/where/limit (Mandatory Rule 2)
+                onSnapshot(listingsCol, (snapshot) => {
+                    if (snapshot.empty && !seededListings) {
+                        seededListings = true;
+                        window.HomeLinkCloudDB.seedDefaults();
+                        return;
+                    }
+                    const remoteListings = [];
+                    snapshot.forEach(d => remoteListings.push(d.data()));
+                    if (remoteListings.length > 0 && typeof window.applyCloudListings === 'function') {
+                        window.applyCloudListings(remoteListings);
+                    }
+                }, (err) => {
+                    console.warn('Listings snapshot warning:', err);
+                });
+
+                onSnapshot(employeesCol, (snapshot) => {
+                    if (snapshot.empty && !seededEmployees) {
+                        seededEmployees = true;
+                        window.HomeLinkCloudDB.seedDefaults();
+                        return;
+                    }
+                    const remoteEmployees = [];
+                    snapshot.forEach(d => remoteEmployees.push(d.data()));
+                    if (remoteEmployees.length > 0 && typeof window.applyCloudEmployees === 'function') {
+                        window.applyCloudEmployees(remoteEmployees);
+                    }
+                }, (err) => {
+                    console.warn('Employees snapshot warning:', err);
+                });
+
+                onSnapshot(inquiriesCol, (snapshot) => {
+                    if (snapshot.empty && !seededInquiries) {
+                        seededInquiries = true;
+                        window.HomeLinkCloudDB.seedDefaults();
+                        return;
+                    }
+                    const remoteInquiries = [];
+                    snapshot.forEach(d => remoteInquiries.push(d.data()));
+                    if (remoteInquiries.length > 0 && typeof window.applyCloudInquiries === 'function') {
+                        window.applyCloudInquiries(remoteInquiries);
+                    }
+                }, (err) => {
+                    console.warn('Inquiries snapshot warning:', err);
+                });
+
+                setCloudStatus(true, 'Live Cloud DB Synced');
+            } catch (err) {
+                console.warn('Cloud DB initialization fallback:', err);
+                setCloudStatus(false, 'Session Memory Mode');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', initHomeLinkCloudDatabase);
+    </script>
+
     <script>
         // ==========================================
-        // STORAGE KEYS & INITIAL SEED DATA
+        // IN-MEMORY STATE & INITIAL SEED DATA
         // ==========================================
-        const STORAGE_KEY_LISTINGS = 'homelink_koshi_listings_v1';
-        const STORAGE_KEY_EMPLOYEES = 'homelink_koshi_employees_v1';
-        const STORAGE_KEY_INQUIRIES = 'homelink_koshi_inquiries_v1';
-        const STORAGE_KEY_SAVED = 'homelink_koshi_saved_v1';
-        const STORAGE_KEY_AUTH = 'homelink_koshi_auth_v1';
-
         const INITIAL_LISTINGS = [
             {
                 id: 'hl-101',
@@ -2490,33 +3024,495 @@
         let staffQueryCityFilter = 'All';
         let staffQueryStatusFilter = 'All';
         let staffListingCategoryFilter = 'All';
+        let dbExplorerCollection = 'rentals';
         let pendingRouteAfterLogin = null;
+        let ownerSheetWebAppUrl = '';
 
-        function loadStateFromStorage() {
-            try {
-                listings = JSON.parse(localStorage.getItem(STORAGE_KEY_LISTINGS)) || [...INITIAL_LISTINGS];
-                employees = JSON.parse(localStorage.getItem(STORAGE_KEY_EMPLOYEES)) || [...INITIAL_EMPLOYEES];
-                inquiries = JSON.parse(localStorage.getItem(STORAGE_KEY_INQUIRIES)) || [...INITIAL_INQUIRIES];
-                savedIds = JSON.parse(localStorage.getItem(STORAGE_KEY_SAVED)) || [];
-                currentUser = JSON.parse(localStorage.getItem(STORAGE_KEY_AUTH)) || null;
-            } catch (err) {
-                listings = [...INITIAL_LISTINGS];
-                employees = [...INITIAL_EMPLOYEES];
-                inquiries = [...INITIAL_INQUIRIES];
-                savedIds = [];
-                currentUser = null;
+        const OWNER_SHEET_COLUMNS = [
+            'DATE', 'OWNER ID', 'CUSTOMER ID', 'PLAN', 'HLSN PRICE', 'OWNER NAME',
+            'ADDRESS', 'NEAR LANDMARK', 'MAP LINK', 'CONTACT NO.', 'OPT.CONTACT NO.',
+            'TYPE: ROOM', 'TYPE: FLAT', 'TYPE: HOUSE', 'TYPE: COMMERCIAL',
+            'RENT', 'FLOOR', 'DESCRIPTION'
+        ];
+
+        const OWNER_APPS_SCRIPT_TEMPLATE = `const SHEET_NAME = 'owner';
+const HEADERS = [
+  'DATE','OWNER ID','CUSTOMER ID','PLAN','HLSN PRICE','OWNER NAME',
+  'ADDRESS','NEAR LANDMARK','MAP LINK','CONTACT NO.','OPT.CONTACT NO.',
+  'TYPE: ROOM','TYPE: FLAT','TYPE: HOUSE','TYPE: COMMERCIAL',
+  'RENT','FLOOR','DESCRIPTION'
+];
+
+function getOwnerSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(SHEET_NAME);
+  if (!sh) sh = ss.insertSheet(SHEET_NAME);
+  if (sh.getLastRow() === 0) sh.appendRow(HEADERS);
+  return sh;
+}
+
+function doGet(e) {
+  const sh = getOwnerSheet_();
+  const range = sh.getDataRange();
+  const data = range.getValues();
+  const backgrounds = range.getBackgrounds();
+  if (data.length < 2) {
+    return ContentService.createTextOutput(JSON.stringify({ ok: true, rows: [] }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  const headers = data[0].map(h => String(h).trim());
+  const ownerIdCol = Math.max(0, headers.indexOf('OWNER ID'));
+  const rows = [];
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (row.every(c => String(c).trim() === '')) continue;
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = row[idx]; });
+    const hex = String(backgrounds[i][ownerIdCol] || backgrounds[i][0] || '#ffffff').toLowerCase();
+    obj['_ROW_COLOR'] = classifyRowHex_(hex);
+    if (obj['_ROW_COLOR'] === 'red') obj['CUSTOMER ID'] = '';
+    rows.push(obj);
+  }
+  return ContentService.createTextOutput(JSON.stringify({ ok: true, rows }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function classifyRowHex_(hex) {
+  const clean = hex.replace('#', '');
+  if (clean.length !== 6) return 'white';
+  const r = parseInt(clean.substr(0, 2), 16);
+  const g = parseInt(clean.substr(2, 2), 16);
+  const b = parseInt(clean.substr(4, 2), 16);
+  if (r > 235 && g > 235 && b > 235) return 'white';
+  if (g > r + 20 && g >= b) return 'green';
+  if (r > g + 20 && r > b + 20) return 'red';
+  return 'white';
+}
+
+function doPost(e) {
+  const sh = getOwnerSheet_();
+  const payload = JSON.parse(e.postData.contents || '{}');
+  const incoming = Array.isArray(payload.rows) ? payload.rows : (payload.row ? [payload.row] : []);
+  const data = sh.getDataRange().getValues();
+  const headers = data[0].map(h => String(h).trim());
+  const ownerIdCol = headers.indexOf('OWNER ID');
+
+  incoming.forEach(rec => {
+    const colorKey = String(rec['_ROW_COLOR'] || 'white').toLowerCase();
+    if (colorKey === 'red') rec['CUSTOMER ID'] = '';
+    const rowValues = HEADERS.map(h => rec[h] !== undefined && rec[h] !== null ? rec[h] : '');
+    let matchedRow = -1;
+    if (ownerIdCol !== -1 && rec['OWNER ID']) {
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][ownerIdCol]).trim() === String(rec['OWNER ID']).trim()) {
+          matchedRow = i + 1;
+          break;
+        }
+      }
+    }
+    const targetRow = matchedRow > 1 ? matchedRow : sh.getLastRow() + 1;
+    const rowRange = sh.getRange(targetRow, 1, 1, HEADERS.length);
+    rowRange.setValues([rowValues]);
+    const bgHex = colorKey === 'green' ? '#d9ead3' : colorKey === 'red' ? '#f4cccc' : '#ffffff';
+    rowRange.setBackground(bgHex);
+  });
+
+  return ContentService.createTextOutput(JSON.stringify({ ok: true, saved: incoming.length }))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+        function normalizeOwnerRowColor(rawColor) {
+            const c = String(rawColor || 'white').trim().toLowerCase();
+            if (c === 'green' || c === 'filled_homelink') return 'green';
+            if (c === 'red' || c === 'sold_external') return 'red';
+            return 'white';
+        }
+
+        function isListingAvailableForPublic(item) {
+            if (!item || item.category !== 'Rentals') return true;
+            const color = normalizeOwnerRowColor(
+                item.sheetRowColor || (item.ownerSheetRecord && item.ownerSheetRecord['_ROW_COLOR']) || 'white'
+            );
+            return color === 'white';
+        }
+
+        function handleOwnerRowColorChange(colorVal) {
+            const norm = normalizeOwnerRowColor(colorVal);
+            const custInp = document.getElementById('owner-customer-id');
+            if (!custInp) return;
+            if (norm === 'red') {
+                custInp.value = '';
+                custInp.disabled = true;
+                custInp.placeholder = 'Locked (Red: Not filled by HomeLink)';
+            } else {
+                custInp.disabled = false;
+                custInp.placeholder = norm === 'green' ? 'Required: HomeLink Customer ID' : 'Assigned Customer ID (optional)';
             }
         }
 
-        function saveState() {
+        function getCheckedRadioValue(name) {
+            const el = document.querySelector(`input[name="${name}"]:checked`);
+            return el ? el.value : '';
+        }
+
+        function setCheckedRadioValue(name, val) {
+            document.querySelectorAll(`input[name="${name}"]`).forEach(el => {
+                el.checked = Boolean(val) && String(el.value).toUpperCase() === String(val).toUpperCase();
+            });
+        }
+
+        function clearRadioGroup(name) {
+            document.querySelectorAll(`input[name="${name}"]`).forEach(el => {
+                el.checked = false;
+            });
+        }
+
+        function clearAllOwnerTypeRadios() {
+            clearRadioGroup('owner_type_room');
+            clearRadioGroup('owner_type_flat');
+            clearRadioGroup('owner_type_house');
+            clearRadioGroup('owner_type_commercial');
+        }
+
+        function renderOwnerAddressRadios(city, selectedAddress = '') {
+            const grid = document.getElementById('owner-address-radio-grid');
+            const hint = document.getElementById('owner-address-city-hint');
+            if (!grid) return;
+            const isBrt = city === 'Biratnagar';
+            const prefix = isBrt ? 'BIRATNAGAR' : 'DHARAN';
+            const maxWard = isBrt ? 19 : 20;
+            if (hint) hint.textContent = `${prefix} 1 TO ${maxWard}`;
+
+            let html = '';
+            for (let w = 1; w <= maxWard; w++) {
+                const label = `${prefix} ${w}`;
+                const isChecked = selectedAddress
+                    ? String(selectedAddress).toUpperCase() === label
+                    : w === 1;
+                html += `
+                    <label class="cursor-pointer">
+                        <input type="radio" name="owner_address" value="${label}" ${isChecked ? 'checked' : ''} class="peer sr-only">
+                        <span class="block text-center px-2.5 py-2 rounded-xl border border-slate-300 bg-white peer-checked:bg-brand-600 peer-checked:text-white peer-checked:border-brand-600 text-xs font-extrabold transition">${label}</span>
+                    </label>
+                `;
+            }
+            grid.innerHTML = html;
+        }
+
+        function handleFormCityChange(city) {
+            populateFormNeighborhoods(city);
+            renderOwnerAddressRadios(city);
+        }
+
+        function buildOwnerSheetRecordFromListing(item) {
+            const rowColor = normalizeOwnerRowColor(
+                item.sheetRowColor || (item.ownerSheetRecord && item.ownerSheetRecord['_ROW_COLOR']) || 'white'
+            );
+            if (item.ownerSheetRecord) {
+                return {
+                    ...item.ownerSheetRecord,
+                    'CUSTOMER ID': rowColor === 'red' ? '' : (item.ownerSheetRecord['CUSTOMER ID'] || ''),
+                    '_ROW_COLOR': rowColor
+                };
+            }
+            const cityPrefix = item.city === 'Biratnagar' ? 'BIRATNAGAR' : 'DHARAN';
+            const sub = String(item.subtype || '').toUpperCase();
+            return {
+                'DATE': new Date().toISOString().slice(0, 10),
+                'OWNER ID': item.id ? item.id.toUpperCase() : `OWN-${Date.now()}`,
+                'CUSTOMER ID': '',
+                'PLAN': (item.rentalDetails && item.rentalDetails.tenancy === 'Exclusive') ? 'EXCLUSIVE' : 'GENERAL',
+                'HLSN PRICE': '',
+                'OWNER NAME': item.contactName || '',
+                'ADDRESS': `${cityPrefix} 1`,
+                'NEAR LANDMARK': item.neighborhood || '',
+                'MAP LINK': '',
+                'CONTACT NO.': item.phone || '',
+                'OPT.CONTACT NO.': '',
+                'TYPE: ROOM': sub.includes('SINGLE') ? '1B' : '',
+                'TYPE: FLAT': sub.includes('3BHK') ? '3BHK' : sub.includes('2BHK') ? '2BHK' : sub.includes('1BHK') ? '1BHK' : '',
+                'TYPE: HOUSE': sub.includes('HOUSE') ? 'BUILDING' : '',
+                'TYPE: COMMERCIAL': sub.includes('COMMERCIAL') ? 'SHUTTER' : '',
+                'RENT': item.price || 0,
+                'FLOOR': 'FIRST FLOOR',
+                'DESCRIPTION': item.description || '',
+                '_ROW_COLOR': rowColor
+            };
+        }
+
+        function mapOwnerSheetRowToListing(row, idx = 0) {
+            const addr = String(row['ADDRESS'] || '').trim().toUpperCase();
+            const city = addr.includes('BIRATNAGAR') ? 'Biratnagar' : 'Dharan';
+            const rowColor = normalizeOwnerRowColor(row['_ROW_COLOR']);
+            const cleanCustomerId = rowColor === 'red' ? '' : String(row['CUSTOMER ID'] || '').trim();
+            const typeRoom = String(row['TYPE: ROOM'] || '').trim();
+            const typeFlat = String(row['TYPE: FLAT'] || '').trim();
+            const typeHouse = String(row['TYPE: HOUSE'] || '').trim();
+            const typeComm = String(row['TYPE: COMMERCIAL'] || '').trim();
+
+            const activeTypes = [];
+            if (typeRoom) activeTypes.push(`Room ${typeRoom}`);
+            if (typeFlat) activeTypes.push(`Flat ${typeFlat}`);
+            if (typeHouse) activeTypes.push(`House (${typeHouse})`);
+            if (typeComm) activeTypes.push(`Commercial ${typeComm}`);
+
+            const subtype = typeFlat
+                ? (typeFlat.includes('3BHK') ? '3BHK Apartment' : typeFlat.includes('2BHK') ? '2BHK Flat' : typeFlat.includes('1BHK') ? '1BHK Flat' : `${typeFlat} Flat`)
+                : typeRoom
+                ? `Single Room (${typeRoom})`
+                : typeComm
+                ? `Commercial Space (${typeComm})`
+                : typeHouse
+                ? `House (${typeHouse})`
+                : 'Rental Property';
+
+            const landmark = String(row['NEAR LANDMARK'] || '').trim();
+            const floor = String(row['FLOOR'] || '').trim();
+            const plan = String(row['PLAN'] || 'GENERAL').trim().toUpperCase();
+            const ownerId = String(row['OWNER ID'] || `OWN-${Date.now()}-${idx}`).trim();
+            const rentNum = Number(String(row['RENT'] || '0').replace(/[^\d.]/g, '')) || 0;
+            const titleParts = [activeTypes.join(' / ') || 'Rental Property', landmark ? `near ${landmark}` : (addr || city)];
+
+            const tags = [plan, addr || city];
+            if (floor) tags.push(floor);
+            if (typeRoom) tags.push(`Room: ${typeRoom}`);
+            if (typeFlat) tags.push(`Flat: ${typeFlat}`);
+            if (typeHouse) tags.push(`House: ${typeHouse}`);
+            if (typeComm) tags.push(`Comm: ${typeComm}`);
+
+            return {
+                id: 'own-' + ownerId.toLowerCase().replace(/[^a-z0-9-_]/g, ''),
+                category: 'Rentals',
+                subtype,
+                city,
+                neighborhood: landmark || addr || city,
+                title: titleParts.join(' '),
+                price: rentNum,
+                priceUnit: '/ month',
+                contactName: String(row['OWNER NAME'] || 'Property Owner').trim(),
+                phone: String(row['CONTACT NO.'] || '').trim(),
+                tags: tags.filter(Boolean),
+                image: getFallbackImageForCategory('Rentals', subtype),
+                photoTag: `${addr || city} • ${floor || 'Rental'}`,
+                description: String(row['DESCRIPTION'] || '').trim() || `Listed under ${plan} plan at ${addr || city}.`,
+                verified: true,
+                postedAt: String(row['DATE'] || 'From Google Sheet').trim(),
+                sheetRowColor: rowColor,
+                fulfillmentStatus: rowColor === 'green'
+                    ? 'Filled by HomeLink'
+                    : rowColor === 'red'
+                    ? 'Sold Out (Not by HomeLink)'
+                    : 'Available',
+                ownerSheetRecord: {
+                    'DATE': String(row['DATE'] || '').trim(),
+                    'OWNER ID': ownerId,
+                    'CUSTOMER ID': cleanCustomerId,
+                    'PLAN': plan,
+                    'HLSN PRICE': String(row['HLSN PRICE'] || '').trim(),
+                    'OWNER NAME': String(row['OWNER NAME'] || '').trim(),
+                    'ADDRESS': addr || `${city.toUpperCase()} 1`,
+                    'NEAR LANDMARK': landmark,
+                    'MAP LINK': String(row['MAP LINK'] || '').trim(),
+                    'CONTACT NO.': String(row['CONTACT NO.'] || '').trim(),
+                    'OPT.CONTACT NO.': String(row['OPT.CONTACT NO.'] || '').trim(),
+                    'TYPE: ROOM': typeRoom,
+                    'TYPE: FLAT': typeFlat,
+                    'TYPE: HOUSE': typeHouse,
+                    'TYPE: COMMERCIAL': typeComm,
+                    'RENT': rentNum,
+                    'FLOOR': floor,
+                    'DESCRIPTION': String(row['DESCRIPTION'] || '').trim(),
+                    '_ROW_COLOR': rowColor
+                }
+            };
+        }
+
+        function toggleOwnerAppsScriptDrawer() {
+            const drawer = document.getElementById('gsheet-apps-script-drawer');
+            const codeArea = document.getElementById('gsheet-apps-script-code');
+            if (!drawer) return;
+            if (codeArea && !codeArea.value) {
+                codeArea.value = OWNER_APPS_SCRIPT_TEMPLATE;
+            }
+            drawer.classList.toggle('hidden');
+        }
+
+        function copyOwnerAppsScriptCode() {
+            const codeArea = document.getElementById('gsheet-apps-script-code');
+            if (!codeArea) return;
+            codeArea.value = OWNER_APPS_SCRIPT_TEMPLATE;
+            codeArea.select();
+            codeArea.setSelectionRange(0, 99999);
             try {
-                localStorage.setItem(STORAGE_KEY_LISTINGS, JSON.stringify(listings));
-                localStorage.setItem(STORAGE_KEY_EMPLOYEES, JSON.stringify(employees));
-                localStorage.setItem(STORAGE_KEY_INQUIRIES, JSON.stringify(inquiries));
-                localStorage.setItem(STORAGE_KEY_SAVED, JSON.stringify(savedIds));
-                localStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(currentUser));
+                document.execCommand('copy');
+                showToast('Copied Google Apps Script code! Paste it in Extensions → Apps Script.', 'success');
             } catch (err) {
-                console.warn('Could not persist state to localStorage:', err);
+                showToast('Select and copy the script text from the box.', 'info');
+            }
+        }
+
+        function saveOwnerSheetWebAppUrl() {
+            const inp = document.getElementById('gsheet-owner-webapp-url');
+            const statusEl = document.getElementById('gsheet-owner-status-line');
+            const val = (inp ? inp.value : '').trim();
+            if (!val || !val.startsWith('http')) {
+                showToast('Please paste a valid Google Apps Script Web App URL (https://script.google.com/.../exec).', 'info');
+                return;
+            }
+            ownerSheetWebAppUrl = val;
+            try { localStorage.setItem('homelink_owner_sheet_url', val); } catch (e) {}
+            if (statusEl) statusEl.textContent = `Status: Connected to "owner" sheet Web App. Pulling existing rows...`;
+            showToast('Connected Google Sheet Web App URL!', 'success');
+            pullFromOwnerGoogleSheet();
+        }
+
+        async function pullFromOwnerGoogleSheet() {
+            const statusEl = document.getElementById('gsheet-owner-status-line');
+            const url = ownerSheetWebAppUrl || (document.getElementById('gsheet-owner-webapp-url')?.value || '').trim();
+            if (!url) {
+                showToast('Paste your Google Apps Script Web App URL first.', 'info');
+                return;
+            }
+            ownerSheetWebAppUrl = url;
+            try {
+                if (statusEl) statusEl.textContent = 'Status: Pulling rows from Google Sheet "owner" tab...';
+                const res = await fetch(url, { method: 'GET' });
+                const data = await res.json();
+                if (!data || !Array.isArray(data.rows)) {
+                    throw new Error('Unexpected response from sheet script.');
+                }
+                let imported = 0;
+                data.rows.forEach((row, idx) => {
+                    const mapped = mapOwnerSheetRowToListing(row, idx);
+                    const existingIdx = listings.findIndex(l =>
+                        l.id === mapped.id ||
+                        (l.ownerSheetRecord && mapped.ownerSheetRecord && l.ownerSheetRecord['OWNER ID'] === mapped.ownerSheetRecord['OWNER ID'])
+                    );
+                    if (existingIdx !== -1) {
+                        listings[existingIdx] = { ...listings[existingIdx], ...mapped, image: listings[existingIdx].image || mapped.image };
+                    } else {
+                        listings.unshift(mapped);
+                    }
+                    syncListingToCloud(existingIdx !== -1 ? listings[existingIdx] : mapped);
+                    imported++;
+                });
+                renderAllViews();
+                if (statusEl) statusEl.textContent = `Status: Synced ${imported} row(s) from Google Sheet "owner" tab at ${new Date().toLocaleTimeString()}.`;
+                showToast(`Pulled ${imported} Rental Owner row(s) from Google Sheets!`, 'success');
+            } catch (err) {
+                if (statusEl) statusEl.textContent = `Status: Could not reach sheet (${err.message}). Ensure Web App is deployed with "Who has access: Anyone".`;
+                showToast('Could not pull from Google Sheet. Check Web App deployment access ("Anyone").', 'info');
+            }
+        }
+
+        async function pushSingleRentalToOwnerSheet(ownerRow) {
+            if (!ownerSheetWebAppUrl || !ownerRow) return;
+            const statusEl = document.getElementById('gsheet-owner-status-line');
+            try {
+                await fetch(ownerSheetWebAppUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ sheet: 'owner', row: ownerRow })
+                });
+                if (statusEl) statusEl.textContent = `Status: Pushed OWNER ID "${ownerRow['OWNER ID']}" to Google Sheet "owner" tab.`;
+            } catch (err) {
+                console.warn('Google Sheet push warning:', err);
+            }
+        }
+
+        async function pushAllRentalsToOwnerSheet() {
+            const url = ownerSheetWebAppUrl || (document.getElementById('gsheet-owner-webapp-url')?.value || '').trim();
+            if (!url) {
+                showToast('Paste your Google Apps Script Web App URL first.', 'info');
+                return;
+            }
+            ownerSheetWebAppUrl = url;
+            const rentalRows = listings
+                .filter(l => l.category === 'Rentals')
+                .map(buildOwnerSheetRecordFromListing);
+            const statusEl = document.getElementById('gsheet-owner-status-line');
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ sheet: 'owner', rows: rentalRows })
+                });
+                if (statusEl) statusEl.textContent = `Status: Pushed ${rentalRows.length} rental row(s) to Google Sheet "owner" tab at ${new Date().toLocaleTimeString()}.`;
+                showToast(`Pushed ${rentalRows.length} Rental Owner record(s) to Google Sheet "owner"!`, 'success');
+            } catch (err) {
+                showToast('Error pushing rows to Google Sheets.', 'info');
+            }
+        }
+
+        window.INITIAL_LISTINGS_SEED = INITIAL_LISTINGS;
+        window.INITIAL_EMPLOYEES_SEED = INITIAL_EMPLOYEES;
+        window.INITIAL_INQUIRIES_SEED = INITIAL_INQUIRIES;
+
+        function loadStateFromStorage() {
+            listings = [...INITIAL_LISTINGS];
+            employees = [...INITIAL_EMPLOYEES];
+            inquiries = [...INITIAL_INQUIRIES];
+            savedIds = [];
+            currentUser = null;
+        }
+
+        function saveState() {
+            // In-memory state is primary; individual mutations also push directly to window.HomeLinkCloudDB
+        }
+
+        window.applyCloudListings = function (remoteListings) {
+            listings = remoteListings.map(item => ({
+                ...item,
+                tags: Array.isArray(item.tags) ? item.tags : []
+            }));
+            renderAllViews();
+            if (currentDetailListingId) {
+                populateDetailViewById(currentDetailListingId);
+            }
+        };
+
+        window.applyCloudEmployees = function (remoteEmployees) {
+            employees = remoteEmployees;
+            if (currentUser && currentUser.role === 'employee') {
+                const updatedSelf = employees.find(e => !e.isOwner && e.empCode === currentUser.empCode);
+                if (updatedSelf && updatedSelf.branchCity) {
+                    currentUser.branchCity = updatedSelf.branchCity;
+                    currentUser.city = updatedSelf.branchCity;
+                    enforceEmployeeBranchLock();
+                }
+            }
+            populateEmployeeIdDatalist();
+            renderAllViews();
+        };
+
+        window.applyCloudInquiries = function (remoteInquiries) {
+            inquiries = remoteInquiries;
+            renderStaffDashboard();
+        };
+
+        function syncListingToCloud(item) {
+            if (window.HomeLinkCloudDB && window.HomeLinkCloudDB.enabled) {
+                window.HomeLinkCloudDB.upsertListing(item).catch(err => console.warn('Cloud listing sync error:', err));
+            }
+        }
+
+        function deleteListingFromCloud(id) {
+            if (window.HomeLinkCloudDB && window.HomeLinkCloudDB.enabled) {
+                window.HomeLinkCloudDB.removeListing(id).catch(err => console.warn('Cloud listing delete error:', err));
+            }
+        }
+
+        function syncEmployeeToCloud(emp) {
+            if (window.HomeLinkCloudDB && window.HomeLinkCloudDB.enabled) {
+                window.HomeLinkCloudDB.upsertEmployee(emp).catch(err => console.warn('Cloud employee sync error:', err));
+            }
+        }
+
+        function syncInquiryToCloud(inq) {
+            if (window.HomeLinkCloudDB && window.HomeLinkCloudDB.enabled) {
+                window.HomeLinkCloudDB.upsertInquiry(inq).catch(err => console.warn('Cloud inquiry sync error:', err));
             }
         }
 
@@ -2805,6 +3801,13 @@
 
         function updateFormFieldsForCategory(cat) {
             const isStaff = currentUser && (currentUser.role === 'employee' || currentUser.role === 'admin');
+            const isRental = cat === 'Rentals';
+
+            const rentalOwnerFields = document.getElementById('rental-owner-sheet-fields');
+            const nonRentalFields = document.getElementById('non-rental-standard-fields');
+            const nonRentalNeighWrap = document.getElementById('non-rental-neighborhood-wrap');
+            const rentalDateWrap = document.getElementById('rental-date-wrap');
+
             const subtypeWrap = document.getElementById('form-subtype-wrapper');
             const subtypeLabel = document.getElementById('form-subtype-label');
             const subtypeSel = document.getElementById('form-subtype');
@@ -2814,14 +3817,44 @@
             const staffSpecs = document.getElementById('form-staff-rental-specs');
             const csvSec = document.getElementById('post-form-csv-section');
 
-            if (subtypeSel) {
+            if (rentalOwnerFields) rentalOwnerFields.classList.toggle('hidden', !isRental);
+            if (nonRentalFields) nonRentalFields.classList.toggle('hidden', isRental);
+            if (nonRentalNeighWrap) nonRentalNeighWrap.classList.toggle('hidden', isRental);
+            if (rentalDateWrap) rentalDateWrap.classList.toggle('hidden', !isRental);
+
+            // Toggle required attributes cleanly so browser validation only validates visible fields
+            const toggleReq = (id, req) => {
+                const el = document.getElementById(id);
+                if (el) el.required = Boolean(req);
+            };
+            toggleReq('form-neighborhood', !isRental);
+            toggleReq('form-title', !isRental);
+            toggleReq('form-price', !isRental);
+            toggleReq('form-contact-name', !isRental);
+            toggleReq('form-phone', !isRental);
+
+            toggleReq('owner-date', isRental);
+            toggleReq('owner-id', isRental);
+            toggleReq('owner-name', isRental);
+            toggleReq('owner-contact', isRental);
+            toggleReq('owner-landmark', isRental);
+            toggleReq('owner-rent', isRental);
+
+            if (isRental) {
+                const cityVal = document.getElementById('form-city')?.value || 'Dharan';
+                if (!document.querySelector('input[name="owner_address"]')) {
+                    renderOwnerAddressRadios(cityVal);
+                }
+                const dateInp = document.getElementById('owner-date');
+                if (dateInp && !dateInp.value) {
+                    dateInp.value = new Date().toISOString().slice(0, 10);
+                }
+                if (descEl) descEl.placeholder = 'Important notes about the property, owner terms, water/parking, and tenant preferences...';
+            }
+
+            if (subtypeSel && !isRental) {
                 let options = [];
-                if (cat === 'Rentals') {
-                    options = ['Single Room', '1BHK Flat', '2BHK Flat', '3BHK Apartment', 'Commercial Space'];
-                    if (subtypeLabel) subtypeLabel.textContent = 'Property Type *';
-                    if (priceLabel) priceLabel.textContent = 'Monthly Rent (NPR) *';
-                    if (descEl) descEl.placeholder = 'Describe exact location, room count, floor, water/parking facilities, and rental terms...';
-                } else if (cat === 'Jobs') {
+                if (cat === 'Jobs') {
                     options = ['Full-Time Job', 'Part-Time / Shift', 'Internship / Trainee'];
                     if (subtypeLabel) subtypeLabel.textContent = 'Employment Type *';
                     if (priceLabel) priceLabel.textContent = 'Monthly Salary (NPR) *';
@@ -2835,14 +3868,12 @@
                 subtypeSel.innerHTML = options.map(o => `<option value="${escapeHTML(o)}">${escapeHTML(o)}</option>`).join('');
             }
 
-            // Hide Property Type* for regular Rental Providers; only Staff/Owner assign Property Type*
             if (subtypeWrap) {
-                const hideSubtype = (cat === 'Rentals' && !isStaff);
-                subtypeWrap.classList.toggle('hidden', hideSubtype);
+                subtypeWrap.classList.toggle('hidden', isRental);
             }
 
             if (staffSpecs) {
-                staffSpecs.classList.toggle('hidden', !(cat === 'Rentals' && isStaff));
+                staffSpecs.classList.toggle('hidden', !(isRental && isStaff));
             }
 
             if (photoSec) {
@@ -2854,14 +3885,13 @@
                 const showCsv = isStaff && (cat === 'Rentals' || cat === 'Jobs');
                 csvSec.classList.toggle('hidden', !showCsv);
                 if (showCsv) {
-                    const isRental = cat === 'Rentals';
-                    document.getElementById('post-csv-badge').textContent = isRental ? 'Employee Bulk Option • Rentals Only' : 'Employee Bulk Option • Jobs Only';
-                    document.getElementById('post-csv-title').textContent = isRental ? 'Bulk Add / Update Rental Properties via CSV' : 'Bulk Add / Update Job Vacancies via CSV';
-                    document.getElementById('post-csv-template-label').textContent = isRental ? 'Download Rental CSV Template' : 'Download Job CSV Template';
-                    document.getElementById('post-csv-url-label').textContent = isRental ? 'Rental CSV Link (Google Sheets / Published URL)' : 'Job CSV Link (Google Sheets / Published URL)';
-                    document.getElementById('post-csv-file-label').textContent = isRental ? 'Or Upload Rental .CSV File' : 'Or Upload Job .CSV File';
+                    document.getElementById('post-csv-badge').textContent = isRental ? 'Employee Bulk Option • Rentals ("owner" Sheet)' : 'Employee Bulk Option • Jobs Only';
+                    document.getElementById('post-csv-title').textContent = isRental ? 'Bulk Add / Update Rental Owner Sheet via CSV' : 'Bulk Add / Update Job Vacancies via CSV';
+                    document.getElementById('post-csv-template-label').textContent = isRental ? 'Download "owner" CSV Template' : 'Download Job CSV Template';
+                    document.getElementById('post-csv-url-label').textContent = isRental ? 'Rental "owner" CSV Link (Google Sheets Published URL)' : 'Job CSV Link (Google Sheets / Published URL)';
+                    document.getElementById('post-csv-file-label').textContent = isRental ? 'Or Upload Rental "owner" .CSV File' : 'Or Upload Job .CSV File';
                     document.getElementById('post-csv-hint').textContent = isRental
-                        ? 'Columns: id, title, subtype, city, neighborhood, price, contactName, phone, description (Automatically saved to Rentals)'
+                        ? 'Columns: DATE, OWNER ID, CUSTOMER ID, PLAN, HLSN PRICE, OWNER NAME, ADDRESS, NEAR LANDMARK, MAP LINK, CONTACT NO., OPT.CONTACT NO., TYPE: ROOM, TYPE: FLAT, TYPE: HOUSE, TYPE: COMMERCIAL, RENT, FLOOR, DESCRIPTION'
                         : 'Columns: id, title, subtype, city, neighborhood, price, contactName, phone, description (Automatically saved to Jobs)';
                 }
             }
@@ -2872,6 +3902,8 @@
             authenticatingListingMode = false;
             const form = document.getElementById('post-listing-form');
             if (form) form.reset();
+            clearAllOwnerTypeRadios();
+            clearDeviceListingPhoto();
 
             const radio = document.querySelector(`input[name="category"][value="${defaultCategory}"]`);
             if (radio) radio.checked = true;
@@ -2882,18 +3914,39 @@
                 citySel.value = restricted || 'Dharan';
                 citySel.disabled = Boolean(restricted);
                 populateFormNeighborhoods(citySel.value);
+                renderOwnerAddressRadios(citySel.value);
             }
+
+            const dateInp = document.getElementById('owner-date');
+            if (dateInp) dateInp.value = new Date().toISOString().slice(0, 10);
+            const ownerIdInp = document.getElementById('owner-id');
+            if (ownerIdInp) {
+                const prefix = (citySel && citySel.value === 'Biratnagar') ? 'OWN-BRT-' : 'OWN-DH-';
+                ownerIdInp.value = prefix + String(Math.floor(100 + Math.random() * 900));
+            }
+            setCheckedRadioValue('owner_plan', 'GENERAL');
+            setCheckedRadioValue('owner_floor', 'GROUND FLOOR');
+            setCheckedRadioValue('owner_row_color', 'white');
+            handleOwnerRowColorChange('white');
 
             if (currentUser) {
                 const cName = document.getElementById('form-contact-name');
                 const cPhone = document.getElementById('form-phone');
+                const oName = document.getElementById('owner-name');
+                const oPhone = document.getElementById('owner-contact');
                 if (cName) cName.value = currentUser.name || '';
                 if (cPhone) cPhone.value = currentUser.phone || '';
+                if (oName) oName.value = currentUser.name || '';
+                if (oPhone) oPhone.value = currentUser.phone || '';
             }
 
             updateFormFieldsForCategory(defaultCategory);
-            document.getElementById('post-page-heading').textContent = `Add New ${defaultCategory === 'Jobs' ? 'Job Vacancy' : defaultCategory === 'Services' ? 'Home Service' : 'Property / Listing'}`;
-            document.getElementById('post-form-submit-text').textContent = 'Publish Listing Now';
+            document.getElementById('post-page-heading').textContent = defaultCategory === 'Rentals'
+                ? 'Rental Owner Listing Form ("owner" Sheet)'
+                : `Add New ${defaultCategory === 'Jobs' ? 'Job Vacancy' : 'Home Service'}`;
+            document.getElementById('post-form-submit-text').textContent = defaultCategory === 'Rentals'
+                ? 'Save & Sync Rental Owner Listing'
+                : 'Publish Listing Now';
             navigateTo('page-post-listing');
         }
 
@@ -2920,21 +3973,6 @@
                 populateFormNeighborhoods(item.city);
             }
 
-            document.getElementById('form-neighborhood').value = item.neighborhood || '';
-            document.getElementById('form-title').value = item.title || '';
-            const subSel = document.getElementById('form-subtype');
-            if (subSel && item.subtype) {
-                if (![...subSel.options].some(o => o.value === item.subtype)) {
-                    const opt = document.createElement('option');
-                    opt.value = item.subtype;
-                    opt.textContent = item.subtype;
-                    subSel.appendChild(opt);
-                }
-                subSel.value = item.subtype;
-            }
-            document.getElementById('form-price').value = item.price || '';
-            document.getElementById('form-contact-name').value = item.contactName || '';
-            document.getElementById('form-phone').value = item.phone || '';
             document.getElementById('form-tags').value = (item.tags || []).join(', ');
             document.getElementById('form-description').value = item.description || '';
 
@@ -2944,22 +3982,62 @@
             updateFormPhotoPreview(imgData, imgData ? 'Current Listing Photo' : '');
 
             if (item.category === 'Rentals') {
+                const rec = buildOwnerSheetRecordFromListing(item);
+                document.getElementById('owner-date').value = rec['DATE'] || new Date().toISOString().slice(0, 10);
+                document.getElementById('owner-id').value = rec['OWNER ID'] || '';
+                document.getElementById('owner-customer-id').value = rec['CUSTOMER ID'] || '';
+                document.getElementById('owner-hlsn-price').value = rec['HLSN PRICE'] || '';
+                document.getElementById('owner-name').value = rec['OWNER NAME'] || item.contactName || '';
+                document.getElementById('owner-contact').value = rec['CONTACT NO.'] || item.phone || '';
+                document.getElementById('owner-opt-contact').value = rec['OPT.CONTACT NO.'] || '';
+                document.getElementById('owner-landmark').value = rec['NEAR LANDMARK'] || item.neighborhood || '';
+                document.getElementById('owner-map-link').value = rec['MAP LINK'] || '';
+                document.getElementById('owner-rent').value = rec['RENT'] || item.price || '';
+
+                renderOwnerAddressRadios(item.city, rec['ADDRESS']);
+                setCheckedRadioValue('owner_plan', rec['PLAN'] || 'GENERAL');
+                setCheckedRadioValue('owner_floor', rec['FLOOR'] || 'GROUND FLOOR');
+                const rowColor = normalizeOwnerRowColor(item.sheetRowColor || rec['_ROW_COLOR']);
+                setCheckedRadioValue('owner_row_color', rowColor);
+                handleOwnerRowColorChange(rowColor);
+                clearAllOwnerTypeRadios();
+                setCheckedRadioValue('owner_type_room', rec['TYPE: ROOM']);
+                setCheckedRadioValue('owner_type_flat', rec['TYPE: FLAT']);
+                setCheckedRadioValue('owner_type_house', rec['TYPE: HOUSE']);
+                setCheckedRadioValue('owner_type_commercial', rec['TYPE: COMMERCIAL']);
+
                 const rd = item.rentalDetails || {};
-                document.getElementById('spec-tenancy').value = rd.tenancy || 'General';
+                document.getElementById('spec-tenancy').value = rd.tenancy || (rec['PLAN'] === 'EXCLUSIVE' ? 'Exclusive' : 'General');
                 document.getElementById('spec-rent-type').value = rd.rentType || 'Flat';
-                document.getElementById('spec-location').value = rd.location || `${item.city} (${item.neighborhood})`;
+                document.getElementById('spec-location').value = rd.location || rec['ADDRESS'] || `${item.city} (${item.neighborhood})`;
                 document.getElementById('spec-bathroom').value = rd.bathroom || 'Attached';
                 document.getElementById('spec-electrical').value = rd.electricalEquipments || 'Fan & Light Bulb Installed';
                 document.getElementById('spec-meter').value = rd.electricityMeter || 'Separate';
                 document.getElementById('spec-parking').value = rd.parkingSpace || 'Bike Only';
                 document.getElementById('spec-wifi').value = rd.wifi || 'Yes';
+            } else {
+                document.getElementById('form-neighborhood').value = item.neighborhood || '';
+                document.getElementById('form-title').value = item.title || '';
+                const subSel = document.getElementById('form-subtype');
+                if (subSel && item.subtype) {
+                    if (![...subSel.options].some(o => o.value === item.subtype)) {
+                        const opt = document.createElement('option');
+                        opt.value = item.subtype;
+                        opt.textContent = item.subtype;
+                        subSel.appendChild(opt);
+                    }
+                    subSel.value = item.subtype;
+                }
+                document.getElementById('form-price').value = item.price || '';
+                document.getElementById('form-contact-name').value = item.contactName || '';
+                document.getElementById('form-phone').value = item.phone || '';
             }
 
             document.getElementById('post-page-heading').textContent = authenticatingListingMode
                 ? `Authenticate Property: ${item.title}`
                 : `Edit Listing: ${item.title}`;
             document.getElementById('post-form-submit-text').textContent = authenticatingListingMode
-                ? 'Authenticate & Publish Property'
+                ? 'Authenticate & Sync Property'
                 : 'Save Listing Changes';
 
             navigateTo('page-post-listing');
@@ -3042,25 +4120,92 @@
             const isStaff = currentUser && (currentUser.role === 'employee' || currentUser.role === 'admin');
             const restricted = getEmployeeRestrictedCity();
             const city = restricted || document.getElementById('form-city').value;
-            const neighborhood = document.getElementById('form-neighborhood').value.trim();
-            const title = document.getElementById('form-title').value.trim();
-            const subtype = (cat === 'Rentals' && !isStaff)
-                ? 'Pending Classification'
-                : document.getElementById('form-subtype').value;
-            const price = Number(document.getElementById('form-price').value) || 0;
-            const contactName = document.getElementById('form-contact-name').value.trim();
-            const phone = document.getElementById('form-phone').value.trim();
-            const tags = document.getElementById('form-tags').value
+            const tagsInput = document.getElementById('form-tags').value
                 .split(',')
                 .map(t => t.trim())
                 .filter(Boolean);
             const description = document.getElementById('form-description').value.trim();
+
+            let neighborhood = '';
+            let title = '';
+            let subtype = '';
+            let price = 0;
+            let contactName = '';
+            let phone = '';
+            let ownerSheetRecord = null;
+            let tags = tagsInput;
+
+            if (cat === 'Rentals') {
+                const typeRoom = getCheckedRadioValue('owner_type_room');
+                const typeFlat = getCheckedRadioValue('owner_type_flat');
+                const typeHouse = getCheckedRadioValue('owner_type_house');
+                const typeComm = getCheckedRadioValue('owner_type_commercial');
+
+                if (!typeRoom && !typeFlat && !typeHouse && !typeComm) {
+                    showToast('Please select at least one option under TYPE: ROOM, FLAT, HOUSE, or COMMERCIAL.', 'info');
+                    return;
+                }
+
+                const ownerDate = document.getElementById('owner-date').value || new Date().toISOString().slice(0, 10);
+                const ownerId = document.getElementById('owner-id').value.trim() || `OWN-${Date.now()}`;
+                const rowColor = normalizeOwnerRowColor(getCheckedRadioValue('owner_row_color'));
+                const customerId = rowColor === 'red' ? '' : document.getElementById('owner-customer-id').value.trim();
+                const plan = getCheckedRadioValue('owner_plan') || 'GENERAL';
+                const hlsnPrice = document.getElementById('owner-hlsn-price').value.trim();
+                const ownerName = document.getElementById('owner-name').value.trim();
+                const address = getCheckedRadioValue('owner_address') || `${city.toUpperCase()} 1`;
+                const landmark = document.getElementById('owner-landmark').value.trim();
+                const mapLink = document.getElementById('owner-map-link').value.trim();
+                const contactNo = document.getElementById('owner-contact').value.trim();
+                const optContactNo = document.getElementById('owner-opt-contact').value.trim();
+                const rentVal = Number(document.getElementById('owner-rent').value) || 0;
+                const floorVal = getCheckedRadioValue('owner_floor') || 'GROUND FLOOR';
+
+                ownerSheetRecord = {
+                    'DATE': ownerDate,
+                    'OWNER ID': ownerId,
+                    'CUSTOMER ID': customerId,
+                    'PLAN': plan,
+                    'HLSN PRICE': hlsnPrice,
+                    'OWNER NAME': ownerName,
+                    'ADDRESS': address,
+                    'NEAR LANDMARK': landmark,
+                    'MAP LINK': mapLink,
+                    'CONTACT NO.': contactNo,
+                    'OPT.CONTACT NO.': optContactNo,
+                    'TYPE: ROOM': typeRoom,
+                    'TYPE: FLAT': typeFlat,
+                    'TYPE: HOUSE': typeHouse,
+                    'TYPE: COMMERCIAL': typeComm,
+                    'RENT': rentVal,
+                    'FLOOR': floorVal,
+                    'DESCRIPTION': description,
+                    '_ROW_COLOR': rowColor
+                };
+
+                const mapped = mapOwnerSheetRowToListing(ownerSheetRecord);
+                neighborhood = mapped.neighborhood;
+                title = mapped.title;
+                subtype = mapped.subtype;
+                price = rentVal;
+                contactName = ownerName;
+                phone = contactNo;
+                tags = tagsInput.length ? tagsInput : mapped.tags;
+            } else {
+                neighborhood = document.getElementById('form-neighborhood').value.trim();
+                title = document.getElementById('form-title').value.trim();
+                subtype = document.getElementById('form-subtype').value;
+                price = Number(document.getElementById('form-price').value) || 0;
+                contactName = document.getElementById('form-contact-name').value.trim();
+                phone = document.getElementById('form-phone').value.trim();
+            }
+
             const image = (document.getElementById('form-image-data')?.value || '').trim() || getFallbackImageForCategory(cat, subtype);
 
             const rentalDetails = cat === 'Rentals' ? {
                 tenancy: document.getElementById('spec-tenancy').value,
                 rentType: document.getElementById('spec-rent-type').value,
-                location: document.getElementById('spec-location').value.trim() || `${city} (${neighborhood})`,
+                location: document.getElementById('spec-location').value.trim() || (ownerSheetRecord ? ownerSheetRecord['ADDRESS'] : `${city} (${neighborhood})`),
                 bathroom: document.getElementById('spec-bathroom').value,
                 electricalEquipments: document.getElementById('spec-electrical').value,
                 electricityMeter: document.getElementById('spec-meter').value,
@@ -3086,21 +4231,32 @@
                         description,
                         image,
                         verified: isStaff ? true : listings[idx].verified,
-                        rentalDetails: rentalDetails || listings[idx].rentalDetails
+                        rentalDetails: rentalDetails || listings[idx].rentalDetails,
+                        sheetRowColor: ownerSheetRecord ? ownerSheetRecord['_ROW_COLOR'] : listings[idx].sheetRowColor,
+                        fulfillmentStatus: ownerSheetRecord
+                            ? (ownerSheetRecord['_ROW_COLOR'] === 'green' ? 'Filled by HomeLink' : ownerSheetRecord['_ROW_COLOR'] === 'red' ? 'Sold Out (Not by HomeLink)' : 'Available')
+                            : listings[idx].fulfillmentStatus,
+                        ownerSheetRecord: ownerSheetRecord || listings[idx].ownerSheetRecord
                     };
+                    syncListingToCloud(listings[idx]);
+                    if (cat === 'Rentals' && ownerSheetRecord) {
+                        pushSingleRentalToOwnerSheet(ownerSheetRecord);
+                    }
                 }
                 const wasAuth = authenticatingListingMode;
                 editingListingId = null;
                 authenticatingListingMode = false;
                 saveState();
                 renderAllViews();
-                showToast(wasAuth ? 'Property authenticated & published!' : 'Listing updated successfully!', 'success');
+                showToast(wasAuth ? 'Property authenticated & synced!' : 'Listing updated successfully!', 'success');
                 navigateTo(isStaff ? 'page-staff-dashboard' : 'page-home');
                 return;
             }
 
             const newListing = {
-                id: 'hl-' + Date.now(),
+                id: (cat === 'Rentals' && ownerSheetRecord)
+                    ? ('own-' + ownerSheetRecord['OWNER ID'].toLowerCase().replace(/[^a-z0-9-_]/g, ''))
+                    : ('hl-' + Date.now()),
                 category: cat,
                 subtype,
                 city,
@@ -3115,11 +4271,20 @@
                 photoTag: `${subtype} • ${city}`,
                 description,
                 verified: Boolean(isStaff),
-                postedAt: 'Just now',
-                rentalDetails
+                postedAt: (ownerSheetRecord && ownerSheetRecord['DATE']) ? ownerSheetRecord['DATE'] : 'Just now',
+                sheetRowColor: ownerSheetRecord ? ownerSheetRecord['_ROW_COLOR'] : 'white',
+                fulfillmentStatus: ownerSheetRecord
+                    ? (ownerSheetRecord['_ROW_COLOR'] === 'green' ? 'Filled by HomeLink' : ownerSheetRecord['_ROW_COLOR'] === 'red' ? 'Sold Out (Not by HomeLink)' : 'Available')
+                    : 'Available',
+                rentalDetails,
+                ownerSheetRecord
             };
 
             listings.unshift(newListing);
+            syncListingToCloud(newListing);
+            if (cat === 'Rentals' && ownerSheetRecord) {
+                pushSingleRentalToOwnerSheet(ownerSheetRecord);
+            }
             saveState();
             renderAllViews();
             showToast(isStaff ? 'Published verified listing!' : 'Property submitted! Awaiting employee authentication.', 'success');
@@ -3136,19 +4301,22 @@
         function downloadCategoryCsvTemplate() {
             const cat = getSelectedFormCategory();
             const restricted = getEmployeeRestrictedCity() || 'Dharan';
-            const rows = [
-                ['id', 'title', 'subtype', 'city', 'neighborhood', 'price', 'contactName', 'phone', 'description'],
-                cat === 'Jobs'
-                    ? ['', 'Store Sales Executive', 'Full-Time Job', restricted, 'Main Chowk', '20000', 'HR Desk', '9852011223', 'Full-time retail sales position']
-                    : ['', 'Newly Built 2BHK Flat', '2BHK Flat', restricted, 'BPKIHS Road', '16000', 'Hari Limbu', '9852044556', 'Sunny 2BHK flat with parking and 24hr water']
-            ];
+            const rows = cat === 'Jobs'
+                ? [
+                    ['id', 'title', 'subtype', 'city', 'neighborhood', 'price', 'contactName', 'phone', 'description'],
+                    ['', 'Store Sales Executive', 'Full-Time Job', restricted, 'Main Chowk', '20000', 'HR Desk', '9852011223', 'Full-time retail sales position']
+                ]
+                : [
+                    OWNER_SHEET_COLUMNS,
+                    [new Date().toISOString().slice(0, 10), 'OWN-DH-105', '', 'GENERAL', '2000', 'Hari Limbu', `${restricted.toUpperCase()} 11`, 'Near BPKIHS Gate', 'https://maps.app.goo.gl/ESjnpvNzyResPm6S9', '9852044556', '', '', '2BHK', '', '', '16000', 'FIRST FLOOR', 'Sunny 2BHK flat with parking and 24hr water']
+                ];
             const csvText = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
             const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `homelink_${cat.toLowerCase()}_template.csv`;
+            link.download = cat === 'Jobs' ? 'homelink_jobs_template.csv' : 'homelink_owner_rentals_template.csv';
             link.click();
-            showToast(`Downloaded ${cat} CSV template`, 'success');
+            showToast(`Downloaded ${cat === 'Rentals' ? 'owner sheet' : cat} CSV template`, 'success');
         }
 
         function parseAndApplyCategoryCsv(csvText, targetCategory) {
@@ -3158,31 +4326,44 @@
                 return;
             }
             const restricted = getEmployeeRestrictedCity();
+            const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim().toUpperCase());
+            const isOwnerSheetCsv = targetCategory === 'Rentals' && headers.includes('OWNER ID') && headers.includes('OWNER NAME');
             let count = 0;
+
             for (let i = 1; i < lines.length; i++) {
                 const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
-                if (!cols[1]) continue;
-                const rowCity = restricted || (cols[3] === 'Biratnagar' ? 'Biratnagar' : 'Dharan');
-                const entry = {
-                    id: cols[0] || `hl-csv-${Date.now()}-${i}`,
-                    category: targetCategory,
-                    title: cols[1],
-                    subtype: cols[2] || (targetCategory === 'Jobs' ? 'Full-Time Job' : '2BHK Flat'),
-                    city: rowCity,
-                    neighborhood: cols[4] || rowCity,
-                    price: Number(cols[5]) || 15000,
-                    priceUnit: '/ month',
-                    contactName: cols[6] || (currentUser ? currentUser.name : 'HomeLink Staff'),
-                    phone: cols[7] || '9852055101',
-                    description: cols[8] || `${targetCategory} listing imported via CSV`,
-                    tags: [rowCity, cols[2] || targetCategory],
-                    image: getFallbackImageForCategory(targetCategory, cols[2]),
-                    verified: true,
-                    postedAt: 'CSV Sync'
-                };
+                let entry;
+                if (isOwnerSheetCsv) {
+                    const rowObj = {};
+                    headers.forEach((h, idx) => { rowObj[h] = cols[idx] || ''; });
+                    if (!rowObj['OWNER ID'] && !rowObj['OWNER NAME']) continue;
+                    entry = mapOwnerSheetRowToListing(rowObj, i);
+                    if (restricted) entry.city = restricted;
+                } else {
+                    if (!cols[1]) continue;
+                    const rowCity = restricted || (cols[3] === 'Biratnagar' ? 'Biratnagar' : 'Dharan');
+                    entry = {
+                        id: cols[0] || `hl-csv-${Date.now()}-${i}`,
+                        category: targetCategory,
+                        title: cols[1],
+                        subtype: cols[2] || (targetCategory === 'Jobs' ? 'Full-Time Job' : '2BHK Flat'),
+                        city: rowCity,
+                        neighborhood: cols[4] || rowCity,
+                        price: Number(cols[5]) || 15000,
+                        priceUnit: '/ month',
+                        contactName: cols[6] || (currentUser ? currentUser.name : 'HomeLink Staff'),
+                        phone: cols[7] || '9852055101',
+                        description: cols[8] || `${targetCategory} listing imported via CSV`,
+                        tags: [rowCity, cols[2] || targetCategory],
+                        image: getFallbackImageForCategory(targetCategory, cols[2]),
+                        verified: true,
+                        postedAt: 'CSV Sync'
+                    };
+                }
                 const existingIdx = listings.findIndex(l => l.id === entry.id);
                 if (existingIdx !== -1) listings[existingIdx] = { ...listings[existingIdx], ...entry };
                 else listings.unshift(entry);
+                syncListingToCloud(existingIdx !== -1 ? listings[existingIdx] : entry);
                 count++;
             }
             saveState();
@@ -3282,6 +4463,7 @@
             const grid = document.getElementById('home-latest-grid');
             if (!grid) return;
             const filtered = listings
+                .filter(isListingAvailableForPublic)
                 .filter(item => homeLatestTab === 'All' ? (item.category === 'Rentals' || item.category === 'Jobs') : item.category === homeLatestTab)
                 .slice(0, 6);
             grid.innerHTML = filtered.map(buildListingCardHTML).join('');
@@ -3320,7 +4502,9 @@
             if (!grid) return;
 
             const q = searchQuery.toLowerCase();
-            let results = listings.filter(item => {
+            let results = listings
+                .filter(isListingAvailableForPublic)
+                .filter(item => {
                 const cityOk = activeCity === 'All' || item.city === activeCity;
                 const catOk = searchCategoryFilter === 'All' || item.category === searchCategoryFilter;
                 const kwOk = !q || [item.title, item.subtype, item.city, item.neighborhood, item.description, ...(item.tags || [])]
@@ -3354,6 +4538,7 @@
             const kw = rentalOption1Keyword.toLowerCase();
             const items = listings.filter(l => {
                 if (l.category !== 'Rentals') return false;
+                if (!isListingAvailableForPublic(l)) return false;
                 if (activeCity !== 'All' && l.city !== activeCity) return false;
                 if (rentalPageSubtype !== 'All' && l.subtype !== rentalPageSubtype) return false;
                 if (kw && ![l.title, l.subtype, l.neighborhood, l.city, l.description, ...(l.tags || [])].join(' ').toLowerCase().includes(kw)) return false;
@@ -3450,7 +4635,25 @@
                         parkingSpace: 'Bike Only',
                         wifi: 'Yes'
                     };
-                    const specEntries = [
+                    const rec = item.ownerSheetRecord;
+                    const isStaff = currentUser && (currentUser.role === 'employee' || currentUser.role === 'admin');
+                    const specEntries = rec ? [
+                        { label: 'Owner ID', val: rec['OWNER ID'] || '-' },
+                        { label: 'Plan', val: rec['PLAN'] || 'GENERAL' },
+                        { label: 'Address', val: rec['ADDRESS'] || item.city },
+                        { label: 'Near Landmark', val: rec['NEAR LANDMARK'] || item.neighborhood },
+                        { label: 'Floor', val: rec['FLOOR'] || '-' },
+                        { label: 'TYPE: ROOM', val: rec['TYPE: ROOM'] || '—' },
+                        { label: 'TYPE: FLAT', val: rec['TYPE: FLAT'] || '—' },
+                        { label: 'TYPE: HOUSE', val: rec['TYPE: HOUSE'] || '—' },
+                        { label: 'TYPE: COMMERCIAL', val: rec['TYPE: COMMERCIAL'] || '—' },
+                        ...(isStaff ? [
+                            { label: 'Customer ID', val: rec['CUSTOMER ID'] || 'Unassigned' },
+                            { label: 'HLSN Price', val: rec['HLSN PRICE'] ? `Rs. ${rec['HLSN PRICE']}` : '-' },
+                            { label: 'Opt. Contact', val: rec['OPT.CONTACT NO.'] || '—' }
+                        ] : []),
+                        ...(rec['MAP LINK'] ? [{ label: 'Map Link', val: `<a href="${escapeHTML(rec['MAP LINK'])}" target="_blank" rel="noopener noreferrer" class="text-brand-600 underline">Open Google Maps ↗</a>`, rawHtml: true }] : [])
+                    ] : [
                         { label: 'Tenancy', val: rd.tenancy },
                         { label: 'Rent Type', val: rd.rentType },
                         { label: 'Ward / Area', val: rd.location },
@@ -3463,7 +4666,7 @@
                     specsGrid.innerHTML = specEntries.map(s => `
                         <div class="bg-white p-3 rounded-xl border border-indigo-100">
                             <span class="block text-[11px] font-bold uppercase text-slate-400">${escapeHTML(s.label)}</span>
-                            <span class="block text-xs sm:text-sm font-extrabold text-slate-900 mt-0.5">${escapeHTML(s.val)}</span>
+                            <span class="block text-xs sm:text-sm font-extrabold text-slate-900 mt-0.5">${s.rawHtml ? s.val : escapeHTML(s.val)}</span>
                         </div>
                     `).join('');
                 } else {
@@ -3583,6 +4786,7 @@
             };
 
             inquiries.unshift(newInq);
+            syncInquiryToCloud(newInq);
             saveState();
             renderStaffDashboard();
             e.target.reset();
@@ -3627,6 +4831,7 @@
             };
 
             inquiries.unshift(newJobInq);
+            syncInquiryToCloud(newJobInq);
             saveState();
             renderStaffDashboard();
             e.target.reset();
@@ -3910,13 +5115,21 @@
         // STAFF & OWNER DASHBOARD
         // ==========================================
         function switchStaffTab(tab) {
+            if (tab === 'database' && (!currentUser || currentUser.role !== 'admin')) {
+                showToast('Only the Owner account can access the Cloud Database Explorer.', 'info');
+                return;
+            }
             activeStaffTab = tab;
-            const tabs = ['rental-queries', 'job-queries', 'service-queries', 'listings', 'employees'];
+            const tabs = ['rental-queries', 'job-queries', 'service-queries', 'listings', 'employees', 'database'];
             tabs.forEach(t => {
                 const panel = document.getElementById(`staff-panel-${t}`);
                 const btn = document.getElementById(`staff-tab-${t}`);
                 if (panel) panel.classList.toggle('hidden', t !== tab);
                 if (btn) {
+                    if (t === 'database') {
+                        const isOwner = currentUser && currentUser.role === 'admin';
+                        btn.classList.toggle('hidden', !isOwner);
+                    }
                     if (t === tab) {
                         btn.className = 'shrink-0 px-4 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-600/20';
                     } else {
@@ -3924,6 +5137,9 @@
                     }
                 }
             });
+            if (tab === 'database') {
+                renderOwnerDatabaseExplorer();
+            }
         }
 
         function switchEmployeeDepartmentDesk(dept) {
@@ -3995,6 +5211,7 @@
                 time: 'Just now'
             };
             inquiries.unshift(newQ);
+            syncInquiryToCloud(newQ);
             saveState();
             e.target.reset();
             toggleStaffLogQueryBox(false);
@@ -4011,6 +5228,7 @@
             }
             q.resolved = !q.resolved;
             q.status = q.resolved ? 'Resolved ✓' : 'Pending Follow-up';
+            syncInquiryToCloud(q);
             saveState();
             renderStaffDashboard();
             showToast(`Marked query as ${q.status}`, 'success');
@@ -4094,6 +5312,7 @@
             q.resolved = q.status.toLowerCase().includes('resolved');
             q.listingTitle = document.getElementById('edit-q-title').value.trim();
             q.message = document.getElementById('edit-q-message').value.trim();
+            syncInquiryToCloud(q);
             saveState();
             closeEditInquiryBox();
             renderStaffDashboard();
@@ -4108,6 +5327,7 @@
                 return;
             }
             item.verified = !item.verified;
+            syncListingToCloud(item);
             saveState();
             renderAllViews();
             showToast(item.verified ? `Verified "${item.title}"` : `Unverified "${item.title}"`, 'success');
@@ -4121,6 +5341,7 @@
                 return;
             }
             listings = listings.filter(l => l.id !== id);
+            deleteListingFromCloud(id);
             saveState();
             renderAllViews();
             showToast(`Removed "${item.title}"`, 'info');
@@ -4145,6 +5366,7 @@
             if (!emp) return;
             emp.branchCity = newCity;
             emp.hub = newCity;
+            syncEmployeeToCloud(emp);
             saveState();
             renderAllViews();
             showToast(`Assigned Employee ID ${emp.empCode} (${emp.name}) to ${newCity} branch!`, 'success');
@@ -4170,7 +5392,7 @@
             }
 
             const initials = name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2) || 'EM';
-            employees.push({
+            const newEmp = {
                 id: 'emp-' + Date.now(),
                 empCode: code,
                 email,
@@ -4183,7 +5405,9 @@
                 hub,
                 phone,
                 color: 'from-indigo-500 to-violet-600'
-            });
+            };
+            employees.push(newEmp);
+            syncEmployeeToCloud(newEmp);
             saveState();
             e.target.reset();
             renderAllViews();
@@ -4287,8 +5511,14 @@
             renderQueueList('staff-job-queries-list', jobQs, `No job queries found for ${cityFilter === 'All' ? 'any branch' : cityFilter}.`);
             renderQueueList('staff-service-queries-list', serviceQs, `No home service queries found for ${cityFilter === 'All' ? 'any branch' : cityFilter}.`);
 
-            // Render All Listings Table
-            const pendingBranchProps = visibleListings.filter(l => !l.verified);
+            // Render Separated Listings Tables (4A: Rentals, 4B: Jobs, 4C: Services)
+            const branchFilteredListings = listings.filter(l => {
+                if (restrictedCity && l.city !== restrictedCity) return false;
+                if (!restrictedCity && cityFilter !== 'All' && l.city !== cityFilter) return false;
+                return true;
+            });
+
+            const pendingBranchProps = branchFilteredListings.filter(l => !l.verified);
             const pendingAlertBtn = document.getElementById('staff-pending-props-alert-btn');
             const pendingAlertText = document.getElementById('staff-pending-props-alert-text');
             if (pendingAlertBtn && pendingAlertText) {
@@ -4302,38 +5532,54 @@
                 }
             }
 
-            const tbody = document.getElementById('staff-listings-tbody');
-            if (tbody) {
-                tbody.innerHTML = visibleListings.map(item => `
-                    <tr ${!item.verified ? `onclick="openEditListingPage('${escapeHTML(item.id)}', true)"` : ''} class="${!item.verified ? 'bg-amber-50/40 hover:bg-amber-100/60 cursor-pointer' : 'hover:bg-slate-50/80'} transition">
-                        <td class="py-4 px-5 font-extrabold text-slate-900">
-                            <button type="button" onclick="event.stopPropagation(); ${!item.verified ? `openEditListingPage('${escapeHTML(item.id)}', true)` : `openListingDetail('${escapeHTML(item.id)}')`}" class="text-left hover:text-brand-600">${escapeHTML(item.title)}</button>
-                            <div class="text-xs font-medium text-slate-500">${escapeHTML(item.subtype)} • ${escapeHTML(item.contactName)}</div>
-                        </td>
-                        <td class="py-4 px-5 font-bold text-slate-700">${escapeHTML(item.category)}</td>
-                        <td class="py-4 px-5 text-slate-600">${escapeHTML(item.city)} (${escapeHTML(item.neighborhood)})</td>
-                        <td class="py-4 px-5 font-extrabold text-slate-900">Rs. ${Number(item.price || 0).toLocaleString()}</td>
-                        <td class="py-4 px-5">
-                            ${!item.verified
-                                ? `<button type="button" onclick="event.stopPropagation(); openEditListingPage('${escapeHTML(item.id)}', true)" class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-100 hover:bg-amber-200 text-amber-900">Waiting Auth →</button>`
-                                : `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">Verified ✓</span>`
-                            }
-                        </td>
-                        <td class="py-4 px-5 text-right space-x-1.5 whitespace-nowrap">
-                            ${!item.verified
-                                ? `<button type="button" onclick="event.stopPropagation(); openEditListingPage('${escapeHTML(item.id)}', true)" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-xs inline-flex items-center gap-1"><i class="ph-bold ph-seal-check"></i><span>Authenticate</span></button>`
-                                : `<button type="button" onclick="event.stopPropagation(); openEditListingPage('${escapeHTML(item.id)}')" class="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-extrabold">Edit</button>
-                                   <button type="button" onclick="event.stopPropagation(); deleteListingByStaff('${escapeHTML(item.id)}')" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-extrabold">Delete</button>`
-                            }
-                        </td>
-                    </tr>
-                `).join('');
-            }
+            const buildStaffListingRowHTML = (item) => `
+                <tr ${!item.verified ? `onclick="openEditListingPage('${escapeHTML(item.id)}', true)"` : ''} class="${!item.verified ? 'bg-amber-50/40 hover:bg-amber-100/60 cursor-pointer' : 'hover:bg-slate-50/80'} transition">
+                    <td class="py-4 px-5 font-extrabold text-slate-900">
+                        <button type="button" onclick="event.stopPropagation(); ${!item.verified ? `openEditListingPage('${escapeHTML(item.id)}', true)` : `openListingDetail('${escapeHTML(item.id)}')`}" class="text-left hover:text-brand-600">${escapeHTML(item.title)}</button>
+                        <div class="text-xs font-medium text-slate-500">${escapeHTML(item.contactName)} • <span class="font-mono">${escapeHTML(item.phone)}</span></div>
+                    </td>
+                    <td class="py-4 px-5 font-bold text-slate-700">${escapeHTML(item.subtype)}</td>
+                    <td class="py-4 px-5 text-slate-600">${escapeHTML(item.city)} (${escapeHTML(item.neighborhood)})</td>
+                    <td class="py-4 px-5 font-extrabold text-slate-900">Rs. ${Number(item.price || 0).toLocaleString()} <span class="text-xs font-normal text-slate-500">${escapeHTML(item.priceUnit || '')}</span></td>
+                    <td class="py-4 px-5">
+                        ${!item.verified
+                            ? `<button type="button" onclick="event.stopPropagation(); openEditListingPage('${escapeHTML(item.id)}', true)" class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-100 hover:bg-amber-200 text-amber-900">Waiting Auth →</button>`
+                            : `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">Verified ✓</span>`
+                        }
+                    </td>
+                    <td class="py-4 px-5 text-right space-x-1.5 whitespace-nowrap">
+                        ${!item.verified
+                            ? `<button type="button" onclick="event.stopPropagation(); openEditListingPage('${escapeHTML(item.id)}', true)" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-xs inline-flex items-center gap-1"><i class="ph-bold ph-seal-check"></i><span>Authenticate</span></button>`
+                            : `<button type="button" onclick="event.stopPropagation(); openEditListingPage('${escapeHTML(item.id)}')" class="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-extrabold">Edit</button>
+                               <button type="button" onclick="event.stopPropagation(); deleteListingByStaff('${escapeHTML(item.id)}')" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-extrabold">Delete</button>`
+                        }
+                    </td>
+                </tr>
+            `;
+
+            ['Rentals', 'Jobs', 'Services'].forEach(cat => {
+                const box = document.getElementById(`staff-listings-box-${cat}`);
+                const tbodyCat = document.getElementById(`staff-listings-tbody-${cat}`);
+                const catItems = branchFilteredListings.filter(l => l.category === cat);
+
+                setTxt(`staff-count-${cat.toLowerCase()}`, catItems.length);
+                if (box) {
+                    const showBox = staffListingCategoryFilter === 'All' || staffListingCategoryFilter === cat;
+                    box.classList.toggle('hidden', !showBox);
+                }
+                if (tbodyCat) {
+                    tbodyCat.innerHTML = catItems.length
+                        ? catItems.map(buildStaffListingRowHTML).join('')
+                        : `<tr><td colspan="6" class="py-7 text-center text-slate-400 font-semibold">No ${escapeHTML(cat.toLowerCase())} records found for this branch filter.</td></tr>`;
+                }
+            });
 
             // Render Staff Roster & Owner Location Assignment
             const empListEl = document.getElementById('staff-employees-list');
             const ownerAddCard = document.getElementById('owner-add-employee-card');
+            const dbTabBtn = document.getElementById('staff-tab-database');
             if (ownerAddCard) ownerAddCard.classList.toggle('hidden', !isOwner);
+            if (dbTabBtn) dbTabBtn.classList.toggle('hidden', !isOwner);
 
             if (empListEl) {
                 empListEl.innerHTML = employees.map(emp => {
@@ -4362,6 +5608,361 @@
                     `;
                 }).join('');
             }
+
+            if (isOwner) {
+                renderOwnerDatabaseExplorer();
+            }
+        }
+
+        // ==========================================
+        // OWNER CLOUD DATABASE EXPLORER & JSON EDITOR
+        // ==========================================
+        function getListingCategoryForDbTab(colName) {
+            if (colName === 'rentals') return 'Rentals';
+            if (colName === 'jobs') return 'Jobs';
+            if (colName === 'services') return 'Services';
+            return null;
+        }
+
+        function setDbExplorerCollection(colName) {
+            dbExplorerCollection = colName;
+            ['rentals', 'jobs', 'services', 'employees', 'inquiries'].forEach(c => {
+                const btn = document.getElementById(`db-col-btn-${c}`);
+                if (!btn) return;
+                btn.className = c === colName
+                    ? 'px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-emerald-500 text-slate-950 transition flex items-center gap-2'
+                    : 'px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold bg-white/10 text-slate-300 hover:bg-white/20 transition flex items-center gap-2';
+            });
+            closeDbRecordModal();
+            renderOwnerDatabaseExplorer();
+        }
+
+        function renderOwnerDatabaseExplorer() {
+            const setTxt = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            };
+            setTxt('db-count-rentals', listings.filter(l => l.category === 'Rentals').length);
+            setTxt('db-count-jobs', listings.filter(l => l.category === 'Jobs').length);
+            setTxt('db-count-services', listings.filter(l => l.category === 'Services').length);
+            setTxt('db-count-employees', employees.length);
+            setTxt('db-count-inquiries', inquiries.length);
+
+            const theadRow = document.getElementById('db-explorer-thead-row');
+            const tbody = document.getElementById('db-explorer-tbody');
+            if (!theadRow || !tbody) return;
+
+            const q = (document.getElementById('db-explorer-search')?.value || '').trim().toLowerCase();
+            const targetListingCategory = getListingCategoryForDbTab(dbExplorerCollection);
+
+            if (targetListingCategory) {
+                const typeColHeader = targetListingCategory === 'Rentals'
+                    ? 'Property Type'
+                    : targetListingCategory === 'Jobs'
+                    ? 'Employment Type'
+                    : 'Service Specialty';
+                const priceColHeader = targetListingCategory === 'Rentals'
+                    ? 'Monthly Rent'
+                    : targetListingCategory === 'Jobs'
+                    ? 'Salary'
+                    : 'Visit Rate';
+
+                theadRow.innerHTML = `
+                    <th class="py-3.5 px-4">Doc ID</th>
+                    <th class="py-3.5 px-4">${typeColHeader}</th>
+                    <th class="py-3.5 px-4">Title</th>
+                    <th class="py-3.5 px-4">City / Area</th>
+                    <th class="py-3.5 px-4">${priceColHeader}</th>
+                    <th class="py-3.5 px-4">Verified</th>
+                    <th class="py-3.5 px-4 text-right">DB Actions</th>
+                `;
+                const rows = listings
+                    .filter(item => item.category === targetListingCategory)
+                    .filter(item => !q || JSON.stringify(item).toLowerCase().includes(q));
+                tbody.innerHTML = rows.map(item => `
+                    <tr class="hover:bg-slate-50/90 transition">
+                        <td class="py-3.5 px-4 font-mono font-bold text-indigo-600">${escapeHTML(item.id)}</td>
+                        <td class="py-3.5 px-4 font-bold text-slate-700">${escapeHTML(item.subtype)}</td>
+                        <td class="py-3.5 px-4 font-extrabold text-slate-900 max-w-xs truncate">${escapeHTML(item.title)}</td>
+                        <td class="py-3.5 px-4 text-slate-600">${escapeHTML(item.city)} (${escapeHTML(item.neighborhood)})</td>
+                        <td class="py-3.5 px-4 font-mono font-bold">Rs. ${Number(item.price || 0).toLocaleString()}</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${item.verified ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${item.verified ? 'true' : 'false'}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+                            <button type="button" onclick="openDbRecordModal('${escapeHTML(item.id)}')" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-brand-600 text-white text-xs font-extrabold">Edit JSON</button>
+                            <button type="button" onclick="openEditListingPage('${escapeHTML(item.id)}', ${!item.verified})" class="px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-extrabold">Form</button>
+                            <button type="button" onclick="deleteDbRecord('${escapeHTML(dbExplorerCollection)}', '${escapeHTML(item.id)}')" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-extrabold">Delete</button>
+                        </td>
+                    </tr>
+                `).join('') || `<tr><td colspan="7" class="py-8 text-center text-slate-400 font-semibold">No matching documents in ${escapeHTML(dbExplorerCollection)} collection.</td></tr>`;
+            } else if (dbExplorerCollection === 'employees') {
+                theadRow.innerHTML = `
+                    <th class="py-3.5 px-4">Doc ID</th>
+                    <th class="py-3.5 px-4">Emp Code</th>
+                    <th class="py-3.5 px-4">Name & Role</th>
+                    <th class="py-3.5 px-4">Assigned Branch</th>
+                    <th class="py-3.5 px-4">Email & Phone</th>
+                    <th class="py-3.5 px-4 text-right">DB Actions</th>
+                `;
+                const rows = employees.filter(emp => !q || JSON.stringify(emp).toLowerCase().includes(q));
+                tbody.innerHTML = rows.map(emp => `
+                    <tr class="hover:bg-slate-50/90 transition">
+                        <td class="py-3.5 px-4 font-mono font-bold text-indigo-600">${escapeHTML(emp.id)}</td>
+                        <td class="py-3.5 px-4 font-mono font-extrabold text-slate-900">${escapeHTML(emp.empCode)}</td>
+                        <td class="py-3.5 px-4 font-extrabold text-slate-900">${escapeHTML(emp.name)} <div class="text-xs font-medium text-slate-500">${escapeHTML(emp.role)}</div></td>
+                        <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-extrabold">${escapeHTML(emp.branchCity || emp.hub)}</span></td>
+                        <td class="py-3.5 px-4 font-mono text-xs text-slate-600">${escapeHTML(emp.email || '')}<div>${escapeHTML(emp.phone || '')}</div></td>
+                        <td class="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+                            <button type="button" onclick="openDbRecordModal('${escapeHTML(emp.id)}')" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-brand-600 text-white text-xs font-extrabold">Edit JSON</button>
+                            ${!emp.isOwner ? `<button type="button" onclick="deleteDbRecord('employees', '${escapeHTML(emp.id)}')" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-extrabold">Delete</button>` : ''}
+                        </td>
+                    </tr>
+                `).join('') || `<tr><td colspan="6" class="py-8 text-center text-slate-400 font-semibold">No matching documents in employees collection.</td></tr>`;
+            } else {
+                theadRow.innerHTML = `
+                    <th class="py-3.5 px-4">Doc ID</th>
+                    <th class="py-3.5 px-4">Dept / City</th>
+                    <th class="py-3.5 px-4">Customer / Phone</th>
+                    <th class="py-3.5 px-4">Reference Listing</th>
+                    <th class="py-3.5 px-4">Status</th>
+                    <th class="py-3.5 px-4 text-right">DB Actions</th>
+                `;
+                const rows = inquiries.filter(inq => !q || JSON.stringify(inq).toLowerCase().includes(q));
+                tbody.innerHTML = rows.map(inq => `
+                    <tr class="hover:bg-slate-50/90 transition">
+                        <td class="py-3.5 px-4 font-mono font-bold text-indigo-600">${escapeHTML(inq.id)}</td>
+                        <td class="py-3.5 px-4 font-bold text-slate-700">${escapeHTML(inq.category)} • ${escapeHTML(inq.city)}</td>
+                        <td class="py-3.5 px-4 font-extrabold text-slate-900">${escapeHTML(inq.customerName)} <div class="text-xs font-mono text-slate-500">${escapeHTML(inq.phone)}</div></td>
+                        <td class="py-3.5 px-4 text-slate-700 max-w-xs truncate">${escapeHTML(inq.listingTitle)}</td>
+                        <td class="py-3.5 px-4"><span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${inq.resolved ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${escapeHTML(inq.status)}</span></td>
+                        <td class="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+                            <button type="button" onclick="openDbRecordModal('${escapeHTML(inq.id)}')" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-brand-600 text-white text-xs font-extrabold">Edit JSON</button>
+                            <button type="button" onclick="deleteDbRecord('inquiries', '${escapeHTML(inq.id)}')" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-extrabold">Delete</button>
+                        </td>
+                    </tr>
+                `).join('') || `<tr><td colspan="6" class="py-8 text-center text-slate-400 font-semibold">No matching documents in inquiries collection.</td></tr>`;
+            }
+        }
+
+        function openDbRecordModal(recordId = null) {
+            const box = document.getElementById('db-json-editor-box');
+            const badge = document.getElementById('db-editor-collection-badge');
+            const heading = document.getElementById('db-editor-heading');
+            const textarea = document.getElementById('db-json-textarea');
+            if (!box || !textarea) return;
+
+            const targetListingCategory = getListingCategoryForDbTab(dbExplorerCollection);
+            const arr = targetListingCategory
+                ? listings.filter(l => l.category === targetListingCategory)
+                : (dbExplorerCollection === 'employees' ? employees : inquiries);
+            let targetObj = recordId ? arr.find(x => x.id === recordId) : null;
+
+            if (!targetObj) {
+                if (dbExplorerCollection === 'rentals') {
+                    targetObj = {
+                        id: 'hl-rent-' + Date.now(),
+                        category: 'Rentals',
+                        subtype: '2BHK Flat',
+                        city: 'Dharan',
+                        neighborhood: 'Bhanu Chowk',
+                        title: 'New Rental Property',
+                        price: 15000,
+                        priceUnit: '/ month',
+                        contactName: 'Owner Direct',
+                        phone: '9852055101',
+                        tags: ['24hr Water', 'Parking'],
+                        description: 'Created directly from Owner Cloud Database Explorer (rentals table).',
+                        verified: true,
+                        postedAt: 'Just now'
+                    };
+                } else if (dbExplorerCollection === 'jobs') {
+                    targetObj = {
+                        id: 'hl-job-' + Date.now(),
+                        category: 'Jobs',
+                        subtype: 'Full-Time Job',
+                        city: 'Biratnagar',
+                        neighborhood: 'Traffic Chowk',
+                        title: 'New Job Vacancy',
+                        price: 22000,
+                        priceUnit: '/ month',
+                        contactName: 'HR Department',
+                        phone: '021-514222',
+                        tags: ['Day Shift', 'Immediate Join'],
+                        description: 'Created directly from Owner Cloud Database Explorer (jobs table).',
+                        verified: true,
+                        postedAt: 'Just now'
+                    };
+                } else if (dbExplorerCollection === 'services') {
+                    targetObj = {
+                        id: 'hl-srv-' + Date.now(),
+                        category: 'Services',
+                        subtype: 'Plumbing & Sanitary',
+                        city: 'Dharan',
+                        neighborhood: 'Putali Line',
+                        title: 'New Verified Service Technician',
+                        price: 500,
+                        priceUnit: '/ visit',
+                        contactName: 'Service Pro',
+                        phone: '9812345670',
+                        tags: ['Same-Day Visit', 'Verified Pro'],
+                        description: 'Created directly from Owner Cloud Database Explorer (services table).',
+                        verified: true,
+                        postedAt: 'Verified Pro'
+                    };
+                } else if (dbExplorerCollection === 'employees') {
+                    targetObj = {
+                        id: 'emp-' + Date.now(),
+                        empCode: '025',
+                        email: 'staff.025@homelink.com.np',
+                        initials: 'ST',
+                        name: 'New Staff Coordinator',
+                        role: 'Branch Coordinator',
+                        department: 'All',
+                        branchCity: 'Dharan',
+                        hub: 'Dharan',
+                        phone: '9852000000',
+                        color: 'from-indigo-500 to-violet-600'
+                    };
+                } else {
+                    targetObj = {
+                        id: 'inq-' + Date.now(),
+                        category: 'Rentals',
+                        subtype: '2BHK Flat',
+                        customerName: 'Walk-in Client',
+                        phone: '9842000000',
+                        listingTitle: 'Direct Branch Inquiry',
+                        city: 'Dharan',
+                        neighborhood: 'Bhanu Chowk',
+                        assignedTo: 'Pratima Rai (ID 021)',
+                        message: 'Logged via Cloud DB Console',
+                        status: 'Pending Visit',
+                        resolved: false,
+                        time: 'Just now'
+                    };
+                }
+            }
+
+            if (badge) badge.textContent = `Table: ${dbExplorerCollection}`;
+            if (heading) heading.textContent = recordId ? `Edit Document (${recordId})` : `Create New Document in ${dbExplorerCollection}`;
+            textarea.value = JSON.stringify(targetObj, null, 2);
+            box.classList.remove('hidden');
+            box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function closeDbRecordModal() {
+            const box = document.getElementById('db-json-editor-box');
+            if (box) box.classList.add('hidden');
+        }
+
+        function saveDbRecordFromJsonEditor() {
+            const textarea = document.getElementById('db-json-textarea');
+            if (!textarea) return;
+            try {
+                const parsed = JSON.parse(textarea.value);
+                if (!parsed || !parsed.id) {
+                    showToast('Document JSON must include a valid "id" field.', 'info');
+                    return;
+                }
+                const targetListingCategory = getListingCategoryForDbTab(dbExplorerCollection);
+                if (targetListingCategory) {
+                    parsed.category = parsed.category || targetListingCategory;
+                    const idx = listings.findIndex(x => x.id === parsed.id);
+                    if (idx !== -1) listings[idx] = parsed;
+                    else listings.unshift(parsed);
+                    syncListingToCloud(parsed);
+                } else if (dbExplorerCollection === 'employees') {
+                    const idx = employees.findIndex(x => x.id === parsed.id);
+                    if (idx !== -1) employees[idx] = parsed;
+                    else employees.push(parsed);
+                    syncEmployeeToCloud(parsed);
+                } else if (dbExplorerCollection === 'inquiries') {
+                    const idx = inquiries.findIndex(x => x.id === parsed.id);
+                    if (idx !== -1) inquiries[idx] = parsed;
+                    else inquiries.unshift(parsed);
+                    syncInquiryToCloud(parsed);
+                }
+                closeDbRecordModal();
+                renderAllViews();
+                showToast(`Saved document "${parsed.id}" to ${dbExplorerCollection}!`, 'success');
+            } catch (err) {
+                showToast('Invalid JSON syntax: ' + err.message, 'info');
+            }
+        }
+
+        function deleteDbRecord(colName, id) {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            if (colName === 'listings' || colName === 'rentals' || colName === 'jobs' || colName === 'services') {
+                listings = listings.filter(x => x.id !== id);
+                deleteListingFromCloud(id);
+            } else if (colName === 'employees') {
+                employees = employees.filter(x => x.id !== id);
+                if (window.HomeLinkCloudDB && window.HomeLinkCloudDB.removeEmployee) {
+                    window.HomeLinkCloudDB.removeEmployee(id);
+                }
+            } else if (colName === 'inquiries') {
+                inquiries = inquiries.filter(x => x.id !== id);
+                if (window.HomeLinkCloudDB && window.HomeLinkCloudDB.removeInquiry) {
+                    window.HomeLinkCloudDB.removeInquiry(id);
+                }
+            }
+            renderAllViews();
+            showToast(`Deleted "${id}" from ${colName}`, 'info');
+        }
+
+        function exportFullDatabaseJson() {
+            const payload = {
+                exportedAt: new Date().toISOString(),
+                rentals: listings.filter(l => l.category === 'Rentals'),
+                jobs: listings.filter(l => l.category === 'Jobs'),
+                services: listings.filter(l => l.category === 'Services'),
+                listings,
+                employees,
+                inquiries
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `homelink_cloud_db_backup_${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            showToast('Exported full Cloud Database JSON backup!', 'success');
+        }
+
+        function importFullDatabaseJson(input) {
+            const file = input && input.files && input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data.rentals) || Array.isArray(data.jobs) || Array.isArray(data.services)) {
+                        const combined = [
+                            ...(data.rentals || []).map(x => ({ ...x, category: 'Rentals' })),
+                            ...(data.jobs || []).map(x => ({ ...x, category: 'Jobs' })),
+                            ...(data.services || []).map(x => ({ ...x, category: 'Services' }))
+                        ];
+                        listings = combined;
+                        listings.forEach(syncListingToCloud);
+                    } else if (Array.isArray(data.listings)) {
+                        listings = data.listings;
+                        listings.forEach(syncListingToCloud);
+                    }
+                    if (Array.isArray(data.employees)) {
+                        employees = data.employees;
+                        employees.forEach(syncEmployeeToCloud);
+                    }
+                    if (Array.isArray(data.inquiries)) {
+                        inquiries = data.inquiries;
+                        inquiries.forEach(syncInquiryToCloud);
+                    }
+                    renderAllViews();
+                    showToast('Imported & synced JSON backup to Cloud Database!', 'success');
+                } catch (err) {
+                    showToast('Invalid backup JSON file.', 'info');
+                }
+                input.value = '';
+            };
+            reader.readAsText(file);
         }
 
         function renderAllViews() {
@@ -4377,12 +5978,10 @@
         }
 
         function resetDemoData() {
-            localStorage.removeItem(STORAGE_KEY_LISTINGS);
-            localStorage.removeItem(STORAGE_KEY_EMPLOYEES);
-            localStorage.removeItem(STORAGE_KEY_INQUIRIES);
-            localStorage.removeItem(STORAGE_KEY_SAVED);
-            localStorage.removeItem(STORAGE_KEY_AUTH);
             loadStateFromStorage();
+            if (window.HomeLinkCloudDB && window.HomeLinkCloudDB.enabled) {
+                window.HomeLinkCloudDB.seedDefaults();
+            }
             releaseStaffBranchLocks();
             activeCity = 'All';
             staffQueryCityFilter = 'All';
@@ -4408,6 +6007,15 @@
 
         window.onload = function () {
             loadStateFromStorage();
+            try {
+                const savedSheetUrl = localStorage.getItem('homelink_owner_sheet_url');
+                if (savedSheetUrl) {
+                    ownerSheetWebAppUrl = savedSheetUrl;
+                    const urlInp = document.getElementById('gsheet-owner-webapp-url');
+                    if (urlInp) urlInp.value = savedSheetUrl;
+                    pullFromOwnerGoogleSheet();
+                }
+            } catch (e) {}
             if (currentUser && currentUser.role === 'employee') {
                 enforceEmployeeBranchLock();
             }
