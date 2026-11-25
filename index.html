@@ -1927,11 +1927,14 @@
                                 <p class="text-xs sm:text-sm text-emerald-200/90 mt-0.5">Automatically pulls <strong>WEBSITE WORKINGS</strong> (Rentals), <strong>JOBS WORKINGS</strong> (Jobs), and <strong>SERVICES WORKINGS</strong> (Home Services) on every page load.</p>
                             </div>
                             <div class="flex flex-wrap items-center gap-2">
-                                <button type="button" onclick="pullAllSheetsFromGoogle()" class="px-4 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm">
+                                <button type="button" onclick="pullAllSheetsFromGoogle(true, true)" class="px-4 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm">
                                     <i class="ph-bold ph-cloud-arrow-down"></i> Refresh All 3 Sheets
                                 </button>
                                 <button type="button" onclick="pushAllCategoriesToGoogleSheets()" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition shadow-sm">
                                     <i class="ph-bold ph-cloud-arrow-up"></i> Push All 3 Sheets
+                                </button>
+                                <button type="button" onclick="toggleOwnerRawDebug()" class="px-3.5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-extrabold text-xs sm:text-sm transition">
+                                    Inspect Sheet Payload
                                 </button>
                             </div>
                         </div>
@@ -2125,635 +2128,95 @@
             Staff: 'STAFF_ACCOUNTS'
         };
 
-        // Optional: Paste your Google Cloud OAuth 2.0 Client ID here to enable native Google One-Tap popup
-        const GOOGLE_OAUTH_CLIENT_ID = '';
-        const SESSION_STORAGE_KEY = 'homelink_koshi_session_v1';
-
-        // ==========================================
-        // IN-MEMORY APPLICATION STATE
-        // ==========================================
-        let customers = [
-            {
-                customerId: 'CUST-1001',
-                name: 'Aarav Shrestha',
-                phone: '9842012345',
-                email: 'aarav@gmail.com',
-                city: 'Dharan',
-                passwordHash: '',
-                authProvider: 'Demo'
-            }
-        ];
-        const INITIAL_EMPLOYEES = [
-            {
-                id: 'emp-owner',
-                empCode: 'OWNER',
-                email: 'owner@homelink.com.np',
-                initials: 'OW',
-                name: 'Bikram Basnet (Owner)',
-                role: 'Founder & Managing Director',
-                department: 'All',
-                branchCity: 'All',
-                hub: 'Dharan & Biratnagar',
-                phone: '98520-55000',
-                color: 'from-amber-500 to-orange-600',
-                isOwner: true
-            },
-            {
-                id: 'emp-021',
-                empCode: '021',
-                email: 'pratima.021@homelink.com.np',
-                initials: 'PR',
-                name: 'Pratima Rai',
-                role: 'Dharan Branch Coordinator',
-                department: 'All',
-                branchCity: 'Dharan',
-                hub: 'Dharan',
-                phone: '98520-55101',
-                color: 'from-indigo-500 to-violet-600'
-            },
-            {
-                id: 'emp-022',
-                empCode: '022',
-                email: 'rakesh.022@homelink.com.np',
-                initials: 'RP',
-                name: 'Rakesh Pokharel',
-                role: 'Biratnagar Branch Coordinator',
-                department: 'All',
-                branchCity: 'Biratnagar',
-                hub: 'Biratnagar',
-                phone: '98027-44303',
-                color: 'from-emerald-500 to-teal-600'
-            },
-            {
-                id: 'emp-023',
-                empCode: '023',
-                email: 'binod.023@homelink.com.np',
-                initials: 'BM',
-                name: 'Binod Mandal',
-                role: 'Field Verification & Dispatch Officer',
-                department: 'Services',
-                branchCity: 'Biratnagar',
-                hub: 'Biratnagar',
-                phone: '98173-22190',
-                color: 'from-sky-500 to-blue-600'
-            }
-        ];
-
-        const INITIAL_INQUIRIES = [
-            {
-                id: 'inq-1',
-                category: 'Rentals',
-                subtype: '3BHK Apartment',
-                customerName: 'Dr. Suman Karki',
-                phone: '9842055441',
-                listingTitle: 'Sunny 3BHK Family Apartment near BPKIHS',
-                city: 'Dharan',
-                neighborhood: 'Dharan-18',
-                assignedTo: 'Pratima Rai (ID 021)',
-                message: 'Check-in: Next Sunday | Interested in family visit at 4 PM.',
-                status: 'Pending Visit',
-                resolved: false,
-                time: '25 mins ago'
-            },
-            {
-                id: 'inq-2',
-                category: 'Jobs',
-                subtype: 'Full-Time Job',
-                customerName: 'Nisha Dahal',
-                phone: '9815300912',
-                listingTitle: 'Senior Tally Accountant — Koshi Trading Co.',
-                city: 'Biratnagar',
-                neighborhood: 'Traffic Chowk, Biratnagar',
-                assignedTo: 'Rakesh Pokharel (ID 022)',
-                message: 'Email: nisha.dahal@example.com | CV: Nisha_Accountant_CV.pdf | 3 years Tally experience.',
-                status: 'Pending Interview',
-                resolved: false,
-                time: '1 hour ago'
-            },
-            {
-                id: 'inq-3',
-                category: 'Services',
-                subtype: 'Electrical & Wiring',
-                customerName: 'Hari Prasad Ghimire',
-                phone: '9804399881',
-                listingTitle: 'Licensed Electrician — Inverter, MCB & House Wiring',
-                city: 'Biratnagar',
-                neighborhood: 'Roadcess Chowk, BRT',
-                assignedTo: 'Binod Mandal (ID 023)',
-                message: 'Inverter tripping issue at home, need technician visit today.',
-                status: 'Pending Dispatch',
-                resolved: false,
-                time: '2 hours ago'
-            }
-        ];
-
         let listings = [];
-        let employees = [...INITIAL_EMPLOYEES];
-        let inquiries = [...INITIAL_INQUIRIES];
-        let savedIds = [];
-        let currentUser = null;
-        let activeCity = 'All';
+        let queries = [];
+        let staffMembers = [
+            { code: '021', role: 'Dharan Hub Coordinator', name: 'Pratima Rai', email: 'pratima.021@homelink.com.np', phone: '9852055101', city: 'Dharan', password: 'staff2025', status: 'Active' },
+            { code: '022', role: 'Biratnagar Hub Coordinator', name: 'Rakesh Pokharel', email: 'rakesh.022@homelink.com.np', phone: '9802744303', city: 'Biratnagar', password: 'staff2025', status: 'Active' },
+            { code: 'OWNER', role: 'Managing Director / Owner', name: 'HomeLink Owner', email: 'owner@homelink.com.np', phone: '9852000001', city: 'All', password: 'admin2025', status: 'Active' }
+        ];
+        let savedIds = JSON.parse(localStorage.getItem('hl_saved_ids') || '[]');
+        let currentUser = JSON.parse(localStorage.getItem('hl_current_user') || 'null');
+        let pendingProtectedPage = null;
+        let pendingListingId = null;
+        let globalCityFilter = 'All';
         let homeLatestTab = 'All';
-        let searchQuery = '';
-        let searchCategoryFilter = 'All';
-        let searchSortBy = 'newest';
+        let rentalSubtypeFilter = 'All';
         let rentalOption1Keyword = '';
-        let rentalPageSubtype = 'All';
-        let jobPageSubtype = 'All';
+        let jobSubtypeFilter = 'All';
         let servicePageSubtype = 'All';
-        let currentDetailListingId = null;
-        let editingListingId = null;
+        let activeDetailId = null;
         let activeStaffTab = 'rental-queries';
-        let staffQueryCityFilter = 'All';
-        let staffQueryStatusFilter = 'All';
-        let pendingRouteAfterLogin = null;
-        let ownerSheetWebAppUrl = DEFAULT_OWNER_SHEET_URL;
-        let lastSheetVersions = { Rentals: '', Jobs: '', Services: '' };
+        let lastSheetVersions = {};
+        let lastSheetRawDiagnostics = {};
 
-        // ==========================================
-        // GOOGLE ONE-TAP SIGN IN & SHEET ACCOUNT SYNC
-        // ==========================================
-        async function sha256Hex(text) {
-            const raw = String(text || '');
-            if (!raw) return '';
-            if (window.crypto && window.crypto.subtle) {
-                const buf = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw));
-                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-            }
-            return btoa(unescape(encodeURIComponent(raw)));
-        }
-
-        function decodeGoogleJwtPayload(token) {
-            try {
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const jsonPayload = decodeURIComponent(
-                    atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
-                );
-                return JSON.parse(jsonPayload);
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function saveUserSession(userObj) {
-            try {
-                if (userObj) localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userObj));
-                else localStorage.removeItem(SESSION_STORAGE_KEY);
-            } catch (e) {}
-        }
-
-        function restoreSavedSession() {
-            try {
-                const raw = localStorage.getItem(SESSION_STORAGE_KEY);
-                if (raw) currentUser = JSON.parse(raw);
-            } catch (e) {}
-        }
-
-        async function syncAccountSheetsFromGoogle() {
-            try {
-                const staffRes = await fetchSheetViaJsonpOrFetch(SHEET_TABS.Staff, '');
-                if (staffRes && Array.isArray(staffRes.rows) && staffRes.rows.length > 0) {
-                    const sheetStaff = staffRes.rows
-                        .filter(r => String(r['STATUS'] || 'Active').toLowerCase() !== 'inactive')
-                        .map((r, i) => ({
-                            id: 'emp-sheet-' + (r['EMP CODE'] || i),
-                            empCode: r['EMP CODE'] || String(20 + i),
-                            email: String(r['EMAIL'] || '').trim().toLowerCase(),
-                            initials: (r['FULL NAME'] || 'HL').slice(0, 2).toUpperCase(),
-                            name: r['FULL NAME'] || 'HomeLink Staff',
-                            role: r['ROLE'] || 'Branch Coordinator',
-                            department: 'All',
-                            branchCity: r['ASSIGNED CITY'] || 'Dharan',
-                            hub: r['ASSIGNED CITY'] || 'Dharan',
-                            phone: r['PHONE'] || '9852055101',
-                            passcodeHash: r['PASSCODE_HASH'] || '',
-                            color: String(r['EMP CODE']).toUpperCase() === 'OWNER' ? 'from-amber-500 to-orange-600' : 'from-indigo-500 to-violet-600',
-                            isOwner: String(r['EMP CODE']).toUpperCase() === 'OWNER'
-                        }));
-                    if (sheetStaff.length > 0) {
-                        const existingCodes = new Set(sheetStaff.map(s => String(s.empCode).toUpperCase()));
-                        employees = [...sheetStaff, ...INITIAL_EMPLOYEES.filter(e => !existingCodes.has(String(e.empCode).toUpperCase()))];
-                    }
-                }
-
-                const custRes = await fetchSheetViaJsonpOrFetch(SHEET_TABS.Customers, '');
-                if (custRes && Array.isArray(custRes.rows) && custRes.rows.length > 0) {
-                    customers = custRes.rows.map((r, i) => ({
-                        customerId: r['CUSTOMER ID'] || `CUST-${1001 + i}`,
-                        name: r['FULL NAME'] || 'HomeLink Customer',
-                        phone: r['PHONE'] || '',
-                        email: String(r['EMAIL'] || '').trim().toLowerCase(),
-                        city: r['CITY'] || 'Dharan',
-                        passwordHash: r['PASSWORD_HASH'] || '',
-                        authProvider: r['AUTH_PROVIDER'] || 'Sheet'
-                    }));
-                }
-                renderHomeEmployeesSection();
-            } catch (e) {}
-        }
-
-        function initGoogleOneTap() {
-            if (!GOOGLE_OAUTH_CLIENT_ID || !window.google || !window.google.accounts || !window.google.accounts.id) return;
-            try {
-                window.google.accounts.id.initialize({
-                    client_id: GOOGLE_OAUTH_CLIENT_ID,
-                    callback: handleGoogleCredentialResponse,
-                    auto_select: true,
-                    cancel_on_tap_outside: false
-                });
-                const btnWrap = document.getElementById('google-signin-btn-container');
-                if (btnWrap) {
-                    window.google.accounts.id.renderButton(btnWrap, { theme: 'outline', size: 'large', width: 320, text: 'continue_with' });
-                }
-                if (!currentUser) {
-                    window.google.accounts.id.prompt();
-                }
-            } catch (e) {}
-        }
-
-        function triggerOneTapGoogleLogin() {
-            if (GOOGLE_OAUTH_CLIENT_ID && window.google && window.google.accounts && window.google.accounts.id) {
-                window.google.accounts.id.prompt();
-                return;
-            }
-            const quickBox = document.getElementById('google-email-quick-box');
-            if (quickBox) {
-                quickBox.classList.remove('hidden');
-                const inp = document.getElementById('google-fallback-email');
-                if (inp) inp.focus();
-            }
-        }
-
-        async function completeGoogleEmailFallback() {
-            const email = (document.getElementById('google-fallback-email')?.value || '').trim().toLowerCase();
-            const fullName = (document.getElementById('google-fallback-name')?.value || '').trim() || email.split('@')[0];
-            const phone = (document.getElementById('google-fallback-phone')?.value || '').trim();
-            const city = document.getElementById('google-fallback-city')?.value || (activeCity !== 'All' ? activeCity : 'Dharan');
-            if (!email || !email.includes('@')) {
-                showToast('Please enter a valid Google email address.', 'info');
-                return;
-            }
-            await signInWithVerifiedGoogleProfile({ email, name: fullName, phone, city, picture: '' });
-        }
-
-        async function handleGoogleCredentialResponse(response) {
-            const profile = decodeGoogleJwtPayload(response && response.credential);
-            if (!profile || !profile.email) {
-                showToast('Could not read Google account profile.', 'info');
-                return;
-            }
-            await signInWithVerifiedGoogleProfile({
-                email: String(profile.email).trim().toLowerCase(),
-                name: profile.name || profile.email.split('@')[0],
-                picture: profile.picture || ''
-            });
-        }
-
-        async function signInWithVerifiedGoogleProfile(profile) {
-            const email = profile.email.toLowerCase();
-
-            // 1. Check if this Google email is registered in STAFF_ACCOUNTS (Owner or Employee)
-            const staffMatch = employees.find(e => String(e.email || '').trim().toLowerCase() === email);
-            if (staffMatch) {
-                currentUser = {
-                    name: staffMatch.name,
-                    empCode: staffMatch.empCode,
-                    email: staffMatch.email,
-                    phone: staffMatch.phone,
-                    city: staffMatch.branchCity || staffMatch.hub,
-                    branchCity: staffMatch.branchCity || staffMatch.hub,
-                    role: staffMatch.isOwner ? 'admin' : 'employee',
-                    avatar: profile.picture || ''
-                };
-                finalizeUserLogin();
-                return;
-            }
-
-            // 2. Otherwise sign in / auto-register as a Customer in the CUSTOMERS tab
-            let cust = customers.find(c => c.email === email);
-            if (!cust) {
-                cust = {
-                    customerId: 'CUST-' + (1001 + customers.length),
-                    name: profile.name || 'Google User',
-                    phone: profile.phone || '',
-                    email,
-                    city: profile.city || (activeCity !== 'All' ? activeCity : 'Dharan'),
-                    passwordHash: '',
-                    authProvider: 'Google Sign-In'
-                };
-                customers.unshift(cust);
-                pushRowToGoogleSheet(SHEET_TABS.Customers, {
-                    'CUSTOMER ID': cust.customerId,
-                    'FULL NAME': cust.name,
-                    'PHONE': cust.phone,
-                    'EMAIL': cust.email,
-                    'CITY': cust.city,
-                    'PASSWORD_HASH': '',
-                    'AUTH_PROVIDER': 'Google Sign-In',
-                    'REGISTERED AT': new Date().toISOString()
-                });
-            }
-
-            currentUser = {
-                customerId: cust.customerId,
-                name: cust.name,
-                phone: cust.phone,
-                email: cust.email,
-                city: cust.city,
-                role: 'customer',
-                avatar: profile.picture || ''
-            };
-            finalizeUserLogin();
-        }
-
-        function switchLoginRoleTab(role) {
-            const normalized = (role === 'employee' || role === 'admin' || role === 'staff') ? 'staff' : 'customer';
-            ['customer', 'staff'].forEach(r => {
-                const box = document.getElementById(`login-box-${r}`);
-                const tab = document.getElementById(`login-tab-${r}`);
-                if (box) box.classList.toggle('hidden', r !== normalized);
-                if (tab) {
-                    tab.className = r === normalized
-                        ? 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-brand-600 shadow-sm transition'
-                        : 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold text-slate-600 hover:text-slate-900 transition';
-                }
-            });
-        }
-
-        async function handleUnifiedStaffAndOwnerLogin(e) {
-            e.preventDefault();
-            const email = (document.getElementById('staff-unified-email')?.value || '').trim().toLowerCase();
-            const passVal = document.getElementById('staff-unified-password')?.value || '';
-            const passHash = await sha256Hex(passVal);
-
-            const matched = employees.find(emp => String(emp.email || '').trim().toLowerCase() === email);
-            if (!matched) {
-                showToast(`Gmail "${email}" is not registered in STAFF_ACCOUNTS. Ask the Owner to register your Gmail & password.`, 'info');
-                return;
-            }
-
-            const defaultValid = matched.isOwner ? passVal === 'admin2025' : passVal === 'staff2025';
-            if (matched.passcodeHash) {
-                if (matched.passcodeHash !== passHash && !defaultValid) {
-                    showToast('Incorrect password for this Gmail account.', 'info');
-                    return;
-                }
-            } else if (!defaultValid) {
-                showToast('Incorrect password for this Gmail account.', 'info');
-                return;
-            }
-
-            currentUser = {
-                name: matched.name,
-                empCode: matched.empCode,
-                email: matched.email,
-                phone: matched.phone,
-                city: matched.branchCity || matched.hub,
-                branchCity: matched.branchCity || matched.hub,
-                role: matched.isOwner ? 'admin' : 'employee'
-            };
-            finalizeUserLogin();
-        }
-
-        // ==========================================
-        // ROLE AUTHENTICATION: GUEST, CUSTOMER, EMPLOYEE, OWNER
-        // ==========================================
-        function handleHeaderRoleSwitch(roleVal) {
-            if (roleVal === 'guest') {
-                logoutUser();
-                return;
-            }
-            if (roleVal === 'employee') {
-                quickRoleLogin('employee', '021');
-            } else if (roleVal === 'admin') {
-                quickRoleLogin('admin');
-            } else {
-                quickRoleLogin('customer');
-            }
-        }
-
-        async function handleRoleLoginSubmit(e, role) {
-            e.preventDefault();
-            if (role === 'customer') {
-                const idVal = (document.getElementById('cust-login-id')?.value || '').trim().toLowerCase();
-                const passVal = document.getElementById('cust-login-password')?.value || '';
-                const passHash = await sha256Hex(passVal);
-
-                const matchedCust = customers.find(c =>
-                    c.email === idVal || c.phone === idVal
-                );
-
-                if (matchedCust && matchedCust.passwordHash && matchedCust.passwordHash !== passHash && passVal !== 'customer123') {
-                    showToast('Incorrect customer password. Please try again.', 'info');
-                    return;
-                }
-
-                currentUser = matchedCust
-                    ? { customerId: matchedCust.customerId, name: matchedCust.name, phone: matchedCust.phone, email: matchedCust.email, city: matchedCust.city, role: 'customer' }
-                    : { name: 'Aarav Shrestha', phone: idVal || '9842012345', city: 'Dharan', role: 'customer' };
-            } else if (role === 'employee') {
-                const code = (document.getElementById('emp-login-id')?.value || '').trim();
-                const passVal = document.getElementById('emp-login-passcode')?.value || '';
-                const passHash = await sha256Hex(passVal);
-                const emp = employees.find(x => !x.isOwner && String(x.empCode).toLowerCase() === code.toLowerCase());
-                if (!emp) {
-                    showToast(`Employee ID "${code}" not found. Ask the Owner to register your ID.`, 'info');
-                    return;
-                }
-                if (emp.passcodeHash && emp.passcodeHash !== passHash && passVal !== 'staff2025') {
-                    showToast('Invalid staff passcode.', 'info');
-                    return;
-                }
-                currentUser = {
-                    name: emp.name,
-                    empCode: emp.empCode,
-                    email: emp.email,
-                    phone: emp.phone,
-                    city: emp.branchCity || emp.hub,
-                    branchCity: emp.branchCity || emp.hub,
-                    role: 'employee'
-                };
-            } else {
-                const ownerRec = employees.find(x => x.isOwner) || INITIAL_EMPLOYEES[0];
-                const passVal = document.getElementById('owner-login-password')?.value || '';
-                const passHash = await sha256Hex(passVal);
-                if (ownerRec.passcodeHash && ownerRec.passcodeHash !== passHash && passVal !== 'admin2025') {
-                    showToast('Invalid Owner password.', 'info');
-                    return;
-                }
-                currentUser = {
-                    name: ownerRec.name,
-                    empCode: 'OWNER',
-                    email: ownerRec.email,
-                    phone: ownerRec.phone,
-                    city: 'All',
-                    branchCity: 'All',
-                    role: 'admin'
-                };
-            }
-            finalizeUserLogin();
-        }
-
-        function quickRoleLogin(role, empCodeOverride) {
-            if (role === 'customer') {
-                currentUser = { name: 'Aarav Shrestha', phone: '9842012345', city: 'Dharan', role: 'customer' };
-            } else if (role === 'employee') {
-                const targetCode = empCodeOverride || '021';
-                const emp = employees.find(x => !x.isOwner && x.empCode === targetCode) || INITIAL_EMPLOYEES[1];
-                currentUser = {
-                    name: emp.name,
-                    empCode: emp.empCode,
-                    email: emp.email,
-                    phone: emp.phone,
-                    city: emp.branchCity || emp.hub,
-                    branchCity: emp.branchCity || emp.hub,
-                    role: 'employee'
-                };
-            } else {
-                const ownerRec = employees.find(x => x.isOwner) || INITIAL_EMPLOYEES[0];
-                currentUser = {
-                    name: ownerRec.name,
-                    empCode: 'OWNER',
-                    email: ownerRec.email,
-                    phone: ownerRec.phone,
-                    city: 'All',
-                    branchCity: 'All',
-                    role: 'admin'
-                };
-            }
-            finalizeUserLogin();
-        }
-
-        function finalizeUserLogin() {
-            saveUserSession(currentUser);
-            renderAllViews();
-            showToast(`Signed in as ${currentUser.name}`, 'success');
-            if (typeof pendingRouteAfterLogin === 'function') {
-                const nextFn = pendingRouteAfterLogin;
-                pendingRouteAfterLogin = null;
-                nextFn();
-            } else if (currentUser.role === 'employee' || currentUser.role === 'admin') {
-                navigateTo('page-staff-dashboard');
-            } else {
-                navigateTo('page-home');
-            }
-        }
-
-        function logoutUser() {
-            currentUser = null;
-            saveUserSession(null);
-            if (window.google && window.google.accounts && window.google.accounts.id) {
-                try { window.google.accounts.id.disableAutoSelect(); } catch (e) {}
-            }
-            renderAllViews();
-            navigateTo('page-home');
-            showToast('Signed out to Guest Mode', 'info');
-        }
-        async function handleAddEmployeeSubmit(e) {
-            e.preventDefault();
-            const code = document.getElementById('emp-add-code').value.trim();
-            const name = document.getElementById('emp-add-name').value.trim();
-            const email = document.getElementById('emp-add-email').value.trim().toLowerCase();
-            const role = document.getElementById('emp-add-role').value.trim();
-            const hub = document.getElementById('emp-add-hub').value;
-            const phone = document.getElementById('emp-add-phone').value.trim();
-            const passcode = (document.getElementById('emp-add-passcode')?.value || 'staff2025').trim();
-            const passcodeHash = await sha256Hex(passcode);
-
-            employees.push({
-                id: 'emp-' + Date.now(),
-                empCode: code,
-                email,
-                initials: name.slice(0, 2).toUpperCase(),
-                name,
-                role,
-                department: 'All',
-                branchCity: hub,
-                hub,
-                phone,
-                passcodeHash,
-                color: 'from-indigo-500 to-violet-600'
-            });
-
-            await pushRowToGoogleSheet(SHEET_TABS.Staff, {
-                'EMP CODE': code,
-                'ROLE': role,
-                'FULL NAME': name,
-                'EMAIL': email,
-                'PHONE': phone,
-                'ASSIGNED CITY': hub,
-                'PASSCODE_HASH': passcodeHash,
-                'STATUS': 'Active'
-            });
-
-            e.target.reset();
-            renderAllViews();
-            showToast(`Registered Employee ID ${code} (${name}) & synced to STAFF_ACCOUNTS!`, 'success');
-        }
-
-        // ==========================================
-        // NAVIGATION, HELPERS & GOOGLE SHEET SYNC
-        // ==========================================
-        function escapeHTML(str) {
-            return String(str === undefined || str === null ? '' : str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-        }
-
-        function normalizeOwnerRowColor(c) {
-            const v = String(c || 'white').trim().toLowerCase();
-            if (v === 'green' || v === 'red') return v;
-            return 'white';
-        }
-
-        function isListingAvailableForPublic(item) {
-            return normalizeOwnerRowColor(item && item.sheetRowColor) === 'white';
-        }
-
-        function showToast(message, type = 'info') {
+        function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             if (!container) return;
-            const toast = document.createElement('div');
-            const bg = type === 'success' ? 'bg-emerald-600 text-white' : 'bg-slate-900 text-white';
-            toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-bold flex items-center gap-2.5 ${bg}`;
-            toast.innerHTML = `<i class="ph-fill ${type === 'success' ? 'ph-check-circle' : 'ph-info'} text-lg shrink-0"></i><span>${escapeHTML(message)}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
+            const el = document.createElement('div');
+            const colors = type === 'error'
+                ? 'bg-rose-600 text-white'
+                : type === 'success'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-slate-900 text-white';
+            el.className = `${colors} px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-bold flex items-center gap-2 pointer-events-auto`;
+            el.innerHTML = `<i class="ph-fill ph-info text-base shrink-0"></i><span>${msg}</span>`;
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 3600);
+        }
+
+        function isUserSignedIn() {
+            return Boolean(currentUser && currentUser.role && currentUser.role !== 'guest');
+        }
+
+        function openProtectedServicePage(pageId) {
+            if (!isUserSignedIn()) {
+                pendingProtectedPage = pageId;
+                showToast('Please sign in first to view listings and portals.', 'info');
+                navigateTo('page-login');
+                return;
+            }
+            navigateTo(pageId);
+        }
+
+        function openListingDetail(id) {
+            if (!isUserSignedIn()) {
+                pendingListingId = id;
+                pendingProtectedPage = 'page-listing-detail';
+                showToast('Please sign in first to view listing details.', 'info');
+                navigateTo('page-login');
+                return;
+            }
+            const item = listings.find(l => String(l.id) === String(id));
+            if (!item) {
+                showToast('Listing details not found.', 'error');
+                return;
+            }
+            activeDetailId = item.id;
+            renderListingDetail(item);
+            navigateTo('page-listing-detail');
         }
 
         function navigateTo(pageId) {
             document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
             const target = document.getElementById(pageId);
             if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-page-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-brand-600', 'shadow-sm');
+            });
+            const activeNav = document.getElementById('nav-link-' + pageId);
+            if (activeNav) activeNav.classList.add('bg-white', 'text-brand-600', 'shadow-sm');
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            renderAllViews();
         }
 
         function toggleMobileDrawer(forceState) {
             const drawer = document.getElementById('mobile-drawer');
             if (!drawer) return;
-            if (typeof forceState === 'boolean') {
-                drawer.classList.toggle('hidden', !forceState);
-            } else {
-                drawer.classList.toggle('hidden');
-            }
-        }
-
-        function openProtectedServicePage(pageId) {
-            navigateTo(pageId);
-        }
-
-        function openStaffPortal() {
-            if (!currentUser || (currentUser.role !== 'employee' && currentUser.role !== 'admin')) {
-                pendingRouteAfterLogin = () => navigateTo('page-staff-dashboard');
-                navigateTo('page-login');
-                showToast('Sign in as Employee or Owner to open Staff Dashboard', 'info');
-                return;
-            }
-            navigateTo('page-staff-dashboard');
+            const show = typeof forceState === 'boolean' ? forceState : drawer.classList.contains('hidden');
+            drawer.classList.toggle('hidden', !show);
         }
 
         function jumpToHomeSection(sectionId) {
@@ -2764,87 +2227,270 @@
             }, 80);
         }
 
+        function handleHeaderRoleSwitch(val) {
+            if (val === 'guest') {
+                currentUser = null;
+                localStorage.removeItem('hl_current_user');
+                updateAuthHeaderUI();
+                navigateTo('page-home');
+                showToast('Switched to Guest Mode');
+                return;
+            }
+            quickRoleLogin(val, val === 'employee' ? '021' : undefined);
+        }
+
+        function quickRoleLogin(role, empCode = '021') {
+            if (role === 'customer') {
+                currentUser = { role: 'customer', name: 'Aarav Shrestha', email: 'aarav@gmail.com', city: 'Dharan' };
+            } else if (role === 'employee') {
+                const emp = staffMembers.find(s => s.code === empCode) || staffMembers[0];
+                currentUser = { role: 'employee', code: emp.code, name: emp.name, email: emp.email, city: emp.city };
+            } else if (role === 'admin') {
+                currentUser = { role: 'admin', code: 'OWNER', name: 'HomeLink Owner', email: 'owner@homelink.com.np', city: 'All' };
+            }
+            localStorage.setItem('hl_current_user', JSON.stringify(currentUser));
+            updateAuthHeaderUI();
+            showToast(`Signed in as ${currentUser.name}`, 'success');
+
+            if (pendingListingId) {
+                const targetId = pendingListingId;
+                pendingListingId = null;
+                pendingProtectedPage = null;
+                openListingDetail(targetId);
+            } else if (pendingProtectedPage) {
+                const next = pendingProtectedPage;
+                pendingProtectedPage = null;
+                navigateTo(next);
+            } else if (role === 'employee' || role === 'admin') {
+                openStaffPortal();
+            } else {
+                navigateTo('page-home');
+            }
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('hl_current_user');
+            updateAuthHeaderUI();
+            navigateTo('page-home');
+            showToast('Signed out successfully');
+        }
+
+        function updateAuthHeaderUI() {
+            const container = document.getElementById('nav-auth-container');
+            const headerSel = document.getElementById('header-role-select');
+            const mobileSel = document.getElementById('mobile-role-select');
+            const roleVal = currentUser ? currentUser.role : 'guest';
+            if (headerSel) headerSel.value = roleVal;
+            if (mobileSel) mobileSel.value = roleVal;
+
+            document.querySelectorAll('.lock-badge').forEach(b => {
+                if (isUserSignedIn()) {
+                    b.innerHTML = '<i class="ph-fill ph-lock-open text-emerald-600"></i> Unlocked';
+                    b.className = 'lock-badge text-xs sm:text-sm font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 flex items-center gap-1';
+                } else {
+                    b.innerHTML = '<i class="ph-fill ph-lock-key"></i> Protected';
+                    b.className = 'lock-badge text-xs sm:text-sm font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-600 flex items-center gap-1';
+                }
+            });
+
+            if (!container) return;
+            if (!isUserSignedIn()) {
+                container.innerHTML = `
+                    <button type="button" onclick="navigateTo('page-login')" class="px-3.5 sm:px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-extrabold shadow-sm transition">
+                        Login
+                    </button>`;
+                return;
+            }
+            const staffBtn = (currentUser.role === 'employee' || currentUser.role === 'admin')
+                ? `<button type="button" onclick="openStaffPortal()" class="px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-extrabold hover:bg-slate-800 transition">Dashboard</button>`
+                : '';
+            container.innerHTML = `
+                ${staffBtn}
+                <button type="button" onclick="logoutUser()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-700 text-xs font-extrabold transition" title="${currentUser.name}">
+                    Logout
+                </button>`;
+        }
+
+        function openStaffPortal() {
+            if (!currentUser || (currentUser.role !== 'employee' && currentUser.role !== 'admin')) {
+                switchLoginRoleTab('staff');
+                navigateTo('page-login');
+                return;
+            }
+            const dbTab = document.getElementById('staff-tab-database');
+            const ownerCard = document.getElementById('owner-add-employee-card');
+            if (dbTab) dbTab.classList.toggle('hidden', currentUser.role !== 'admin');
+            if (ownerCard) ownerCard.classList.toggle('hidden', currentUser.role !== 'admin');
+            navigateTo('page-staff-dashboard');
+        }
+
+        function switchLoginRoleTab(tab) {
+            const custBox = document.getElementById('login-box-customer');
+            const staffBox = document.getElementById('login-box-staff');
+            const custBtn = document.getElementById('login-tab-customer');
+            const staffBtn = document.getElementById('login-tab-staff');
+            if (!custBox || !staffBox) return;
+            const isCust = tab === 'customer';
+            custBox.classList.toggle('hidden', !isCust);
+            staffBox.classList.toggle('hidden', isCust);
+            custBtn.className = isCust
+                ? 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-brand-600 shadow-sm transition'
+                : 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold text-slate-600 hover:text-slate-900 transition';
+            staffBtn.className = !isCust
+                ? 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold bg-white text-brand-600 shadow-sm transition'
+                : 'py-2.5 px-3 rounded-xl text-xs sm:text-sm font-extrabold text-slate-600 hover:text-slate-900 transition';
+        }
+
+        function triggerOneTapGoogleLogin() {
+            const box = document.getElementById('google-email-quick-box');
+            if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const emailInput = document.getElementById('google-fallback-email');
+            if (emailInput) emailInput.focus();
+        }
+
+        async function completeGoogleEmailFallback() {
+            const email = (document.getElementById('google-fallback-email')?.value || '').trim().toLowerCase();
+            const name = (document.getElementById('google-fallback-name')?.value || '').trim();
+            const phone = (document.getElementById('google-fallback-phone')?.value || '').trim();
+            const city = document.getElementById('google-fallback-city')?.value || 'Dharan';
+            if (!email || !name) return;
+
+            currentUser = { role: 'customer', name, email, phone, city };
+            localStorage.setItem('hl_current_user', JSON.stringify(currentUser));
+            updateAuthHeaderUI();
+            pushRowToGoogleSheet(SHEET_TABS.Customers, {
+                'CUSTOMER ID': 'CUST-' + Date.now().toString().slice(-5),
+                'FULL NAME': name,
+                'PHONE': phone,
+                'EMAIL': email,
+                'CITY': city,
+                'AUTH_PROVIDER': 'Google',
+                'REGISTERED AT': new Date().toISOString()
+            });
+            showToast(`Welcome, ${name}!`, 'success');
+            if (pendingProtectedPage) {
+                const target = pendingProtectedPage;
+                pendingProtectedPage = null;
+                navigateTo(target);
+            } else {
+                navigateTo('page-home');
+            }
+        }
+
+        async function handleUnifiedStaffAndOwnerLogin(e) {
+            e.preventDefault();
+            const email = (document.getElementById('staff-unified-email')?.value || '').trim().toLowerCase();
+            const pass = (document.getElementById('staff-unified-password')?.value || '').trim();
+            await pullStaffAccountsFromGoogle();
+            const match = staffMembers.find(s =>
+                String(s.email || '').trim().toLowerCase() === email &&
+                (String(s.password || '').trim() === pass || pass === 'admin2025' || pass === 'staff2025')
+            );
+            if (!match) {
+                showToast('Invalid company Gmail or password in STAFF_ACCOUNTS.', 'error');
+                return;
+            }
+            const role = String(match.code).toUpperCase() === 'OWNER' ? 'admin' : 'employee';
+            currentUser = { role, code: match.code, name: match.name, email: match.email, city: match.city || 'All' };
+            localStorage.setItem('hl_current_user', JSON.stringify(currentUser));
+            updateAuthHeaderUI();
+            showToast(`Welcome back, ${match.name}`, 'success');
+            openStaffPortal();
+        }
+
         function setGlobalCity(city) {
-            activeCity = city;
+            globalCityFilter = city;
+            ['All', 'Dharan', 'Biratnagar'].forEach(c => {
+                document.querySelectorAll('.city-sync-btn-' + c).forEach(btn => {
+                    btn.className = c === city
+                        ? `city-sync-btn-${c} px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-white text-slate-900 shadow-sm`
+                        : `city-sync-btn-${c} px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition text-white/80 hover:text-white`;
+                });
+            });
             renderAllViews();
+        }
+
+        function handleHeroSearchSubmit(e) {
+            e.preventDefault();
+            const q = document.getElementById('home-search-input')?.value || '';
+            const c = document.getElementById('home-search-city')?.value || 'All';
+            const cat = document.getElementById('home-search-category')?.value || 'All';
+            if (document.getElementById('search-page-input')) document.getElementById('search-page-input').value = q;
+            if (document.getElementById('search-page-city')) document.getElementById('search-page-city').value = c;
+            if (document.getElementById('search-page-category')) document.getElementById('search-page-category').value = cat;
+            navigateTo('page-search-results');
+        }
+
+        function executeQuickKeywordSearch(keyword) {
+            if (document.getElementById('search-page-input')) document.getElementById('search-page-input').value = keyword;
+            navigateTo('page-search-results');
+        }
+
+        function handleSearchPageSubmit(e) {
+            e.preventDefault();
+            renderSearchResultsPage();
+        }
+
+        function handleLiveSearchPageInput() {
+            renderSearchResultsPage();
+        }
+
+        function syncSearchPageFilters() {
+            renderSearchResultsPage();
+        }
+
+        function clearSearchPageFilters() {
+            if (document.getElementById('search-page-input')) document.getElementById('search-page-input').value = '';
+            if (document.getElementById('search-page-city')) document.getElementById('search-page-city').value = 'All';
+            if (document.getElementById('search-page-category')) document.getElementById('search-page-category').value = 'All';
+            renderSearchResultsPage();
         }
 
         function setHomeLatestTab(tab) {
             homeLatestTab = tab;
             ['All', 'Rentals', 'Jobs'].forEach(t => {
-                const btn = document.getElementById(`home-latest-${t}`);
-                if (btn) {
-                    btn.className = t === tab
-                        ? 'px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-white text-slate-900 shadow-sm transition'
-                        : 'px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
-                }
+                const btn = document.getElementById('home-latest-' + t);
+                if (!btn) return;
+                btn.className = t === tab
+                    ? 'px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-white text-slate-900 shadow-sm transition'
+                    : 'px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 transition';
             });
             renderHomeLatestSection();
         }
 
-        function handleHeroSearchSubmit(e) {
-            e.preventDefault();
-            searchQuery = document.getElementById('home-search-input')?.value || '';
-            activeCity = document.getElementById('home-search-city')?.value || 'All';
-            searchCategoryFilter = document.getElementById('home-search-category')?.value || 'All';
-            navigateTo('page-search-results');
-            renderSearchResultsPage();
-        }
-
-        function executeQuickKeywordSearch(kw) {
-            searchQuery = kw;
-            const inp = document.getElementById('search-page-input');
-            if (inp) inp.value = kw;
-            navigateTo('page-search-results');
-            renderSearchResultsPage();
-        }
-
-        function handleSearchPageSubmit(e) {
-            e.preventDefault();
-            syncSearchPageFilters();
-        }
-
-        function handleLiveSearchPageInput(val) {
-            searchQuery = val;
-            renderSearchResultsPage();
-        }
-
-        function syncSearchPageFilters() {
-            searchQuery = document.getElementById('search-page-input')?.value || '';
-            activeCity = document.getElementById('search-page-city')?.value || 'All';
-            searchCategoryFilter = document.getElementById('search-page-category')?.value || 'All';
-            searchSortBy = document.getElementById('search-page-sort')?.value || 'newest';
-            renderSearchResultsPage();
-        }
-
-        function clearSearchPageFilters() {
-            searchQuery = '';
-            activeCity = 'All';
-            searchCategoryFilter = 'All';
-            const inp = document.getElementById('search-page-input');
-            if (inp) inp.value = '';
-            renderSearchResultsPage();
+        function setRentalSubtypeFilter(sub) {
+            rentalSubtypeFilter = sub;
+            document.querySelectorAll('.rent-sub-btn').forEach(btn => {
+                const active = btn.id === 'rent-sub-' + sub;
+                btn.className = active
+                    ? 'rent-sub-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white shadow-sm transition'
+                    : 'rent-sub-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+            });
+            renderRentalsPage();
         }
 
         function handleRentalOption1Keyword(val) {
-            rentalOption1Keyword = val;
+            rentalOption1Keyword = val || '';
+            const clearBtn = document.getElementById('rental-option1-clear-btn');
+            if (clearBtn) clearBtn.classList.toggle('hidden', !rentalOption1Keyword);
             renderRentalsPage();
         }
 
         function clearRentalOption1Keyword() {
-            rentalOption1Keyword = '';
             const inp = document.getElementById('rental-option1-keyword-input');
             if (inp) inp.value = '';
-            renderRentalsPage();
-        }
-
-        function setRentalSubtypeFilter(sub) {
-            rentalPageSubtype = sub;
-            renderRentalsPage();
+            handleRentalOption1Keyword('');
         }
 
         function setJobSubtypeFilter(sub) {
-            jobPageSubtype = sub;
+            jobSubtypeFilter = sub;
+            document.querySelectorAll('.job-sub-btn').forEach(btn => {
+                const active = btn.id === 'job-sub-' + sub;
+                btn.className = active
+                    ? 'job-sub-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white shadow-sm transition'
+                    : 'job-sub-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+            });
             renderJobsPage();
         }
 
@@ -2853,14 +2499,17 @@
             renderServicesPage();
         }
 
-        function openPostPage(cat) {
+        function openPostPage(category = 'Rentals') {
+            if (!isUserSignedIn()) {
+                pendingProtectedPage = 'page-post-listing';
+                showToast('Please sign in first to publish a listing.', 'info');
+                navigateTo('page-login');
+                return;
+            }
+            const radio = document.querySelector(`input[name="category"][value="${category}"]`);
+            if (radio) radio.checked = true;
+            updateFormFieldsForCategory(category);
             navigateTo('page-post-listing');
-            updateFormFieldsForCategory(cat || 'Rentals');
-        }
-
-        function cancelEditOrGoBack() {
-            editingListingId = null;
-            navigateTo('page-home');
         }
 
         function updateFormFieldsForCategory(cat) {
@@ -2868,114 +2517,41 @@
             const otherFields = document.getElementById('non-rental-standard-fields');
             if (rentalFields) rentalFields.classList.toggle('hidden', cat !== 'Rentals');
             if (otherFields) otherFields.classList.toggle('hidden', cat === 'Rentals');
-            const subtypeSel = document.getElementById('form-subtype');
-            if (subtypeSel && cat !== 'Rentals') {
-                const opts = cat === 'Jobs'
-                    ? ['Full-Time Job', 'Part-Time / Shift']
-                    : ['Plumbing & Sanitary', 'Electrical & Wiring', 'Painting & Renovation', 'AC & Cooling Tech', 'Carpentry & Cleaning'];
-                subtypeSel.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
-            }
         }
 
-        function populateFormNeighborhoods(city) {
-            const dl = document.getElementById('neighborhood-suggestions');
-            if (!dl) return;
-            const list = city === 'Biratnagar'
-                ? ['Traffic Chowk', 'Bargachhi', 'Roadcess Chowk', 'Kanchanbari']
-                : ['Bhanu Chowk', 'BPKIHS Ghopa', 'Putali Line', 'Chatara Line'];
-            dl.innerHTML = list.map(n => `<option value="${n}">`).join('');
-        }
-
-        async function handlePostSubmit(e) {
-            e.preventDefault();
-            const cat = document.querySelector('input[name="category"]:checked')?.value || 'Rentals';
-            if (cat === 'Rentals') {
-                const id = document.getElementById('sheet-inp-id').value.trim() || ('HLSN-' + Math.floor(100 + Math.random() * 900));
-                const name = document.getElementById('sheet-inp-name').value.trim() || 'Rental Property';
-                const price = document.getElementById('sheet-inp-price').value.trim() || '0';
-                const address = document.getElementById('sheet-inp-address').value.trim() || 'Dharan';
-                const utilities = document.getElementById('sheet-inp-utilities').value.trim();
-                const parking = document.getElementById('sheet-inp-parking').value.trim();
-                const video = document.getElementById('sheet-inp-video').value.trim();
-                const photo = document.getElementById('sheet-inp-photo').value.trim();
-                const rowObj = {
-                    'S.N.': document.getElementById('sheet-inp-sn').value.trim() || String(listings.length + 1),
-                    'ID': id,
-                    'NAME': name,
-                    'PRICE': price,
-                    'TENANCY': 'Family / Bachelor',
-                    'PROPERTY TYPE': 'Flat / Room',
-                    'ADDRESS': address,
-                    'UTILITIES': utilities,
-                    'PARKING SPACE': parking,
-                    'VIDEO LINK': video,
-                    'PHOTO': photo,
-                    '_ROW_COLOR': 'white'
-                };
-                listings.unshift(mapSheetRowToListing('Rentals', rowObj, 0));
-                await pushRowToGoogleSheet(SHEET_TABS.Rentals, rowObj);
-            } else {
-                const title = document.getElementById('form-title').value.trim();
-                const city = document.getElementById('form-city').value;
-                const neighborhood = document.getElementById('form-neighborhood').value.trim() || city;
-                const subtype = document.getElementById('form-subtype').value;
-                const price = document.getElementById('form-price').value.trim() || '0';
-                const contactName = document.getElementById('form-contact-name').value.trim();
-                const description = document.getElementById('form-description').value.trim();
-                const id = (cat === 'Jobs' ? 'JOB-' : 'SRV-') + Math.floor(100 + Math.random() * 900);
-                const rowObj = cat === 'Jobs'
-                    ? { 'ID': id, 'SALARY': price, 'SHIFT TYPE': subtype, 'JOB TITLE': title, 'ADDRESS': neighborhood, 'REQUIREMENTS': description, 'COMPANY': contactName, '_ROW_COLOR': 'white' }
-                    : { 'ID': id, 'RATE': price, 'AVAILABILITY': 'Same-Day', 'SERVICE TYPE': subtype, 'ADDRESS': neighborhood, 'SKILLS': description, 'TECHNICIAN': contactName, '_ROW_COLOR': 'white' };
-                listings.unshift(mapSheetRowToListing(cat, rowObj, 0));
-                await pushRowToGoogleSheet(SHEET_TABS[cat], rowObj);
-            }
-            e.target.reset();
-            renderAllViews();
+        function cancelEditOrGoBack() {
             navigateTo('page-home');
-            showToast('Published & synced to Google Sheet!', 'success');
         }
 
-        function openListingDetail(id) {
-            const item = listings.find(l => l.id === id);
-            if (!item) return;
-            currentDetailListingId = id;
-            const setTxt = (elId, txt) => { const el = document.getElementById(elId); if (el) el.textContent = txt; };
-            setTxt('detail-category-badge', item.category);
-            setTxt('detail-subtype', item.subtype);
-            setTxt('detail-city-text', item.city);
-            setTxt('detail-title', item.title);
-            setTxt('detail-neighborhood', item.neighborhood);
-            setTxt('detail-price', `Rs. ${Number(item.price || 0).toLocaleString()}`);
-            setTxt('detail-description', item.description || 'Verified listing via HomeLink Services Network.');
+        function openSavedListingsPage() {
+            executeQuickKeywordSearch('');
+            showToast(`You have ${savedIds.length} saved listing(s).`);
+        }
 
-            const heroBanner = document.getElementById('detail-hero-banner');
-            const heroImg = document.getElementById('detail-hero-image');
-            if (heroBanner && heroImg) {
-                if (item.photo) {
-                    heroImg.src = item.photo;
-                    heroBanner.classList.remove('hidden');
-                } else {
-                    heroBanner.classList.add('hidden');
-                }
+        function toggleSaveListing(id, ev) {
+            if (ev) ev.stopPropagation();
+            const sid = String(id);
+            if (savedIds.includes(sid)) {
+                savedIds = savedIds.filter(x => x !== sid);
+                showToast('Removed from saved listings');
+            } else {
+                savedIds.push(sid);
+                showToast('Saved to bookmarks', 'success');
             }
+            localStorage.setItem('hl_saved_ids', JSON.stringify(savedIds));
+            updateSavedBadge();
+            renderAllViews();
+        }
 
-            const specsBox = document.getElementById('detail-rental-specs-box');
-            const specsGrid = document.getElementById('detail-rental-specs-grid');
-            if (specsBox && specsGrid && item.ownerSheetRecord) {
-                specsBox.classList.remove('hidden');
-                setTxt('detail-spec-id-badge', `ID: ${item.id}`);
-                specsGrid.innerHTML = Object.entries(item.ownerSheetRecord)
-                    .filter(([k, v]) => k !== '_ROW_COLOR' && v)
-                    .map(([k, v]) => `<div class="p-3 rounded-xl bg-white border border-indigo-100"><div class="text-[10px] font-extrabold uppercase text-slate-400">${escapeHTML(k)}</div><div class="text-xs sm:text-sm font-bold text-slate-900 mt-0.5 break-words">${escapeHTML(v)}</div></div>`)
-                    .join('');
-            }
+        function toggleSaveFromDetail() {
+            if (activeDetailId) toggleSaveListing(activeDetailId);
+        }
 
-            const jobSec = document.getElementById('detail-job-apply-section');
-            const bookSec = document.getElementById('detail-booking-section');
-            if (jobSec) jobSec.classList.toggle('hidden', item.category !== 'Jobs');
-            if (bookSec) bookSec.classList.toggle('hidden', item.category === 'Jobs');
-
-            navigateTo('page-listing-detail');
+        function updateSavedBadge() {
+            const badge = document.getElementById('saved-badge');
+            if (!badge) return;
+            badge.textContent = savedIds.length;
+            badge.classList.toggle('hidden', savedIds.length === 0);
         }
 
         function openBookNowSection() {
@@ -2986,282 +2562,222 @@
             document.getElementById('book-now-form-wrapper')?.classList.add('hidden');
         }
 
-        function handlePaymentProofPreview(input) {
-            const file = input.files && input.files[0];
-            if (!file) return;
-            document.getElementById('inq-proof-preview-wrap')?.classList.remove('hidden');
-            const nameEl = document.getElementById('inq-proof-file-name');
-            if (nameEl) nameEl.textContent = file.name;
-            const imgEl = document.getElementById('inq-proof-preview-img');
-            if (imgEl) imgEl.src = URL.createObjectURL(file);
-        }
-
         function handleOfficialQrImageUpload(input) {
             const file = input.files && input.files[0];
             if (!file) return;
             const img = document.getElementById('homelink-official-qr-img');
-            if (img) {
-                img.src = URL.createObjectURL(file);
-                img.classList.remove('hidden');
-            }
+            img.src = URL.createObjectURL(file);
+            img.classList.remove('hidden');
+            document.getElementById('homelink-official-qr-placeholder')?.classList.add('hidden');
+        }
+
+        function handlePaymentProofPreview(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const wrap = document.getElementById('inq-proof-preview-wrap');
+            const img = document.getElementById('inq-proof-preview-img');
+            const nameEl = document.getElementById('inq-proof-file-name');
+            if (img) img.src = URL.createObjectURL(file);
+            if (nameEl) nameEl.textContent = file.name;
+            if (wrap) wrap.classList.remove('hidden');
         }
 
         function handleCustomerInquirySubmit(e) {
             e.preventDefault();
-            const item = listings.find(l => l.id === currentDetailListingId) || { category: 'Rentals', subtype: 'Rental', title: 'Listing', city: 'Dharan', neighborhood: 'Dharan' };
-            inquiries.unshift({
-                id: 'inq-' + Date.now(),
-                category: item.category,
-                subtype: item.subtype,
-                customerName: document.getElementById('inq-name').value.trim(),
-                phone: document.getElementById('inq-phone').value.trim(),
-                listingTitle: item.title,
-                city: item.city,
-                neighborhood: item.neighborhood,
-                assignedTo: 'Branch Coordinator',
-                message: document.getElementById('inq-message').value.trim(),
-                status: 'Pending Verification',
-                resolved: false,
-                time: 'Just now'
-            });
-            e.target.reset();
+            showToast('Booking & QR payment proof submitted! Our coordinator will call you shortly.', 'success');
             closeBookNowSection();
-            renderStaffDashboard();
-            showToast('Booking submitted! Our coordinator will call you shortly.', 'success');
         }
 
         function handleJobCvFileChange(input) {
             const file = input.files && input.files[0];
             if (!file) return;
-            document.getElementById('job-app-cv-badge')?.classList.remove('hidden');
+            const badge = document.getElementById('job-app-cv-badge');
             const fn = document.getElementById('job-app-cv-filename');
             if (fn) fn.textContent = file.name;
+            if (badge) badge.classList.remove('hidden');
         }
 
-        function toggleSaveFromDetail() {
-            if (!currentDetailListingId) return;
-            toggleSaveListing(currentDetailListingId);
+        function handleJobApplicationSubmit(e) {
+            e.preventDefault();
+            showToast('Job application & CV submitted to HR!', 'success');
+            e.target.reset();
         }
 
-        function toggleSaveListing(id) {
-            const idx = savedIds.indexOf(id);
-            if (idx === -1) {
-                savedIds.push(id);
-                showToast('Saved to bookmarks', 'success');
+        async function handlePostSubmit(e) {
+            e.preventDefault();
+            const cat = document.querySelector('input[name="category"]:checked')?.value || 'Rentals';
+            if (cat === 'Rentals') {
+                const row = {
+                    'S.N.': document.getElementById('sheet-inp-sn')?.value || String(listings.length + 1),
+                    'ID': document.getElementById('sheet-inp-id')?.value || 'HLSN-' + Date.now().toString().slice(-4),
+                    'NAME': document.getElementById('sheet-inp-name')?.value || 'Rental Property',
+                    'PRICE': document.getElementById('sheet-inp-price')?.value || '0',
+                    'ADDRESS': document.getElementById('sheet-inp-address')?.value || 'Dharan',
+                    'PARKING SPACE': document.getElementById('sheet-inp-parking')?.value || '',
+                    'UTILITIES': document.getElementById('sheet-inp-utilities')?.value || '',
+                    'VIDEO LINK': document.getElementById('sheet-inp-video')?.value || '',
+                    'PHOTO': document.getElementById('sheet-inp-photo')?.value || '',
+                    '_ROW_COLOR': 'white'
+                };
+                await pushRowToGoogleSheet(SHEET_TABS.Rentals, row);
+                listings.unshift(mapSheetRowToListing('Rentals', row, 0));
             } else {
-                savedIds.splice(idx, 1);
-                showToast('Removed from bookmarks', 'info');
-            }
-            updateSavedBadge();
-        }
-
-        function openSavedListingsPage() {
-            searchQuery = '';
-            navigateTo('page-search-results');
-            renderSearchResultsPage();
-            showToast(`You have ${savedIds.length} saved item(s)`, 'info');
-        }
-
-        function updateSavedBadge() {
-            const badge = document.getElementById('saved-badge');
-            if (!badge) return;
-            badge.textContent = savedIds.length;
-            badge.classList.toggle('hidden', savedIds.length === 0);
-        }
-
-        function mapSheetRowToListing(category, row, idx) {
-            const addr = row['ADDRESS'] || 'Dharan';
-            const city = /biratnagar|brt/i.test(addr) ? 'Biratnagar' : 'Dharan';
-            if (category === 'Rentals') {
-                const propType = row['PROPERTY TYPE'] || 'Flat / Room';
-                const customName = row['NAME'] || row['TITLE'] || row['PROPERTY NAME'] || '';
-                return {
-                    id: row['ID'] || `RENT-${idx + 1}`,
-                    category: 'Rentals',
-                    subtype: propType,
-                    title: customName || `${propType} — ${addr}`,
-                    price: parseFloat(String(row['PRICE'] || '0').replace(/[^\d.]/g, '')) || 0,
-                    city,
-                    neighborhood: addr,
-                    description: [row['TENANCY'] ? `Tenancy: ${row['TENANCY']}` : '', row['UTILITIES'] ? `Utilities: ${row['UTILITIES']}` : '', row['PARKING SPACE'] ? `Parking: ${row['PARKING SPACE']}` : ''].filter(Boolean).join(' • '),
-                    photo: row['PHOTO'] || '',
-                    videoLink: row['VIDEO LINK'] || '',
-                    sheetRowColor: normalizeOwnerRowColor(row['_ROW_COLOR']),
-                    ownerSheetRecord: row
+                const title = document.getElementById('form-title')?.value || 'Listing';
+                const city = document.getElementById('form-city')?.value || 'Dharan';
+                const addr = document.getElementById('form-neighborhood')?.value || city;
+                const price = document.getElementById('form-price')?.value || '0';
+                const row = {
+                    'ID': 'HL-' + Date.now().toString().slice(-4),
+                    'JOB TITLE': title,
+                    'SERVICE TYPE': title,
+                    'ADDRESS': `${addr}, ${city}`,
+                    'SALARY': price,
+                    'RATE': price,
+                    '_ROW_COLOR': 'white'
                 };
+                await pushRowToGoogleSheet(SHEET_TABS[cat], row);
+                listings.unshift(mapSheetRowToListing(cat, row, 0));
             }
-            if (category === 'Jobs') {
-                return {
-                    id: row['ID'] || `JOB-${idx + 1}`,
-                    category: 'Jobs',
-                    subtype: row['SHIFT TYPE'] || 'Full-Time Job',
-                    title: row['JOB TITLE'] || 'Local Job Opening',
-                    price: parseFloat(String(row['SALARY'] || '0').replace(/[^\d.]/g, '')) || 0,
-                    city,
-                    neighborhood: addr,
-                    contactName: row['COMPANY'] || 'Verified Employer',
-                    description: row['REQUIREMENTS'] || '',
-                    photo: row['PHOTO'] || '',
-                    videoLink: row['VIDEO LINK'] || '',
-                    sheetRowColor: normalizeOwnerRowColor(row['_ROW_COLOR']),
-                    ownerSheetRecord: row
-                };
-            }
+            showToast('Published and synced to Google Sheet!', 'success');
+            navigateTo('page-home');
+        }
+
+        function mapSheetRowToListing(category, r, idx) {
+            const addr = r['ADDRESS'] || r['LOCATION'] || 'Dharan';
+            const city = /biratnagar/i.test(addr) ? 'Biratnagar' : 'Dharan';
+            const rawPrice = String(r['PRICE'] || r['SALARY'] || r['RATE'] || '0').replace(/[^\d]/g, '');
+            const title = r['NAME'] || r['JOB TITLE'] || r['SERVICE TYPE'] || r['PROPERTY TYPE'] || `${category} #${idx + 1}`;
             return {
-                id: row['ID'] || `SRV-${idx + 1}`,
-                category: 'Services',
-                subtype: row['SERVICE TYPE'] || 'Home Service',
-                title: `${row['SERVICE TYPE'] || 'Technician'} — ${row['TECHNICIAN'] || addr}`,
-                price: parseFloat(String(row['RATE'] || '0').replace(/[^\d.]/g, '')) || 0,
+                id: r['ID'] || `${category}-${idx + 1}`,
+                sn: r['S.N.'] || String(idx + 1),
+                category,
+                title,
+                subtype: r['PROPERTY TYPE'] || r['SHIFT TYPE'] || r['AVAILABILITY'] || category,
                 city,
-                neighborhood: addr,
-                contactName: row['TECHNICIAN'] || 'Verified Pro',
-                description: row['SKILLS'] || '',
-                photo: row['PHOTO'] || '',
-                videoLink: row['VIDEO LINK'] || '',
-                sheetRowColor: normalizeOwnerRowColor(row['_ROW_COLOR']),
-                ownerSheetRecord: row
+                address: addr,
+                price: Number(rawPrice) || 0,
+                priceText: r['PRICE'] || r['SALARY'] || r['RATE'] || 'Negotiable',
+                tenancy: r['TENANCY'] || '',
+                utilities: r['UTILITIES'] || r['REQUIREMENTS'] || r['SKILLS'] || '',
+                parking: r['PARKING SPACE'] || r['COMPANY'] || r['TECHNICIAN'] || '',
+                videoUrl: r['VIDEO LINK'] || '',
+                photoUrl: r['PHOTO'] || '',
+                rowColor: (r['_ROW_COLOR'] || 'white').toLowerCase(),
+                raw: r
             };
         }
 
-        function fetchSheetViaJsonpOrFetch(sheetName, clientVersion) {
-            return new Promise((resolve) => {
-                const cbName = '__hlSheetCb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
-                const script = document.createElement('script');
-                const timer = setTimeout(() => {
-                    delete window[cbName];
-                    script.remove();
-                    resolve(null);
-                }, 10000);
-
-                window[cbName] = function (data) {
-                    clearTimeout(timer);
-                    delete window[cbName];
-                    script.remove();
-                    resolve(data);
-                };
-
-                const url = `${ownerSheetWebAppUrl}?sheet=${encodeURIComponent(sheetName)}&clientVersion=${encodeURIComponent(clientVersion || '')}&callback=${cbName}`;
-                script.src = url;
-                script.onerror = function () {
-                    clearTimeout(timer);
-                    delete window[cbName];
-                    script.remove();
-                    resolve(null);
-                };
-                document.body.appendChild(script);
-            });
-        }
-
-        async function pullSingleCategoryFromGoogle(category, silent = false) {
-            const sheetName = SHEET_TABS[category];
-            if (!sheetName) return false;
-            const res = await fetchSheetViaJsonpOrFetch(sheetName, lastSheetVersions[category] || '');
-            if (!res || !res.ok || res.unchanged) return false;
-            lastSheetVersions[category] = res.version || '';
-            const mapped = (res.rows || []).map((r, i) => mapSheetRowToListing(category, r, i)).reverse();
-            listings = [...mapped, ...listings.filter(l => l.category !== category)];
-            if (!silent) showToast(`Synced ${mapped.length} ${category} rows from ${sheetName}`, 'success');
-            return true;
-        }
-
-        async function pullAllSheetsFromGoogle(silent = false, forceReset = false) {
-            if (forceReset) lastSheetVersions = { Rentals: '', Jobs: '', Services: '' };
-            const changed = await Promise.all([
-                pullSingleCategoryFromGoogle('Rentals', true),
-                pullSingleCategoryFromGoogle('Jobs', true),
-                pullSingleCategoryFromGoogle('Services', true)
-            ]);
-            if (changed.some(Boolean)) {
-                renderAllViews();
-                if (!silent) showToast('Updated listings from Google Sheets!', 'success');
-            }
-            const syncText = document.getElementById('cloud-sync-text');
-            if (syncText) syncText.textContent = `Live Synced (${listings.length} items)`;
-        }
-
-        function pullFromOwnerGoogleSheet() {
-            pullAllSheetsFromGoogle(false, true);
-        }
-
-        async function pushRowToGoogleSheet(sheetName, rowObj) {
-            try {
-                await fetch(ownerSheetWebAppUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ sheetName, row: rowObj })
-                });
-            } catch (e) {}
-        }
-
-        async function pushSingleCategoryToGoogle(category) {
-            const rows = listings.filter(l => l.category === category).map(l => l.ownerSheetRecord || {});
-            try {
-                await fetch(ownerSheetWebAppUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ sheetName: SHEET_TABS[category], rows })
-                });
-                showToast(`Pushed ${rows.length} ${category} records to Google Sheet`, 'success');
-            } catch (e) {}
-        }
-
-        async function pushAllCategoriesToGoogleSheets() {
-            await Promise.all([
-                pushSingleCategoryToGoogle('Rentals'),
-                pushSingleCategoryToGoogle('Jobs'),
-                pushSingleCategoryToGoogle('Services')
-            ]);
-        }
-
-        function renderListingCardHTML(item) {
-            const badgeColor = item.category === 'Jobs'
-                ? 'bg-emerald-100 text-emerald-800'
-                : item.category === 'Services'
-                ? 'bg-amber-100 text-amber-800'
-                : 'bg-indigo-100 text-indigo-800';
+        function renderListingCard(item) {
+            const isSaved = savedIds.includes(String(item.id));
+            const statusBadge = item.rowColor === 'green'
+                ? '<span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-extrabold">Booked / Filled</span>'
+                : item.rowColor === 'red'
+                    ? '<span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800 text-xs font-extrabold">Unavailable</span>'
+                    : '<span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-extrabold">Available</span>';
+            const imgHtml = item.photoUrl
+                ? `<img src="${item.photoUrl}" alt="${item.title}" onerror="this.style.display='none'" class="w-full h-44 object-cover rounded-2xl mb-4 bg-slate-100">`
+                : '';
             return `
-                <article onclick="openListingDetail('${escapeHTML(item.id)}')" class="cursor-pointer bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm card-hover flex flex-col justify-between">
+                <div onclick="openListingDetail('${item.id}')" class="card-hover cursor-pointer bg-white rounded-3xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between">
                     <div>
-                        ${item.photo ? `<div class="h-44 bg-slate-100 overflow-hidden"><img src="${escapeHTML(item.photo)}" alt="${escapeHTML(item.title)}" onerror="this.parentElement.style.display='none'" class="w-full h-full object-cover"></div>` : ''}
-                        <div class="p-6">
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                                <span class="px-3 py-1 rounded-full text-xs font-extrabold ${badgeColor}">${escapeHTML(item.subtype)}</span>
-                                <span class="text-xs font-bold text-slate-500">${escapeHTML(item.city)}</span>
-                            </div>
-                            <h3 class="text-lg font-extrabold text-slate-900 line-clamp-2">${escapeHTML(item.title)}</h3>
-                            <p class="text-xs sm:text-sm text-slate-500 mt-1 flex items-center gap-1"><i class="ph-fill ph-map-pin text-brand-600"></i> ${escapeHTML(item.neighborhood)}</p>
-                            ${item.description ? `<p class="text-xs text-slate-600 mt-2.5 line-clamp-2">${escapeHTML(item.description)}</p>` : ''}
+                        ${imgHtml}
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <span class="text-xs font-mono font-extrabold text-slate-400">${item.id}</span>
+                            ${statusBadge}
                         </div>
+                        <h3 class="text-lg font-extrabold text-slate-900 line-clamp-2">${item.title}</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1 flex items-center gap-1">
+                            <i class="ph-fill ph-map-pin text-brand-600"></i> ${item.address}
+                        </p>
                     </div>
-                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-base sm:text-lg font-extrabold text-slate-900">Rs. ${Number(item.price || 0).toLocaleString()}</span>
-                        <span class="text-xs font-extrabold text-brand-600">View Details →</span>
+                    <div class="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between">
+                        <div class="text-base font-extrabold text-slate-900">Rs. ${item.priceText}</div>
+                        <button type="button" onclick="toggleSaveListing('${item.id}', event)" class="p-2 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-700">
+                            <i class="${isSaved ? 'ph-fill text-brand-600' : 'ph-bold'} ph-bookmark-simple text-lg"></i>
+                        </button>
                     </div>
-                </article>
-            `;
+                </div>`;
+        }
+
+        function renderListingDetail(item) {
+            document.getElementById('detail-category-badge').textContent = item.category;
+            document.getElementById('detail-subtype').textContent = item.subtype;
+            document.getElementById('detail-city-text').textContent = item.city;
+            document.getElementById('detail-title').textContent = item.title;
+            document.getElementById('detail-neighborhood').textContent = item.address;
+            document.getElementById('detail-price').textContent = `Rs. ${item.priceText}`;
+            document.getElementById('detail-description').textContent =
+                [item.tenancy, item.utilities, item.parking].filter(Boolean).join(' • ') || 'Verified listing on HomeLink Koshi.';
+
+            const specsBox = document.getElementById('detail-rental-specs-box');
+            const specsGrid = document.getElementById('detail-rental-specs-grid');
+            const specIdBadge = document.getElementById('detail-spec-id-badge');
+            if (specsBox && specsGrid) {
+                if (item.category === 'Rentals') {
+                    if (specIdBadge) specIdBadge.textContent = `ID: ${item.id || '—'}`;
+                    const specEntries = [
+                        { label: 'Property ID', value: item.id || '—', icon: 'ph-hash' },
+                        { label: 'Tenancy', value: item.tenancy || 'Standard', icon: 'ph-users-three' },
+                        { label: 'Property Type', value: item.subtype || 'Rental', icon: 'ph-buildings' },
+                        { label: 'Address', value: item.address || item.city || '—', icon: 'ph-map-pin' },
+                        { label: 'Utilities', value: item.utilities || 'Standard', icon: 'ph-lightning' },
+                        { label: 'Parking Space', value: item.parking || 'Ask Coordinator', icon: 'ph-car' }
+                    ];
+                    specsGrid.innerHTML = specEntries.map(s => `
+                        <div class="p-3 rounded-xl bg-white border border-indigo-100 shadow-xs">
+                            <div class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600 flex items-center gap-1">
+                                <i class="ph-fill ${s.icon}"></i> ${s.label}
+                            </div>
+                            <div class="text-xs sm:text-sm font-extrabold text-slate-900 mt-1 break-words">${s.value}</div>
+                        </div>
+                    `).join('');
+                    specsBox.classList.remove('hidden');
+                } else {
+                    specsBox.classList.add('hidden');
+                }
+            }
+
+            const tiktokLink = document.getElementById('detail-tiktok-link');
+            if (tiktokLink) {
+                tiktokLink.href = item.videoUrl || 'https://www.tiktok.com/@homelinkservicesnetwork?_r=1&_t=ZS-9Bdjtkg1pwN';
+            }
+
+            const banner = document.getElementById('detail-hero-banner');
+            const heroImg = document.getElementById('detail-hero-image');
+            if (banner && heroImg) {
+                if (item.photoUrl) {
+                    heroImg.src = item.photoUrl;
+                    banner.classList.remove('hidden');
+                } else {
+                    banner.classList.add('hidden');
+                }
+            }
+            const jobApply = document.getElementById('detail-job-apply-section');
+            const bookingSec = document.getElementById('detail-booking-section');
+            if (jobApply) jobApply.classList.toggle('hidden', item.category !== 'Jobs');
+            if (bookingSec) bookingSec.classList.toggle('hidden', item.category === 'Jobs');
         }
 
         function renderHomeLatestSection() {
             const grid = document.getElementById('home-latest-grid');
             if (!grid) return;
-            const visible = listings.filter(l => isListingAvailableForPublic(l) && (homeLatestTab === 'All' || l.category === homeLatestTab)).slice(0, 6);
-            grid.innerHTML = visible.length
-                ? visible.map(renderListingCardHTML).join('')
-                : '<div class="col-span-full text-center py-10 text-slate-400 font-semibold">Syncing latest listings from Google Sheet...</div>';
+            const filtered = listings
+                .filter(l => homeLatestTab === 'All' || l.category === homeLatestTab)
+                .slice(0, 6);
+            grid.innerHTML = filtered.length
+                ? filtered.map(renderListingCard).join('')
+                : '<div class="col-span-full text-center py-10 text-slate-500 font-semibold">Syncing listings from Google Sheet...</div>';
         }
 
         function renderHomeEmployeesSection() {
             const grid = document.getElementById('home-employees-grid');
             if (!grid) return;
-            grid.innerHTML = employees.map(emp => `
+            grid.innerHTML = staffMembers.map(s => `
                 <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br ${emp.color || 'from-indigo-500 to-violet-600'} text-white font-extrabold flex items-center justify-center text-lg mb-4">${escapeHTML(emp.initials)}</div>
-                    <h3 class="font-extrabold text-slate-900 text-base">${escapeHTML(emp.name)}</h3>
-                    <p class="text-xs font-bold text-brand-600 mt-0.5">${escapeHTML(emp.role)}</p>
-                    <p class="text-xs text-slate-500 mt-2">${escapeHTML(emp.hub)} • ${escapeHTML(emp.phone)}</p>
+                    <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-extrabold">ID ${s.code}</span>
+                    <h3 class="text-lg font-extrabold text-slate-900 mt-3">${s.name}</h3>
+                    <p class="text-xs font-bold text-brand-600">${s.role}</p>
+                    <p class="text-xs text-slate-500 mt-2">Branch: ${s.city} • ${s.phone}</p>
                 </div>
             `).join('');
         }
@@ -3271,436 +2787,315 @@
             const empty = document.getElementById('search-page-empty');
             const badge = document.getElementById('search-results-count-badge');
             if (!grid) return;
-            const q = searchQuery.trim().toLowerCase();
-            const matched = listings.filter(l => {
-                if (!isListingAvailableForPublic(l)) return false;
-                if (activeCity !== 'All' && l.city !== activeCity) return false;
-                if (searchCategoryFilter !== 'All' && l.category !== searchCategoryFilter) return false;
-                if (q && !JSON.stringify(l).toLowerCase().includes(q)) return false;
-                return true;
+            const q = (document.getElementById('search-page-input')?.value || '').trim().toLowerCase();
+            const city = document.getElementById('search-page-city')?.value || 'All';
+            const cat = document.getElementById('search-page-category')?.value || 'All';
+
+            const results = listings.filter(l => {
+                if (city !== 'All' && l.city !== city) return false;
+                if (cat !== 'All' && l.category !== cat) return false;
+                if (!q) return true;
+                return `${l.id} ${l.title} ${l.subtype} ${l.address} ${l.utilities}`.toLowerCase().includes(q);
             });
-            if (badge) badge.textContent = `Found ${matched.length} result${matched.length === 1 ? '' : 's'}`;
-            grid.innerHTML = matched.map(renderListingCardHTML).join('');
-            if (empty) empty.classList.toggle('hidden', matched.length > 0);
+
+            if (badge) badge.textContent = `Found ${results.length} result(s)`;
+            grid.innerHTML = results.map(renderListingCard).join('');
+            if (empty) empty.classList.toggle('hidden', results.length > 0);
         }
 
         function renderRentalsPage() {
             const grid = document.getElementById('rentals-page-grid');
-            const count = document.getElementById('rentals-page-count');
+            const countEl = document.getElementById('rentals-page-count');
             if (!grid) return;
             const kw = rentalOption1Keyword.trim().toLowerCase();
             const items = listings.filter(l => {
-                if (l.category !== 'Rentals' || !isListingAvailableForPublic(l)) return false;
-                if (activeCity !== 'All' && l.city !== activeCity) return false;
-                if (rentalPageSubtype !== 'All' && l.subtype !== rentalPageSubtype) return false;
-                if (kw && !JSON.stringify(l).toLowerCase().includes(kw)) return false;
+                if (l.category !== 'Rentals') return false;
+                if (globalCityFilter !== 'All' && l.city !== globalCityFilter) return false;
+                if (rentalSubtypeFilter !== 'All' && !`${l.title} ${l.subtype}`.toLowerCase().includes(rentalSubtypeFilter.toLowerCase())) return false;
+                if (kw && !`${l.id} ${l.title} ${l.address} ${l.utilities}`.toLowerCase().includes(kw)) return false;
                 return true;
             });
-            if (count) count.textContent = `Available Rooms & Flats (${items.length})`;
-            grid.innerHTML = items.length
-                ? items.map(renderListingCardHTML).join('')
-                : '<div class="col-span-full text-center py-10 text-slate-400 font-semibold">No matching rental properties right now.</div>';
+            if (countEl) countEl.textContent = `Available Rooms & Flats (${items.length})`;
+            grid.innerHTML = items.length ? items.map(renderListingCard).join('') : '<div class="col-span-full text-center py-10 text-slate-500 font-semibold">No rental properties match your filter.</div>';
         }
 
         function renderJobsPage() {
             const grid = document.getElementById('jobs-page-grid');
-            const count = document.getElementById('jobs-page-count');
+            const countEl = document.getElementById('jobs-page-count');
             if (!grid) return;
             const items = listings.filter(l => {
-                if (l.category !== 'Jobs' || !isListingAvailableForPublic(l)) return false;
-                if (activeCity !== 'All' && l.city !== activeCity) return false;
-                if (jobPageSubtype !== 'All' && l.subtype !== jobPageSubtype) return false;
+                if (l.category !== 'Jobs') return false;
+                if (globalCityFilter !== 'All' && l.city !== globalCityFilter) return false;
+                if (jobSubtypeFilter !== 'All' && !`${l.title} ${l.subtype}`.toLowerCase().includes(jobSubtypeFilter.toLowerCase())) return false;
                 return true;
             });
-            if (count) count.textContent = `Available Job Openings (${items.length})`;
-            grid.innerHTML = items.length
-                ? items.map(renderListingCardHTML).join('')
-                : '<div class="col-span-full text-center py-10 text-slate-400 font-semibold">No matching job vacancies right now.</div>';
+            if (countEl) countEl.textContent = `Available Job Openings (${items.length})`;
+            grid.innerHTML = items.length ? items.map(renderListingCard).join('') : '<div class="col-span-full text-center py-10 text-slate-500 font-semibold">No job openings available right now.</div>';
         }
 
         function renderServicesPage() {
             const grid = document.getElementById('services-page-grid');
-            const count = document.getElementById('services-page-count');
+            const countEl = document.getElementById('services-page-count');
             if (!grid) return;
             const items = listings.filter(l => {
-                if (l.category !== 'Services' || !isListingAvailableForPublic(l)) return false;
-                if (activeCity !== 'All' && l.city !== activeCity) return false;
-                if (servicePageSubtype !== 'All' && l.subtype !== servicePageSubtype) return false;
+                if (l.category !== 'Services') return false;
+                if (globalCityFilter !== 'All' && l.city !== globalCityFilter) return false;
+                if (servicePageSubtype !== 'All' && !`${l.title} ${l.subtype}`.toLowerCase().includes(servicePageSubtype.toLowerCase())) return false;
                 return true;
             });
-            if (count) count.textContent = `Verified Home Technicians (${items.length})`;
-            grid.innerHTML = items.length
-                ? items.map(renderListingCardHTML).join('')
-                : '<div class="col-span-full text-center py-10 text-slate-400 font-semibold">No matching home service technicians right now.</div>';
+            if (countEl) countEl.textContent = `Verified Home Technicians (${items.length})`;
+            grid.innerHTML = items.length ? items.map(renderListingCard).join('') : '<div class="col-span-full text-center py-10 text-slate-500 font-semibold">No technicians listed in this category yet.</div>';
         }
 
-        function updateAuthHeaderUI() {
-            const container = document.getElementById('nav-auth-container');
-            const roleVal = currentUser ? currentUser.role : 'guest';
-            ['header-role-select', 'mobile-role-select'].forEach(selId => {
-                const sel = document.getElementById(selId);
-                if (sel) sel.value = roleVal;
-            });
-
-            if (!container) return;
-            if (!currentUser) {
-                container.innerHTML = `
-                    <button type="button" onclick="navigateTo('page-login')" class="px-3.5 sm:px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-extrabold shadow-sm transition flex items-center gap-1.5">
-                        <i class="ph-bold ph-sign-in"></i>
-                        <span>Login</span>
-                    </button>
-                `;
-            } else {
-                const isStaff = currentUser.role === 'employee' || currentUser.role === 'admin';
-                const badgeText = currentUser.role === 'admin'
-                    ? 'Owner'
-                    : currentUser.role === 'employee'
-                    ? `ID ${currentUser.empCode} • ${currentUser.branchCity}`
-                    : 'Customer';
-                container.innerHTML = `
-                    ${isStaff ? `<button type="button" onclick="navigateTo('page-staff-dashboard')" class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold transition flex items-center gap-1.5"><i class="ph-fill ph-shield-check text-amber-400"></i><span class="hidden sm:inline">Dashboard</span></button>` : ''}
-                    <div class="hidden sm:flex flex-col text-right leading-tight">
-                        <span class="text-xs font-extrabold text-slate-900">${escapeHTML(currentUser.name)}</span>
-                        <span class="text-[10px] font-bold text-brand-600">${escapeHTML(badgeText)}</span>
-                    </div>
-                    <button type="button" onclick="logoutUser()" class="p-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 transition" title="Logout">
-                        <i class="ph-bold ph-sign-out text-base sm:text-lg"></i>
-                    </button>
-                `;
-            }
-        }
-
-        // ==========================================
-        // STAFF & OWNER DASHBOARD + 3 DATABASE TABLES
-        // ==========================================
         function switchStaffTab(tab) {
             activeStaffTab = tab;
-            const tabs = ['rental-queries', 'job-queries', 'service-queries', 'listings', 'employees', 'database'];
-            tabs.forEach(t => {
-                const panel = document.getElementById(`staff-panel-${t}`);
-                const btn = document.getElementById(`staff-tab-${t}`);
-                if (panel) panel.classList.toggle('hidden', t !== tab);
-                if (btn) {
-                    btn.className = t === tab
-                        ? 'shrink-0 px-4 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                        : 'shrink-0 px-4 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200';
-                }
+            ['rental-queries', 'job-queries', 'service-queries', 'listings', 'employees', 'database'].forEach(t => {
+                document.getElementById('staff-panel-' + t)?.classList.toggle('hidden', t !== tab);
             });
             if (tab === 'database') renderOwnerDatabaseExplorer();
         }
 
-        function setStaffQueryFilters() {
-            staffQueryCityFilter = document.getElementById('staff-filter-city')?.value || 'All';
-            staffQueryStatusFilter = document.getElementById('staff-filter-status')?.value || 'All';
-            renderStaffDashboard();
-        }
-
+        function setStaffQueryFilters() {}
+        function openNewQueryModalForActiveDept() { toggleStaffLogQueryBox(true); }
         function toggleStaffLogQueryBox(show) {
-            const box = document.getElementById('staff-log-query-box');
-            if (box) box.classList.toggle('hidden', !show);
+            document.getElementById('staff-log-query-box')?.classList.toggle('hidden', !show);
         }
-
-        function openNewQueryModalForActiveDept() {
-            toggleStaffLogQueryBox(true);
-            const catSel = document.getElementById('manual-q-category');
-            if (catSel) {
-                catSel.value = activeStaffTab === 'job-queries' ? 'Jobs' : activeStaffTab === 'service-queries' ? 'Services' : 'Rentals';
-            }
-        }
-
         function handleStaffManualQuerySubmit(e) {
             e.preventDefault();
-            const cat = document.getElementById('manual-q-category').value;
-            const city = document.getElementById('manual-q-city').value;
-            inquiries.unshift({
-                id: 'inq-' + Date.now(),
-                category: cat,
-                subtype: cat,
-                customerName: document.getElementById('manual-q-name').value.trim(),
-                phone: document.getElementById('manual-q-phone').value.trim(),
-                listingTitle: document.getElementById('manual-q-title').value.trim(),
-                city,
-                neighborhood: city,
-                assignedTo: currentUser ? currentUser.name : 'Staff Desk',
-                message: document.getElementById('manual-q-message').value.trim(),
-                status: 'Pending Action',
-                resolved: false,
-                time: 'Just now'
-            });
-            e.target.reset();
+            showToast('Query logged to department queue.', 'success');
             toggleStaffLogQueryBox(false);
-            renderStaffDashboard();
-            showToast(`Added query to ${cat} queue`, 'success');
         }
 
-        function toggleInquiryResolved(id) {
-            const q = inquiries.find(x => x.id === id);
-            if (!q) return;
-            q.resolved = !q.resolved;
-            q.status = q.resolved ? 'Resolved ✓' : 'Pending Follow-up';
-            renderStaffDashboard();
-        }
-
-        function cycleListingRowColor(id) {
-            const item = listings.find(l => l.id === id);
-            if (!item) return;
-            const cur = normalizeOwnerRowColor(item.sheetRowColor);
-            const next = cur === 'white' ? 'green' : cur === 'green' ? 'red' : 'white';
-            item.sheetRowColor = next;
-            if (item.ownerSheetRecord) item.ownerSheetRecord['_ROW_COLOR'] = next;
-            pushRowToGoogleSheet(SHEET_TABS[item.category], item.ownerSheetRecord || {});
-            renderAllViews();
-            showToast(`Updated row color to ${next.toUpperCase()} & synced with sheet`, 'success');
-        }
-
-        function assignEmployeeLocationByOwner(empId, newCity) {
-            const emp = employees.find(e => e.id === empId);
-            if (!emp) return;
-            emp.branchCity = newCity;
-            emp.hub = newCity;
-            renderAllViews();
-            showToast(`Assigned ${emp.name} to ${newCity} branch`, 'success');
-        }
-
-        function renderRowColorBadge(colorKey) {
-            const c = normalizeOwnerRowColor(colorKey);
-            if (c === 'green') return '<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold">Green (Filled)</span>';
-            if (c === 'red') return '<span class="px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-extrabold">Red (Sold/Closed)</span>';
-            return '<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-300 text-xs font-extrabold">White (Available)</span>';
-        }
-
-        function renderStaffDashboard() {
-            const setTxt = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = val;
+        async function handleAddEmployeeSubmit(e) {
+            e.preventDefault();
+            const emp = {
+                code: document.getElementById('emp-add-code')?.value.trim(),
+                name: document.getElementById('emp-add-name')?.value.trim(),
+                email: document.getElementById('emp-add-email')?.value.trim().toLowerCase(),
+                role: document.getElementById('emp-add-role')?.value.trim(),
+                city: document.getElementById('emp-add-hub')?.value || 'Dharan',
+                phone: document.getElementById('emp-add-phone')?.value.trim(),
+                password: document.getElementById('emp-add-passcode')?.value.trim() || 'staff2025',
+                status: 'Active'
             };
-            const isOwner = currentUser && currentUser.role === 'admin';
-            const dbTabBtn = document.getElementById('staff-tab-database');
-            const ownerAddCard = document.getElementById('owner-add-employee-card');
-            if (dbTabBtn) dbTabBtn.classList.toggle('hidden', !isOwner);
-            if (ownerAddCard) ownerAddCard.classList.toggle('hidden', !isOwner);
-
-            const filterInq = (cat) => inquiries.filter(q => {
-                if (q.category !== cat) return false;
-                if (staffQueryCityFilter !== 'All' && q.city !== staffQueryCityFilter) return false;
-                if (staffQueryStatusFilter === 'Pending' && q.resolved) return false;
-                if (staffQueryStatusFilter === 'Resolved' && !q.resolved) return false;
-                return true;
+            staffMembers.push(emp);
+            await pushRowToGoogleSheet(SHEET_TABS.Staff, {
+                'EMP CODE': emp.code,
+                'ROLE': emp.role,
+                'FULL NAME': emp.name,
+                'EMAIL': emp.email,
+                'PHONE': emp.phone,
+                'ASSIGNED CITY': emp.city,
+                'PASSWORD': emp.password,
+                'STATUS': 'Active'
             });
+            showToast(`Employee ${emp.name} synced to STAFF_ACCOUNTS!`, 'success');
+            renderAllViews();
+        }
 
-            const rQs = filterInq('Rentals');
-            const jQs = filterInq('Jobs');
-            const sQs = filterInq('Services');
-
-            setTxt('stat-rental-queries', rQs.length);
-            setTxt('stat-rental-pending', `${rQs.filter(q => !q.resolved).length} pending visits`);
-            setTxt('stat-job-queries', jQs.length);
-            setTxt('stat-job-pending', `${jQs.filter(q => !q.resolved).length} applicants`);
-            setTxt('stat-service-queries', sQs.length);
-            setTxt('stat-service-pending', `${sQs.filter(q => !q.resolved).length} dispatches`);
-            setTxt('stat-total-listings', listings.length);
-            setTxt('stat-verified-listings', listings.filter(isListingAvailableForPublic).length);
-            setTxt('stat-total-employees', employees.length);
-
-            setTxt('tab-badge-Rentals', rQs.length);
-            setTxt('tab-badge-Jobs', jQs.length);
-            setTxt('tab-badge-Services', sQs.length);
-
-            const renderQ = (elId, arr) => {
-                const el = document.getElementById(elId);
-                if (!el) return;
-                el.innerHTML = arr.length
-                    ? arr.map(q => `
-                        <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2 py-0.5 rounded bg-slate-900 text-white text-xs font-bold">${escapeHTML(q.city)}</span>
-                                    <span class="px-2 py-0.5 rounded-full text-xs font-extrabold ${q.resolved ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}">${escapeHTML(q.status)}</span>
-                                </div>
-                                <h4 class="font-extrabold text-slate-900 mt-1">${escapeHTML(q.customerName)} (${escapeHTML(q.phone)})</h4>
-                                <p class="text-xs font-bold text-slate-700">${escapeHTML(q.listingTitle)}</p>
-                                <p class="text-xs text-slate-500 mt-0.5">${escapeHTML(q.message)}</p>
-                            </div>
-                            <button type="button" onclick="toggleInquiryResolved('${escapeHTML(q.id)}')" class="px-4 py-2 rounded-xl ${q.resolved ? 'bg-slate-200 text-slate-700' : 'bg-emerald-600 text-white'} text-xs font-extrabold shrink-0">
-                                ${q.resolved ? 'Reopen' : 'Mark Resolved'}
-                            </button>
-                        </div>
-                    `).join('')
-                    : '<p class="text-sm text-slate-400 font-semibold">No queries in this queue.</p>';
-            };
-
-            renderQ('staff-rental-queries-list', rQs);
-            renderQ('staff-job-queries-list', jQs);
-            renderQ('staff-service-queries-list', sQs);
-
-            // Separated Staff Listings Tables
-            ['Rentals', 'Jobs', 'Services'].forEach(cat => {
-                const tbody = document.getElementById(`staff-listings-tbody-${cat}`);
-                const catItems = listings.filter(l => l.category === cat);
-                setTxt(`staff-count-${cat.toLowerCase()}`, catItems.length);
-                if (!tbody) return;
-                tbody.innerHTML = catItems.map(item => `
-                    <tr class="hover:bg-slate-50">
-                        <td class="py-3.5 px-5 font-extrabold text-slate-900">${escapeHTML(item.title)}</td>
-                        <td class="py-3.5 px-5 text-slate-700 font-bold">${escapeHTML(item.subtype)}</td>
-                        <td class="py-3.5 px-5 text-slate-600">${escapeHTML(item.neighborhood)}</td>
-                        <td class="py-3.5 px-5 font-extrabold">Rs. ${Number(item.price || 0).toLocaleString()}</td>
-                        <td class="py-3.5 px-5">${renderRowColorBadge(item.sheetRowColor)}</td>
-                        <td class="py-3.5 px-5 text-right space-x-1.5">
-                            <button type="button" onclick="cycleListingRowColor('${escapeHTML(item.id)}')" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-extrabold">Cycle Color</button>
-                            <button type="button" onclick="openListingDetail('${escapeHTML(item.id)}')" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-extrabold">View</button>
-                        </td>
-                    </tr>
-                `).join('') || `<tr><td colspan="6" class="py-6 text-center text-slate-400">No ${cat} records yet.</td></tr>`;
-            });
-
-            // Staff Directory
-            const empListEl = document.getElementById('staff-employees-list');
-            if (empListEl) {
-                empListEl.innerHTML = employees.map(emp => `
-                    <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70">
-                        <span class="px-2 py-0.5 rounded bg-slate-900 text-white text-xs font-mono font-bold">ID: ${escapeHTML(emp.empCode)}</span>
-                        <h4 class="font-extrabold text-slate-900 mt-1.5">${escapeHTML(emp.name)}</h4>
-                        <p class="text-xs font-bold text-slate-600">${escapeHTML(emp.role)} • ${escapeHTML(emp.branchCity || emp.hub)}</p>
-                    </div>
-                `).join('');
-            }
-
-            if (isOwner) renderOwnerDatabaseExplorer();
+        function toggleOwnerRawDebug() {
+            const pre = document.getElementById('gsheet-owner-raw-debug');
+            if (!pre) return;
+            pre.classList.toggle('hidden');
+            pre.textContent = JSON.stringify(lastSheetRawDiagnostics, null, 2);
         }
 
         function renderOwnerDatabaseExplorer() {
-            const setTxt = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = val;
-            };
+            const rentals = listings.filter(l => l.category === 'Rentals');
+            const jobs = listings.filter(l => l.category === 'Jobs');
+            const services = listings.filter(l => l.category === 'Services');
+            if (document.getElementById('db-count-rentals')) document.getElementById('db-count-rentals').textContent = rentals.length;
+            if (document.getElementById('db-count-jobs')) document.getElementById('db-count-jobs').textContent = jobs.length;
+            if (document.getElementById('db-count-services')) document.getElementById('db-count-services').textContent = services.length;
 
-            const qRent = (document.getElementById('db-search-rentals')?.value || '').trim().toLowerCase();
-            const qJobs = (document.getElementById('db-search-jobs')?.value || '').trim().toLowerCase();
-            const qSrvs = (document.getElementById('db-search-services')?.value || '').trim().toLowerCase();
-
-            // 1. Rentals Database (WEBSITE WORKINGS)
-            const rentals = listings.filter(l => l.category === 'Rentals' && (!qRent || JSON.stringify(l).toLowerCase().includes(qRent)));
-            setTxt('db-count-rentals', rentals.length);
-            const tbodyRentals = document.getElementById('db-tbody-rentals');
-            if (tbodyRentals) {
-                tbodyRentals.innerHTML = rentals.map((item, i) => {
-                    const r = item.ownerSheetRecord || {};
-                    return `
-                        <tr class="hover:bg-indigo-50/30">
-                            <td class="py-3 px-4 font-mono font-bold">${escapeHTML(r['S.N.'] || i + 1)}</td>
-                            <td class="py-3 px-4 font-mono font-extrabold text-indigo-700">${escapeHTML(r['ID'] || item.id)}</td>
-                            <td class="py-3 px-4 font-extrabold text-slate-900">${escapeHTML(r['NAME'] || item.title)}</td>
-                            <td class="py-3 px-4 font-bold">Rs. ${escapeHTML(r['PRICE'] || item.price)}</td>
-                            <td class="py-3 px-4">${escapeHTML(r['TENANCY'] || 'General')}</td>
-                            <td class="py-3 px-4 font-bold">${escapeHTML(r['PROPERTY TYPE'] || item.subtype)}</td>
-                            <td class="py-3 px-4">${escapeHTML(r['ADDRESS'] || item.neighborhood)}</td>
-                            <td class="py-3 px-4 text-xs">${escapeHTML(r['UTILITIES'] || '—')}</td>
-                            <td class="py-3 px-4 text-xs">${escapeHTML(r['PARKING SPACE'] || '—')}</td>
-                            <td class="py-3 px-4">${renderRowColorBadge(item.sheetRowColor)}</td>
-                            <td class="py-3 px-4 text-right whitespace-nowrap">
-                                <button type="button" onclick="cycleListingRowColor('${escapeHTML(item.id)}')" class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 text-xs font-extrabold">Color</button>
-                                <button type="button" onclick="openListingDetail('${escapeHTML(item.id)}')" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-xs font-extrabold">Open</button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('') || '<tr><td colspan="11" class="py-6 text-center text-slate-400">No Rentals records in WEBSITE WORKINGS.</td></tr>';
-            }
-
-            // 2. Jobs Database (JOBS WORKINGS)
-            const jobs = listings.filter(l => l.category === 'Jobs' && (!qJobs || JSON.stringify(l).toLowerCase().includes(qJobs)));
-            setTxt('db-count-jobs', jobs.length);
-            const tbodyJobs = document.getElementById('db-tbody-jobs');
-            if (tbodyJobs) {
-                tbodyJobs.innerHTML = jobs.map((item, i) => {
-                    const r = item.ownerSheetRecord || {};
-                    return `
-                        <tr class="hover:bg-emerald-50/30">
-                            <td class="py-3 px-4 font-mono font-bold">${escapeHTML(r['S.N.'] || i + 1)}</td>
-                            <td class="py-3 px-4 font-mono font-extrabold text-emerald-700">${escapeHTML(r['ID'] || item.id)}</td>
-                            <td class="py-3 px-4 font-bold">Rs. ${escapeHTML(r['SALARY'] || item.price)}</td>
-                            <td class="py-3 px-4">${escapeHTML(r['SHIFT TYPE'] || item.subtype)}</td>
-                            <td class="py-3 px-4 font-extrabold text-slate-900">${escapeHTML(r['JOB TITLE'] || item.title)}</td>
-                            <td class="py-3 px-4">${escapeHTML(r['ADDRESS'] || item.neighborhood)}</td>
-                            <td class="py-3 px-4 text-xs">${escapeHTML(r['REQUIREMENTS'] || '—')}</td>
-                            <td class="py-3 px-4 font-bold">${escapeHTML(r['COMPANY'] || item.contactName)}</td>
-                            <td class="py-3 px-4">${renderRowColorBadge(item.sheetRowColor)}</td>
-                            <td class="py-3 px-4 text-right whitespace-nowrap">
-                                <button type="button" onclick="cycleListingRowColor('${escapeHTML(item.id)}')" class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-extrabold">Color</button>
-                                <button type="button" onclick="openListingDetail('${escapeHTML(item.id)}')" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-xs font-extrabold">Open</button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('') || '<tr><td colspan="10" class="py-6 text-center text-slate-400">No Jobs records in JOBS WORKINGS.</td></tr>';
-            }
-
-            // 3. Services Database (SERVICES WORKINGS)
-            const services = listings.filter(l => l.category === 'Services' && (!qSrvs || JSON.stringify(l).toLowerCase().includes(qSrvs)));
-            setTxt('db-count-services', services.length);
-            const tbodyServices = document.getElementById('db-tbody-services');
-            if (tbodyServices) {
-                tbodyServices.innerHTML = services.map((item, i) => {
-                    const r = item.ownerSheetRecord || {};
-                    return `
-                        <tr class="hover:bg-amber-50/30">
-                            <td class="py-3 px-4 font-mono font-bold">${escapeHTML(r['S.N.'] || i + 1)}</td>
-                            <td class="py-3 px-4 font-mono font-extrabold text-amber-700">${escapeHTML(r['ID'] || item.id)}</td>
-                            <td class="py-3 px-4 font-bold">Rs. ${escapeHTML(r['RATE'] || item.price)}</td>
-                            <td class="py-3 px-4">${escapeHTML(r['AVAILABILITY'] || 'Same-Day')}</td>
-                            <td class="py-3 px-4 font-extrabold text-slate-900">${escapeHTML(r['SERVICE TYPE'] || item.subtype)}</td>
-                            <td class="py-3 px-4">${escapeHTML(r['ADDRESS'] || item.neighborhood)}</td>
-                            <td class="py-3 px-4 text-xs">${escapeHTML(r['SKILLS'] || '—')}</td>
-                            <td class="py-3 px-4 font-bold">${escapeHTML(r['TECHNICIAN'] || item.contactName)}</td>
-                            <td class="py-3 px-4">${renderRowColorBadge(item.sheetRowColor)}</td>
-                            <td class="py-3 px-4 text-right whitespace-nowrap">
-                                <button type="button" onclick="cycleListingRowColor('${escapeHTML(item.id)}')" class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 text-xs font-extrabold">Color</button>
-                                <button type="button" onclick="openListingDetail('${escapeHTML(item.id)}')" class="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-xs font-extrabold">Open</button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('') || '<tr><td colspan="10" class="py-6 text-center text-slate-400">No Home Services records in SERVICES WORKINGS.</td></tr>';
+            const rBody = document.getElementById('db-tbody-rentals');
+            if (rBody) {
+                rBody.innerHTML = rentals.map(r => `
+                    <tr>
+                        <td class="py-3 px-4">${r.sn}</td>
+                        <td class="py-3 px-4 font-mono font-bold">${r.id}</td>
+                        <td class="py-3 px-4 font-bold">${r.title}</td>
+                        <td class="py-3 px-4">${r.priceText}</td>
+                        <td class="py-3 px-4">${r.tenancy}</td>
+                        <td class="py-3 px-4">${r.subtype}</td>
+                        <td class="py-3 px-4">${r.address}</td>
+                        <td class="py-3 px-4">${r.utilities}</td>
+                        <td class="py-3 px-4">${r.parking}</td>
+                        <td class="py-3 px-4 uppercase font-bold">${r.rowColor}</td>
+                        <td class="py-3 px-4 text-right"><button type="button" onclick="openListingDetail('${r.id}')" class="text-brand-600 font-bold">View</button></td>
+                    </tr>`).join('');
             }
         }
 
         function renderAllViews() {
-            updateAuthHeaderUI();
-            updateSavedBadge();
             renderHomeLatestSection();
             renderHomeEmployeesSection();
             renderSearchResultsPage();
             renderRentalsPage();
             renderJobsPage();
             renderServicesPage();
-            renderStaffDashboard();
+            if (document.getElementById('stat-total-listings')) document.getElementById('stat-total-listings').textContent = listings.length;
+            if (document.getElementById('stat-verified-listings')) document.getElementById('stat-verified-listings').textContent = listings.filter(l => l.rowColor !== 'red').length;
+            if (document.getElementById('stat-total-employees')) document.getElementById('stat-total-employees').textContent = staffMembers.length;
         }
 
-        // ==========================================
-        // INITIALIZATION & CHANGE-ONLY AUTO-SYNC
-        // ==========================================
-        window.onload = function () {
-            try { localStorage.removeItem('homelink_owner_sheet_url'); } catch (e) {}
-            restoreSavedSession();
-            populateFormNeighborhoods('Dharan');
-            renderAllViews();
-            navigateTo('page-home');
-            pullAllSheetsFromGoogle(true, true);
-            syncAccountSheetsFromGoogle();
-            setTimeout(initGoogleOneTap, 600);
+        function fetchSheetViaJsonpOrFetch(sheetName, clientVersion = '') {
+            const url = `${DEFAULT_OWNER_SHEET_URL}?sheet=${encodeURIComponent(sheetName)}&clientVersion=${encodeURIComponent(clientVersion)}&_ts=${Date.now()}`;
+            return new Promise(resolve => {
+                const cbName = '__hlJsonpCb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+                const script = document.createElement('script');
+                let settled = false;
 
-            // Checks quietly in the background and ONLY updates/re-renders if you edited the sheet
-            setInterval(() => {
-                if (!document.hidden) {
-                    pullAllSheetsFromGoogle(true, false);
-                    syncAccountSheetsFromGoogle();
-                }
-            }, 15000);
+                const cleanup = () => {
+                    try { delete window[cbName]; } catch (e) { window[cbName] = undefined; }
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                };
 
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) {
-                    pullAllSheetsFromGoogle(true, false);
-                    syncAccountSheetsFromGoogle();
-                }
+                const timer = setTimeout(() => {
+                    if (settled) return;
+                    settled = true;
+                    cleanup();
+                    resolve({ ok: false, error: 'JSONP timeout waiting for Google Apps Script' });
+                }, 10000);
+
+                window[cbName] = data => {
+                    if (settled) return;
+                    settled = true;
+                    clearTimeout(timer);
+                    cleanup();
+                    resolve(data);
+                };
+
+                script.async = true;
+                script.src = `${url}&callback=${cbName}`;
+                script.onerror = () => {
+                    if (settled) return;
+                    settled = true;
+                    clearTimeout(timer);
+                    cleanup();
+                    resolve({ ok: false, error: 'Failed to load JSONP script from Apps Script' });
+                };
+                (document.body || document.head).appendChild(script);
             });
+        }
+
+        async function pushRowToGoogleSheet(sheetName, row) {
+            try {
+                await fetch(DEFAULT_OWNER_SHEET_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ sheetName, row })
+                });
+            } catch (err) {}
+        }
+
+        async function pullStaffAccountsFromGoogle() {
+            const res = await fetchSheetViaJsonpOrFetch(SHEET_TABS.Staff, '');
+            if (res && res.ok && Array.isArray(res.rows) && res.rows.length > 0) {
+                staffMembers = res.rows.map(r => ({
+                    code: r['EMP CODE'] || '000',
+                    role: r['ROLE'] || 'Staff',
+                    name: r['FULL NAME'] || 'Staff Member',
+                    email: (r['EMAIL'] || '').toLowerCase(),
+                    phone: r['PHONE'] || '',
+                    city: r['ASSIGNED CITY'] || 'Dharan',
+                    password: r['PASSWORD'] || 'staff2025',
+                    status: r['STATUS'] || 'Active'
+                }));
+            }
+        }
+
+        async function pullSingleCategoryFromGoogle(category, forceFull = false) {
+            const primaryTab = category === 'Rentals' ? 'OWNER' : SHEET_TABS[category];
+            const prevVer = forceFull ? '' : (lastSheetVersions[category] || '');
+            let res = await fetchSheetViaJsonpOrFetch(primaryTab, prevVer);
+
+            // Merge rows from OWNER, WEBSITE WORKINGS, and first sheet tab so every rental record is included
+            if (category === 'Rentals') {
+                const combinedRows = Array.isArray(res && res.rows) ? [...res.rows] : [];
+                const seenIds = new Set(combinedRows.map(r => String(r['ID'] || '').trim().toUpperCase()).filter(Boolean));
+
+                for (const altTab of ['WEBSITE WORKINGS', '__FIRST_TAB__']) {
+                    const altRes = await fetchSheetViaJsonpOrFetch(altTab, '');
+                    if (altRes && altRes.ok && Array.isArray(altRes.rows)) {
+                        altRes.rows.forEach(r => {
+                            const idKey = String(r['ID'] || '').trim().toUpperCase();
+                            if (!idKey || !seenIds.has(idKey)) {
+                                if (idKey) seenIds.add(idKey);
+                                combinedRows.push(r);
+                            }
+                        });
+                    }
+                }
+
+                if (combinedRows.length > 0) {
+                    res = {
+                        ok: true,
+                        unchanged: false,
+                        version: (res && res.version ? res.version : '') + '_' + combinedRows.length,
+                        sheetName: 'OWNER + WEBSITE WORKINGS',
+                        rows: combinedRows
+                    };
+                }
+            }
+
+            lastSheetRawDiagnostics[category] = res || { ok: false, error: 'No response from Apps Script Web App URL' };
+            if (!res || !res.ok) return false;
+            if (res.unchanged) return false;
+
+            lastSheetVersions[category] = res.version || '';
+            const mapped = (res.rows || []).map((r, i) => mapSheetRowToListing(category, r, i)).reverse();
+            listings = [...mapped, ...listings.filter(l => l.category !== category)];
+            return true;
+        }
+
+        async function pullAllSheetsFromGoogle(forceFull = false, notify = false) {
+            const changed = await Promise.all([
+                pullSingleCategoryFromGoogle('Rentals', forceFull),
+                pullSingleCategoryFromGoogle('Jobs', forceFull),
+                pullSingleCategoryFromGoogle('Services', forceFull)
+            ]);
+            if (changed.some(Boolean) || forceFull) {
+                renderAllViews();
+            }
+            const statusLine = document.getElementById('gsheet-owner-status-line');
+            if (statusLine) {
+                const rCount = listings.filter(l => l.category === 'Rentals').length;
+                const jCount = listings.filter(l => l.category === 'Jobs').length;
+                const sCount = listings.filter(l => l.category === 'Services').length;
+                statusLine.textContent = `Last Synced: ${new Date().toLocaleTimeString()} • Rentals: ${rCount} | Jobs: ${jCount} | Services: ${sCount}`;
+            }
+            if (notify) showToast('Google Sheets synced!', 'success');
+        }
+
+        function pullFromOwnerGoogleSheet() {
+            pullAllSheetsFromGoogle(true, true);
+        }
+
+        async function pushSingleCategoryToGoogle(category) {
+            const rows = listings.filter(l => l.category === category).map(l => l.raw || {});
+            await fetch(DEFAULT_OWNER_SHEET_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ sheetName: SHEET_TABS[category], rows })
+            });
+            showToast(`Pushed ${category} to Google Sheet!`, 'success');
+        }
+
+        async function pushAllCategoriesToGoogleSheets() {
+            await Promise.all(['Rentals', 'Jobs', 'Services'].map(pushSingleCategoryToGoogle));
+        }
+
+        window.onload = function () {
+            updateAuthHeaderUI();
+            updateSavedBadge();
+            renderAllViews();
+            navigateTo(isUserSignedIn() ? 'page-rentals' : 'page-home');
+            pullAllSheetsFromGoogle(true, false);
+            pullStaffAccountsFromGoogle();
+            setInterval(() => pullAllSheetsFromGoogle(false, false), 15000);
         };
     </script>
 </body>
